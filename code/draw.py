@@ -39,7 +39,7 @@ def show_palette(palette, description = ''):
         f'![](https://placehold.it/30x30/{c[1:]}/{c[1:]}?text=)'
         for c in palette
     ]
-    
+
     display(Markdown((description)))
     display(Markdown(tabulate(pd.DataFrame(colorboxes), showindex = False)))
 
