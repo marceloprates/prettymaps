@@ -117,7 +117,8 @@ def plot(
     zorder_streets = None,
     zorder_building = None,
     # Whether to fetch data using OSM Id
-    by_osmid = False
+    by_osmid = False,
+    by_coordinates = False,
     ):
 
     #############
@@ -125,7 +126,9 @@ def plot(
     #############
 
     # Geocode central point
-    if not by_osmid:
+    if by_coordinates:
+        point = (float(query.split(",")[0].strip()), float(query.split(",")[1].strip()))
+    elif not by_osmid:
         point = ox.geocode(query)
 
     # Fetch perimeter
