@@ -22,7 +22,7 @@ from geopandas import GeoDataFrame
 import pandas as pd
 from functools import reduce
 from tabulate import tabulate
-from IPython.display import Markdown
+from IPython.display import Markdown, display
 from collections.abc import Iterable
 
 # Fetch
