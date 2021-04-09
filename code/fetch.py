@@ -44,7 +44,7 @@ def get_footprints(perimeter = None, point = None, radius = None, footprint = 'b
         # Boundary defined by polygon (perimeter)
         footprints = ox.geometries_from_polygon(union(perimeter.geometry), tags = {footprint: True} if type(footprint) == str else footprint)
         perimeter = union(ox.project_gdf(perimeter).geometry)
-        
+
     elif (point is not None) and (radius is not None):
         # Boundary defined by circle with radius 'radius' around point
         footprints = ox.geometries_from_point(point, dist = radius, tags = {footprint: True} if type(footprint) == str else footprint)
@@ -100,7 +100,7 @@ def get_streets(perimeter = None, point = None, radius = None, dilate = 6, custo
 
     if not isinstance(streets, Iterable):
         streets = [streets]
-    
+
     streets = list(map(pathify, streets))
 
     return streets, perimeter
