@@ -6,7 +6,7 @@ A small set of Python functions to draw pretty maps from OpenStreetMap data. Bas
 
 Install dependencies with
 
-`$ pip install -r requirements.txt`
+`$ conda env create environment.yml`
 
 ## Usage
 
