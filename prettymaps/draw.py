@@ -27,7 +27,7 @@ from IPython.display import Markdown, display
 from collections.abc import Iterable
 
 # Fetch
-from fetch import *
+from .fetch import *
 
 # Helper functions
 def get_hash(key):
