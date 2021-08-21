@@ -10,9 +10,9 @@ setup(
     license='MIT License',
     packages=['prettymaps'],
     install_requires=[
-        'osmnx=1.0.1',
-        'tabulate=0.8.9',
-        'jupyter=1.0.0',
+        'osmnx==1.0.1',
+        'tabulate==0.8.9',
+        'jupyter==1.0.0',
     ],
 
     classifiers=[
