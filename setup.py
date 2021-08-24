@@ -13,7 +13,7 @@ setup(
         'osmnx==1.0.1',
         'tabulate==0.8.9',
         'jupyter==1.0.0',
-        'vsketch==1.0.0'
+        #'vsketch==1.0.0'
     ],
 
     classifiers=[
