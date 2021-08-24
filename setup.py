@@ -6,13 +6,14 @@ setup(
     description='A simple python library to draw pretty maps from OpenStreetMap data',
     url='https://github.com/marceloprates/prettymaps',
     author='Marcelo Prates',
-    author_email='marceloorp@gmail.com',    
+    author_email='marceloorp@gmail.com',
     license='MIT License',
     packages=['prettymaps'],
     install_requires=[
-        'osmnx=1.0.1',
-        'tabulate=0.8.9',
-        'jupyter=1.0.0',
+        'osmnx==1.0.1',
+        'tabulate==0.8.9',
+        'jupyter==1.0.0',
+        'vsketch==1.0.0a0'
     ],
 
     classifiers=[
