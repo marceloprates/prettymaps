@@ -24,23 +24,7 @@ from descartes import PolygonPatch
 
 from functools import reduce
 
-# Helper functions to fetch data from OSM
-
-def ring_coding(ob):
-    codes = np.ones(len(ob.coords), dtype = Path.code_type) * Path.LINETO
-    codes[0] = Path.MOVETO
-    return codes
-
-def pathify(polygon):
-    vertices = np.concatenate([np.asarray(polygon.exterior)] + [np.asarray(r) for r in polygon.interiors])
-    codes = np.concatenate([ring_coding(polygon.exterior)] + [ring_coding(r) for r in polygon.interiors])
-    return Path(vertices, codes)
-
-def union(geometry):
-    geometry = np.concatenate([[x] if type(x) == Polygon else x for x in geometry if type(x) in [Polygon, MultiPolygon]])
-    geometry = reduce(lambda x, y: x.union(y), geometry[1:], geometry[0])
-    return geometry
-
+# Compute circular or square boundary given point, radius and crs
 def get_boundary(point, radius, crs, circle = True, dilate = 0):
     if circle:
         return ox.project_gdf(
@@ -55,9 +39,11 @@ def get_boundary(point, radius, crs, circle = True, dilate = 0):
             (x-r, y-r), (x+r, y-r), (x+r, y+r), (x-r, y+r)
         ]).buffer(dilate)
 
+# Get perimeter
 def get_perimeter(query, by_osmid = False, **kwargs):
     return ox.geocode_to_gdf(query, by_osmid = by_osmid, **kwargs, **{x: kwargs[x] for x in ['circle', 'dilate'] if x in kwargs.keys()})
 
+# Get geometries
 def get_geometries(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, circle = True, dilate = 0):
 
     if perimeter is not None:
@@ -93,12 +79,13 @@ def get_geometries(perimeter = None, point = None, radius = None, tags = {}, per
 
     return geometries
 
+# Get streets
 def get_streets(perimeter = None, point = None, radius = None, width = 6, custom_filter = None, circle = True, dilate = 0):
 
     # Boundary defined by polygon (perimeter)
     if perimeter is not None:
         # Fetch streets data, project & convert to GDF
-        streets = ox.graph_from_polygon(union(perimeter.geometry), custom_filter = custom_filter)
+        streets = ox.graph_from_polygon(unary_union(perimeter.geometry), custom_filter = custom_filter)
         streets = ox.project_graph(streets)
         streets = ox.graph_to_gdfs(streets, nodes = False)
     # Boundary defined by polygon (perimeter)
@@ -133,10 +120,14 @@ def get_streets(perimeter = None, point = None, radius = None, width = 6, custom
 
     return streets
 
+# Get any layer
 def get_layer(layer, **kwargs):
+    # Fetch perimeter
     if layer == 'perimeter':
+        # If perimeter is already provided:
         if 'perimeter' in kwargs:
             return unary_union(ox.project_gdf(kwargs['perimeter']).geometry)
+        # If point and radius are provided:
         elif 'point' in kwargs and 'radius' in kwargs:
             # Dummy request to fetch CRS
             crs = ox.graph_to_gdfs(ox.graph_from_point(kwargs['point'], dist = kwargs['radius']), nodes = False).crs
@@ -147,7 +138,9 @@ def get_layer(layer, **kwargs):
             return perimeter
         else:
             raise Exception("Either 'perimeter' or 'point' & 'radius' must be provided")
+    # Fetch streets or railway
     if layer in ['streets', 'railway']:
         return get_streets(**kwargs)
+    # Fetch geometries
     else:
         return get_geometries(**kwargs)
