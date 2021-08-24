@@ -1,6 +1,8 @@
 # prettymaps
 
-A small set of Python functions to draw pretty maps from OpenStreetMap data. Based on osmnx, matplotlib, shapely and vsketch libraries.
+A minimal Python library to draw customized maps from OpenStreetMap data.
+
+Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
 
 ## Installation
 
