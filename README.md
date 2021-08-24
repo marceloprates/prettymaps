@@ -13,6 +13,7 @@ Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplot
 Install with
 
 ```
+$ pip install git+https://github.com/abey79/vsketch#egg=vsketch
 $ pip install git+https://github.com/marceloprates/prettymaps.git
 ```
 
