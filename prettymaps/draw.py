@@ -18,6 +18,7 @@ from shapely.affinity import *
 from geopandas import GeoDataFrame
 
 # etc
+import re
 import pandas as pd
 from functools import reduce
 from tabulate import tabulate
@@ -105,9 +106,11 @@ def plot_shapes(shapes, ax, vsketch = None, palette = None, **kwargs):
 
 # Parse query (by coordinates, OSMId or name)
 def parse_query(query):
-    if type(query) == tuple:
+    if type(query) in([Polygon, MultiPolygon]):
+        return 'polygon'
+    elif type(query) == tuple:
         return 'coordinates'
-    elif False:
+    elif re.match('''[A-Z][0-9]+''', query):
         return 'osmid'
     else:
         return 'address'
@@ -173,9 +176,8 @@ def plot(
                 'radius': radius
             }
         else:
-            by_osmid = False
             base_kwargs = {
-                'perimeter': get_perimeter(query, by_osmid = by_osmid)
+                'perimeter': query if query_mode == 'polygon' else get_perimeter(query, by_osmid = query_mode == 'osmid')
             }
 
         # Fetch layers

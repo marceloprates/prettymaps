@@ -80,7 +80,10 @@ def get_geometries(perimeter = None, point = None, radius = None, tags = {}, per
     return geometries
 
 # Get streets
-def get_streets(perimeter = None, point = None, radius = None, width = 6, custom_filter = None, circle = True, dilate = 0):
+def get_streets(perimeter = None, point = None, radius = None, layer = 'streets', width = 6, custom_filter = None, circle = True, dilate = 0):
+
+    if layer == 'streets':
+        layer = 'highway'
 
     # Boundary defined by polygon (perimeter)
     if perimeter is not None:
@@ -106,10 +109,10 @@ def get_streets(perimeter = None, point = None, radius = None, width = 6, custom
         streets = unary_union([
             # Dilate streets of each highway type == 'highway' using width 'w'
             MultiLineString(
-                streets[(streets.highway == highway) & (streets.geometry.type == 'LineString')].geometry.tolist() +
+                streets[(streets[layer] == highway) & (streets.geometry.type == 'LineString')].geometry.tolist() +
                 list(reduce(lambda x, y: x+y, [
                     list(lines)
-                    for lines in streets[(streets.highway == highway) & (streets.geometry.type == 'MultiLineString')].geometry
+                    for lines in streets[(streets[layer] == highway) & (streets.geometry.type == 'MultiLineString')].geometry
                 ], []))
             ).buffer(w)
             for highway, w in width.items()
@@ -139,8 +142,8 @@ def get_layer(layer, **kwargs):
         else:
             raise Exception("Either 'perimeter' or 'point' & 'radius' must be provided")
     # Fetch streets or railway
-    if layer in ['streets', 'railway']:
-        return get_streets(**kwargs)
+    if layer in ['streets', 'railway', 'waterway']:
+        return get_streets(**kwargs, layer = layer)
     # Fetch geometries
     else:
         return get_geometries(**kwargs)
