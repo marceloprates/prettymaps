@@ -106,9 +106,9 @@ def plot_shapes(shapes, ax, vsketch = None, palette = None, **kwargs):
 
 # Parse query (by coordinates, OSMId or name)
 def parse_query(query):
-    if type(query) in([Polygon, MultiPolygon]):
+    if isinstance(query, (Polygon, MultiPolygon)):
         return 'polygon'
-    elif type(query) == tuple:
+    elif isinstance(query, tuple):
         return 'coordinates'
     elif re.match('''[A-Z][0-9]+''', query):
         return 'osmid'
@@ -222,7 +222,7 @@ def plot(
             ax.add_patch(PolygonPatch(geom, **drawing_kwargs['background']))
         else:
             vsketch.geometry(geom)
-    
+
     # Adjust bounds
     xmin, ymin, xmax, ymax = layers['perimeter'].buffer(max_dilation).bounds
     if vsketch is None:
