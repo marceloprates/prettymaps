@@ -6,7 +6,7 @@ Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplot
 
 ## Important:
 
-<a href="https://www.buymeacoffee.com/marceloprates" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 - I've made the `plot` function print by default a message in the corner containing the [mandatory OpenStreetMap credit](https://www.openstreetmap.org/copyright) and the link to this repository. Please keep it.
 - You can make commercial use of `prettymaps` drawings, but I ask that you credit OpenStreetMaps and myself.
