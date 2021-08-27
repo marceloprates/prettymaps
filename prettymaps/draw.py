@@ -258,7 +258,7 @@ def plot(
             fontfamily = (osm_credit['fontfamily'] if 'fontfamily' in osm_credit else 'Ubuntu Mono'),
             fontsize = (osm_credit['fontsize']*d if 'fontsize' in osm_credit else d),
             zorder = (osm_credit['zorder'] if 'zorder' in osm_credit else len(layers)+1),
-            **{k:v for k,v in osm_credit.items() if k not in ['x', 'y', 'fontfamily', 'fontsize', 'zorder']}
+            **{k:v for k,v in osm_credit.items() if k not in ['text', 'x', 'y', 'fontfamily', 'fontsize', 'zorder']}
         )
 
     # Return perimeter
