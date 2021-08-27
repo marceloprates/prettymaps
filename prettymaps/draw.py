@@ -131,6 +131,9 @@ def transform(layers, x, y, scale_x, scale_y, rotation):
     layers = dict(zip(k, v))
     return layers
 
+def draw_text(ax, text, x, y, **kwargs):
+    ax.text(x, y, text, **kwargs)
+
 # Plot
 def plot(
     # Address
@@ -145,6 +148,8 @@ def plot(
     layers = {'perimeter': {}},
     # Drawing params for each layer (matplotlib params such as 'fc', 'ec', 'fill', etc.)
     drawing_kwargs = {},
+    # OSM Caption parameters
+    osm_credit = {},
     # Figure parameters
     figsize = (10, 10), ax = None, title = None,
     # Vsketch parameters
@@ -225,6 +230,7 @@ def plot(
     
     # Adjust bounds
     xmin, ymin, xmax, ymax = layers['perimeter'].buffer(max_dilation).bounds
+    dx, dy = xmax-xmin, ymax-ymin
     if vsketch is None:
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
@@ -240,6 +246,20 @@ def plot(
         else:
             # Draw shape normally
             plot_shapes(shapes, ax, vsketch = vsketch, **kwargs)
+
+    if ((isinstance(osm_credit, dict)) or (osm_credit is True)) and (vsketch is None):
+        x, y = figsize
+        d = .8*(x**2+y**2)**.5
+        draw_text(
+            ax,
+            (osm_credit['text'] if 'text' in osm_credit else 'data © OpenStreetMap contributors\ngithub.com/marceloprates/prettymaps'),
+            x = xmin + (osm_credit['x']*dx if 'x' in osm_credit else 0),
+            y = ymax - 4*d - (osm_credit['y']*dy if 'y' in osm_credit else 0),
+            fontfamily = (osm_credit['fontfamily'] if 'fontfamily' in osm_credit else 'Ubuntu Mono'),
+            fontsize = (osm_credit['fontsize']*d if 'fontsize' in osm_credit else d),
+            zorder = (osm_credit['zorder'] if 'zorder' in osm_credit else len(layers)+1),
+            **{k:v for k,v in osm_credit.items() if k not in ['x', 'y', 'fontfamily', 'fontsize', 'zorder']}
+        )
 
     # Return perimeter
     return layers

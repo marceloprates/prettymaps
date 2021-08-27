@@ -4,6 +4,11 @@ A minimal Python library to draw customized maps from OpenStreetMap data.
 
 Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
 
+## Important:
+
+- I've made the `plot` function print by default a message in the corner containing the [mandatory OpenStreetMap credit](https://www.openstreetmap.org/copyright) and the link to this repository. Please keep it.
+- You can make commercial use of `prettymaps` drawings, but I ask that you credit OpenStreetMaps and myself.
+
 ## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
 ![](prints/hackernews-prettymaps.png)
 
