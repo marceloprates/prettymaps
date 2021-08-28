@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from pathlib import Path
 
 parent_dir = Path(__file__).resolve().parent
@@ -13,9 +13,8 @@ setup(
     author='Marcelo Prates',
     author_email='marceloorp@gmail.com',
     license='MIT License',
-    packages=['prettymaps'],
+    packages=find_packages(exclude=("assets", "notebooks", "prints", "script")),
     install_requires=parent_dir.joinpath("requirements.txt").read_text().splitlines(),
-
     classifiers=[
         'Intended Audience :: Science/Research',
     ],
