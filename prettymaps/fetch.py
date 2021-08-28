@@ -115,8 +115,7 @@ def get_layer(layer, **kwargs):
             return unary_union(ox.project_gdf(kwargs['perimeter']).geometry)
         # If point and radius are provided:
         elif 'point' in kwargs and 'radius' in kwargs:
-            # Dummy request to fetch CRS
-            crs = ox.graph_to_gdfs(ox.graph_from_point(kwargs['point'], dist = kwargs['radius']), nodes = False).crs
+            crs = "EPSG:4326"
             perimeter = get_boundary(
                 kwargs['point'], kwargs['radius'], crs,
                 **{x: kwargs[x] for x in ['circle', 'dilate'] if x in kwargs.keys()}
