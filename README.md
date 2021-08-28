@@ -27,7 +27,7 @@ $ pip install git+https://github.com/abey79/vsketch#egg=vsketch
 $ pip install git+https://github.com/marceloprates/prettymaps.git
 ```
 
-## Usage example (For more examples, see [this Jupyter Notebook](https://github.com/marceloprates/prettymaps/blob/main/notebooks/examples.ipynb)):
+## Usage example (For more examples, see [this Jupyter Notebook](https://nbviewer.jupyter.org/github/marceloprates/prettymaps/blob/main/notebooks/examples.ipynb)):
 
 ```python
 # Init matplotlib figure
