@@ -1,8 +1,8 @@
-from matplotlib import pyplot as plt
-from matplotlib import patches
+import math
+
 from matplotlib import text as mtext
 import numpy as np
-import math
+
 
 class CurvedText(mtext.Text):
     """
