@@ -80,7 +80,7 @@ def get_geometries(perimeter = None, point = None, radius = None, tags = {}, per
     return geometries
 
 # Get streets
-def get_streets(perimeter = None, point = None, radius = None, layer = 'streets', width = 6, custom_filter = None, buffer = 0,circle = True, dilate = 0):
+def get_streets(perimeter = None, point = None, radius = None, layer = 'streets', width = 6, custom_filter = None, buffer = 0, retain_all = False, circle = True, dilate = 0):
 
     if layer == 'streets':
         layer = 'highway'
@@ -94,7 +94,7 @@ def get_streets(perimeter = None, point = None, radius = None, layer = 'streets'
     # Boundary defined by polygon (perimeter)
     elif (point is not None) and (radius is not None):
         # Fetch streets data, save CRS & project
-        streets = ox.graph_from_point(point, dist = radius+dilate+buffer, custom_filter = custom_filter)
+        streets = ox.graph_from_point(point, dist = radius+dilate+buffer, retain_all = retain_all, custom_filter = custom_filter)
         crs = ox.graph_to_gdfs(streets, nodes = False).crs
         streets = ox.project_graph(streets)
         # Compute perimeter from point & CRS
