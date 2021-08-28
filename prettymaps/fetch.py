@@ -1,28 +1,11 @@
-# OpenStreetMap Networkx library to download data from OpenStretMap
-from ast import Mult
-from operator import ge
+from functools import reduce
+
 import osmnx as ox
-
-# CV2 & Scipy & Numpy & Pandas
 import numpy as np
-
-# Shapely
-from shapely.geometry import *
-from shapely.affinity import *
+from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString
 from shapely.ops import unary_union
-
-# Geopandas
 from geopandas import GeoDataFrame
 
-# Matplotlib
-from matplotlib.path import Path
-
-# etc
-from collections.abc import Iterable
-from functools import reduce
-from descartes import PolygonPatch
-
-from functools import reduce
 
 # Compute circular or square boundary given point, radius and crs
 def get_boundary(point, radius, crs, circle = True, dilate = 0):

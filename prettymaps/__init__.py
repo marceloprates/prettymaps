@@ -1,3 +1,1 @@
-# Fetch & Draw
-from .draw import *
-from .fetch import *
+from .draw import plot

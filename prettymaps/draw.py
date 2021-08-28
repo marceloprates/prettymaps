@@ -1,32 +1,18 @@
-# OpenStreetMap Networkx library to download data from OpenStretMap
-import osmnx as ox
-
-# Matplotlib-related stuff, for drawing
-from matplotlib.path import Path
-from matplotlib import pyplot as plt
-from matplotlib.patches import PathPatch
-
-# CV2 & Scipy & Numpy & Pandas
-import numpy as np
-from numpy.random import choice
-
-# Shapely
-from shapely.geometry import *
-from shapely.affinity import *
-
-# Geopandas
-from geopandas import GeoDataFrame
-
-# etc
 import re
-import pandas as pd
-from functools import reduce
-from tabulate import tabulate
-from IPython.display import Markdown, display
 from collections.abc import Iterable
 
-# Fetch
-from .fetch import *
+import osmnx as ox
+import pandas as pd
+import numpy as np
+from numpy.random import choice
+from shapely.geometry import Polygon, MultiPolygon, MultiLineString, GeometryCollection
+from shapely.affinity import translate, scale, rotate
+from descartes import PolygonPatch
+from tabulate import tabulate
+from IPython.display import Markdown, display
+
+from .fetch import get_perimeter, get_layer
+
 
 # Helper functions
 def get_hash(key):
