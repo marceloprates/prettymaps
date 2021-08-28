@@ -7,6 +7,8 @@ setup(
     name='prettymaps',
     version='1.0.0',    
     description='A simple python library to draw pretty maps from OpenStreetMap data',
+    long_description=parent_dir.joinpath("README.md").read_text(),
+    long_description_content_type="text/markdown",
     url='https://github.com/marceloprates/prettymaps',
     author='Marcelo Prates',
     author_email='marceloorp@gmail.com',
