@@ -10,6 +10,7 @@ Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplot
 
 - I've made the `plot` function print by default a message in the corner containing the [mandatory OpenStreetMap credit](https://www.openstreetmap.org/copyright) and the link to this repository. Please keep it.
 - You can make commercial use of `prettymaps` drawings, but I ask that you credit OpenStreetMaps and myself.
+- Share your creations on the [prettymaps subreddit](https://www.reddit.com/r/prettymaps_/)
 
 ## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
 ![](prints/hackernews-prettymaps.png)
