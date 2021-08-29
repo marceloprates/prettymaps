@@ -3,6 +3,7 @@ from collections.abc import Iterable
 
 import osmnx as ox
 import pandas as pd
+from geopandas import GeoDataFrame
 import numpy as np
 from numpy.random import choice
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, GeometryCollection
