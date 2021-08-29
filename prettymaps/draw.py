@@ -92,7 +92,7 @@ def plot_shapes(shapes, ax, vsketch = None, palette = None, **kwargs):
 
 # Parse query (by coordinates, OSMId or name)
 def parse_query(query):
-    if isinstance(query, (Polygon, MultiPolygon)):
+    if isinstance(query, GeoDataFrame):
         return 'polygon'
     elif isinstance(query, tuple):
         return 'coordinates'
