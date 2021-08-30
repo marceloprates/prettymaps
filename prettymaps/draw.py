@@ -6,7 +6,7 @@ import pandas as pd
 from geopandas import GeoDataFrame
 import numpy as np
 from numpy.random import choice
-from shapely.geometry import Polygon, MultiPolygon, MultiLineString, GeometryCollection
+from shapely.geometry import box, Polygon, MultiLineString, GeometryCollection
 from shapely.affinity import translate, scale, rotate
 from descartes import PolygonPatch
 from tabulate import tabulate
@@ -202,13 +202,7 @@ def plot(
 
     # Plot background
     if 'background' in drawing_kwargs:
-        xmin, ymin, xmax, ymax = layers['perimeter'].bounds
-        geom = scale(Polygon([
-            (xmin, ymin),
-            (xmin, ymax),
-            (xmax, ymax),
-            (xmax, ymin)
-        ]), 2, 2)
+        geom = scale(box(*layers['perimeter'].bounds), 2, 2)
 
         if vsketch is None:
             ax.add_patch(PolygonPatch(geom, **drawing_kwargs['background']))
