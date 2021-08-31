@@ -4,7 +4,7 @@ import osmnx as ox
 import numpy as np
 from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString
 from shapely.ops import unary_union
-from geopandas import GeoDataFrame
+from geopandas import GeoDataFrame, read_file
 
 
 # Compute circular or square boundary given point, radius and crs
@@ -25,6 +25,47 @@ def get_boundary(point, radius, crs, circle = True, dilate = 0):
 # Get perimeter
 def get_perimeter(query, by_osmid = False, **kwargs):
     return ox.geocode_to_gdf(query, by_osmid = by_osmid, **kwargs, **{x: kwargs[x] for x in ['circle', 'dilate'] if x in kwargs.keys()})
+
+# Get coastline
+def get_coast(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, circle = True, dilate = 0, file_location = None):
+    if perimeter is not None:
+        # Boundary defined by polygon (perimeter)
+        geometries = ox.geometries_from_polygon(
+            unary_union(perimeter.geometry).buffer(perimeter_tolerance) if perimeter_tolerance > 0 else unary_union(perimeter.geometry),
+            tags = {tags: True} if type(tags) == str else tags
+        )
+        perimeter = unary_union(ox.project_gdf(perimeter).geometry)
+
+    elif (point is not None) and (radius is not None):
+        # Boundary defined by circle with radius 'radius' around point
+        bbox=GeoDataFrame(geometry = [Point(point[::-1])], crs = 4326)
+        bbox=bbox.to_crs(3174)
+        bbox=bbox.buffer(radius)
+        bbox=bbox.envelope
+		# Load the polygons for the coastline from a file
+        geometries=read_file(file_location, bbox=bbox)
+        geometries=geometries.to_crs("epsg:4326")
+        perimeter = get_boundary(point, radius, geometries.crs, circle = circle, dilate = dilate)
+
+    # Project GDF
+    if len(geometries) > 0:
+        geometries = ox.project_gdf(geometries)
+
+    # Intersect with perimeter
+    geometries = geometries.intersection(perimeter)
+
+    if union:
+        geometries = unary_union(reduce(lambda x,y: x+y, [
+            [x] if type(x) == Polygon else list(x)
+            for x in geometries if type(x) in [Polygon, MultiPolygon]
+        ], []))
+    else:
+        geometries = MultiPolygon(reduce(lambda x,y: x+y, [
+            [x] if type(x) == Polygon else list(x)
+            for x in geometries if type(x) in [Polygon, MultiPolygon]
+        ], []))
+
+    return geometries
 
 # Get geometries
 def get_geometries(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, circle = True, dilate = 0):
@@ -126,6 +167,9 @@ def get_layer(layer, **kwargs):
     # Fetch streets or railway
     if layer in ['streets', 'railway', 'waterway']:
         return get_streets(**kwargs, layer = layer)
+	# Fetch Coastline
+	elif layer == 'coastline':
+		return get_coast(**kwargs)
     # Fetch geometries
     else:
         return get_geometries(**kwargs)
