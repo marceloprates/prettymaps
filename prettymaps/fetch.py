@@ -1,6 +1,7 @@
 from functools import reduce
 
 import osmnx as ox
+from osmnx import utils_geo
 import numpy as np
 from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString
 from shapely.ops import unary_union
@@ -30,21 +31,19 @@ def get_perimeter(query, by_osmid = False, **kwargs):
 def get_coast(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, circle = True, dilate = 0, file_location = None):
     if perimeter is not None:
         # Boundary defined by polygon (perimeter)
-        geometries = ox.geometries_from_polygon(
-            unary_union(perimeter.geometry).buffer(perimeter_tolerance) if perimeter_tolerance > 0 else unary_union(perimeter.geometry),
-            tags = {tags: True} if type(tags) == str else tags
-        )
+        bbox=perimeter.to_crs(3174)
+        bbox=bbox.buffer(perimeter_tolerance+dilate)
+        bbox=bbox.to_crs(4326)
+        bbox=bbox.envelope
+        geometries = read_file(file_location, bbox=bbox)
         perimeter = unary_union(ox.project_gdf(perimeter).geometry)
 
     elif (point is not None) and (radius is not None):
         # Boundary defined by circle with radius 'radius' around point
-        bbox=GeoDataFrame(geometry = [Point(point[::-1])], crs = 4326)
-        bbox=bbox.to_crs(3174)
-        bbox=bbox.buffer(radius+dilate)
-        bbox=bbox.envelope
+        north,south,west,east=utils_geo.bbox_from_point(point, dist=radius+dilate)
+        bbox=(west,south,east,north)
         # Load the polygons for the coastline from a file
         geometries=read_file(file_location, bbox=bbox)
-        geometries=geometries.to_crs("epsg:4326")
         perimeter = get_boundary(point, radius, geometries.crs, circle = circle, dilate = dilate)
 
     # Project GDF
