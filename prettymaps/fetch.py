@@ -40,7 +40,7 @@ def get_coast(perimeter = None, point = None, radius = None, tags = {}, perimete
         # Boundary defined by circle with radius 'radius' around point
         bbox=GeoDataFrame(geometry = [Point(point[::-1])], crs = 4326)
         bbox=bbox.to_crs(3174)
-        bbox=bbox.buffer(radius)
+        bbox=bbox.buffer(radius+dilate)
         bbox=bbox.envelope
         # Load the polygons for the coastline from a file
         geometries=read_file(file_location, bbox=bbox)
