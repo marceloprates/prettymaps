@@ -42,7 +42,7 @@ def get_coast(perimeter = None, point = None, radius = None, tags = {}, perimete
         bbox=bbox.to_crs(3174)
         bbox=bbox.buffer(radius)
         bbox=bbox.envelope
-		# Load the polygons for the coastline from a file
+        # Load the polygons for the coastline from a file
         geometries=read_file(file_location, bbox=bbox)
         geometries=geometries.to_crs("epsg:4326")
         perimeter = get_boundary(point, radius, geometries.crs, circle = circle, dilate = dilate)
@@ -167,9 +167,9 @@ def get_layer(layer, **kwargs):
     # Fetch streets or railway
     if layer in ['streets', 'railway', 'waterway']:
         return get_streets(**kwargs, layer = layer)
-	# Fetch Coastline
-	elif layer == 'coastline':
-		return get_coast(**kwargs)
+    # Fetch Coastline
+    elif layer == 'coastline':
+        return get_coast(**kwargs)
     # Fetch geometries
     else:
         return get_geometries(**kwargs)
