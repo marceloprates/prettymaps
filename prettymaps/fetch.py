@@ -27,19 +27,19 @@ def get_perimeter(query, by_osmid = False, **kwargs):
     return ox.geocode_to_gdf(query, by_osmid = by_osmid, **kwargs, **{x: kwargs[x] for x in ['circle', 'dilate'] if x in kwargs.keys()})
 
 # Get geometries
-def get_geometries(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, circle = True, dilate = 0):
+def get_geometries(perimeter = None, point = None, radius = None, tags = {}, perimeter_tolerance = 0, union = True, buffer = 0, circle = True, dilate = 0):
 
     if perimeter is not None:
         # Boundary defined by polygon (perimeter)
         geometries = ox.geometries_from_polygon(
-            unary_union(perimeter.geometry).buffer(perimeter_tolerance) if perimeter_tolerance > 0 else unary_union(perimeter.geometry),
+            unary_union(perimeter.to_crs(3174).buffer(buffer+perimeter_tolerance).to_crs(4326).geometry) if buffer > 0 or perimeter_tolerance > 0 else unary_union(perimeter.geometry),
             tags = {tags: True} if type(tags) == str else tags
         )
         perimeter = unary_union(ox.project_gdf(perimeter).geometry)
 
     elif (point is not None) and (radius is not None):
         # Boundary defined by circle with radius 'radius' around point
-        geometries = ox.geometries_from_point(point, dist = radius+dilate, tags = {tags: True} if type(tags) == str else tags)
+        geometries = ox.geometries_from_point(point, dist = radius+dilate+buffer, tags = {tags: True} if type(tags) == str else tags)
         perimeter = get_boundary(point, radius, geometries.crs, circle = circle, dilate = dilate)
 
     # Project GDF
@@ -71,9 +71,10 @@ def get_streets(perimeter = None, point = None, radius = None, layer = 'streets'
     # Boundary defined by polygon (perimeter)
     if perimeter is not None:
         # Fetch streets data, project & convert to GDF
-        streets = ox.graph_from_polygon(unary_union(perimeter.geometry).buffer(buffer) if buffer > 0 else unary_union(perimeter.geometry), custom_filter = custom_filter)
+        streets = ox.graph_from_polygon(unary_union(perimeter.to_crs(3174).buffer(buffer).to_crs(4326).geometry) if buffer > 0 else unary_union(perimeter.geometry), custom_filter = custom_filter)
         streets = ox.project_graph(streets)
         streets = ox.graph_to_gdfs(streets, nodes = False)
+        perimeter = unary_union(ox.project_gdf(perimeter).geometry)
     # Boundary defined by polygon (perimeter)
     elif (point is not None) and (radius is not None):
         # Fetch streets data, save CRS & project
@@ -84,9 +85,10 @@ def get_streets(perimeter = None, point = None, radius = None, layer = 'streets'
         perimeter = get_boundary(point, radius, crs, circle = circle, dilate = dilate)
         # Convert to GDF
         streets = ox.graph_to_gdfs(streets, nodes = False)
-        # Intersect with perimeter & filter empty elements
-        streets.geometry = streets.geometry.intersection(perimeter)
-        streets = streets[~streets.geometry.is_empty]
+    
+    # Intersect with perimeter & filter empty elements
+    streets.geometry = streets.geometry.intersection(perimeter)
+    streets = streets[~streets.geometry.is_empty]
 
     if type(width) == dict:
         streets = unary_union([
