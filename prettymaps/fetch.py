@@ -94,10 +94,10 @@ def get_streets(perimeter = None, point = None, radius = None, layer = 'streets'
         streets = unary_union([
             # Dilate streets of each highway type == 'highway' using width 'w'
             MultiLineString(
-                streets[(streets[layer] == highway) & (streets.geometry.type == 'LineString')].geometry.tolist() +
+                streets[ [highway in value for value in streets[layer]] & (streets.geometry.type == 'LineString')].geometry.tolist() +
                 list(reduce(lambda x, y: x+y, [
                     list(lines)
-                    for lines in streets[(streets[layer] == highway) & (streets.geometry.type == 'MultiLineString')].geometry
+                    for lines in streets[ [highway in value for value in streets[layer]] & (streets.geometry.type == 'MultiLineString')].geometry
                 ], []))
             ).buffer(w)
             for highway, w in width.items()
