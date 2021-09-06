@@ -46,7 +46,7 @@ def get_coast(perimeter = None, point = None, radius = None, perimeter_tolerance
         bbox=bbox.buffer(perimeter_tolerance+dilate+buffer)
         bbox=bbox.to_crs(4326)
         bbox=bbox.envelope
-		# Load the polygons for the coastline from a file
+        # Load the polygons for the coastline from a file
         geometries = read_file(file_location, bbox=bbox)
         perimeter = unary_union(ox.project_gdf(perimeter).geometry)
 
@@ -86,6 +86,7 @@ def get_geometries(
     tags={},
     perimeter_tolerance=0,
     union=True,
+    buffer=0,
     circle=True,
     dilate=0,
 ):
@@ -93,8 +94,8 @@ def get_geometries(
     if perimeter is not None:
         # Boundary defined by polygon (perimeter)
         geometries = ox.geometries_from_polygon(
-            unary_union(perimeter.geometry).buffer(perimeter_tolerance)
-            if perimeter_tolerance > 0
+            unary_union(perimeter.to_crs(3174).buffer(buffer+perimeter_tolerance).to_crs(4326).geometry)
+            if buffer >0 or perimeter_tolerance > 0
             else unary_union(perimeter.geometry),
             tags={tags: True} if type(tags) == str else tags,
         )
@@ -104,7 +105,7 @@ def get_geometries(
         # Boundary defined by circle with radius 'radius' around point
         geometries = ox.geometries_from_point(
             point,
-            dist=radius + dilate,
+            dist=radius + dilate + buffer,
             tags={tags: True} if type(tags) == str else tags,
         )
         perimeter = get_boundary(
@@ -116,7 +117,7 @@ def get_geometries(
         geometries = ox.project_gdf(geometries)
 
     # Intersect with perimeter
-    geometries = geometries.intersection(perimeter)
+    geometries = geometries.intersection(perimeter).buffer(0)
 
     if union:
         geometries = unary_union(
@@ -167,13 +168,14 @@ def get_streets(
     if perimeter is not None:
         # Fetch streets data, project & convert to GDF
         streets = ox.graph_from_polygon(
-            unary_union(perimeter.geometry).buffer(buffer)
+            unary_union(perimeter.to_crs(3174).buffer(buffer).to_crs(4326).geometry)
             if buffer > 0
             else unary_union(perimeter.geometry),
             custom_filter=custom_filter,
         )
         streets = ox.project_graph(streets)
         streets = ox.graph_to_gdfs(streets, nodes=False)
+        perimeter = unary_union(ox.project_gdf(perimeter).geometry)
     # Boundary defined by polygon (perimeter)
     elif (point is not None) and (radius is not None):
         # Fetch streets data, save CRS & project
@@ -189,9 +191,10 @@ def get_streets(
         perimeter = get_boundary(point, radius, crs, circle=circle, dilate=dilate)
         # Convert to GDF
         streets = ox.graph_to_gdfs(streets, nodes=False)
-        # Intersect with perimeter & filter empty elements
-        streets.geometry = streets.geometry.intersection(perimeter)
-        streets = streets[~streets.geometry.is_empty]
+    
+    # Intersect with perimeter & filter empty elements
+    streets.geometry = streets.geometry.intersection(perimeter)
+    streets = streets[~streets.geometry.is_empty]
 
     if type(width) == dict:
         streets = unary_union(
@@ -199,7 +202,7 @@ def get_streets(
                 # Dilate streets of each highway type == 'highway' using width 'w'
                 MultiLineString(
                     streets[
-                        (streets[layer] == highway)
+                        [highway in value for value in streets[layer]]
                         & (streets.geometry.type == "LineString")
                     ].geometry.tolist()
                     + list(
@@ -208,7 +211,7 @@ def get_streets(
                             [
                                 list(lines)
                                 for lines in streets[
-                                    (streets[layer] == highway)
+                                    [highway in value for value in streets[layer]]
                                     & (streets.geometry.type == "MultiLineString")
                                 ].geometry
                             ],
