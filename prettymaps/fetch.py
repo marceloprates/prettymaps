@@ -170,6 +170,7 @@ def get_streets(
             unary_union(perimeter.geometry).buffer(buffer)
             if buffer > 0
             else unary_union(perimeter.geometry),
+            retain_all=retain_all,
             custom_filter=custom_filter,
         )
         streets = ox.project_graph(streets)
