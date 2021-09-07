@@ -158,6 +158,7 @@ def get_streets(
     retain_all=False,
     circle=True,
     dilate=0,
+    truncate_by_edge=True
 ):
 
     if layer == "streets":
@@ -181,6 +182,7 @@ def get_streets(
             point,
             dist=radius + dilate + buffer,
             retain_all=retain_all,
+            truncate_by_edge = truncate_by_edge,
             custom_filter=custom_filter,
         )
         crs = ox.graph_to_gdfs(streets, nodes=False).crs
