@@ -157,6 +157,54 @@ def plot(
     scale_y=None,
     rotation=None,
 ):
+    """
+    
+    Draw a map from OpenStreetMap data.
+    
+    Parameters
+    ----------
+    query : string
+        The address to geocode and use as the central point around which to get the geometries
+    backup : dict
+        (Optional) feed the output from a previous 'plot()' run to save time
+    postprocessing: function
+        (Optional) Apply a postprocessing step to the 'layers' dict
+    radius
+        (Optional) If not None, draw the map centered around the address with this radius (in meters)
+    layers: dict
+        Specify the name of each layer and the OpenStreetMap tags to fetch
+    drawing_kwargs: dict
+        Drawing params for each layer (matplotlib params such as 'fc', 'ec', 'fill', etc.)
+    osm_credit: dict
+        OSM Caption parameters
+    figsize: Tuple
+        (Optional) Width and Height (in inches) for the Matplotlib figure. Defaults to (10, 10)
+    ax: axes
+        Matplotlib axes
+    title: String
+        (Optional) Title for the Matplotlib figure
+    vsketch: Vsketch
+        (Optional) Vsketch object for pen plotting
+    x: float
+        (Optional) Horizontal displacement
+    y: float
+        (Optional) Vertical displacement
+    scale_x: float
+        (Optional) Horizontal scale factor
+    scale_y: float
+        (Optional) Vertical scale factor
+    rotation: float
+        (Optional) Rotation in angles (0-360)
+    
+    Returns
+    -------
+    layers: dict
+        Dictionary of layers (each layer is a Shapely MultiPolygon)
+    
+    Notes
+    -----
+    
+    """
 
     # Interpret query
     query_mode = parse_query(query)

@@ -1,0 +1,12 @@
+version: 1
+
+sphinx:
+  configuration: docs/source/conf.py
+
+formats: []
+
+python:
+  version: 3.8
+  install:
+  - method: pip
+    path: .
