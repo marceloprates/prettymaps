@@ -6,6 +6,7 @@ from xmlrpc.client import Boolean
 
 import osmnx as ox
 from osmnx import utils_geo
+from osmnx._errors import EmptyOverpassResponse
 import numpy as np
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString, MultiLineString
 from shapely.ops import unary_union
@@ -266,35 +267,38 @@ def get_streets(
     # Boundary defined by polygon (perimeter)
     if perimeter is not None:
         # Fetch streets data, project & convert to GDF
-        streets = ox.graph_from_polygon(
-            unary_union(perimeter.to_crs(3174).buffer(buffer).to_crs(4326).geometry)
-            if buffer > 0
-            else unary_union(perimeter.geometry),
-            retain_all=retain_all,
-            custom_filter=custom_filter,
-        )
-        streets = ox.project_graph(streets)
-        streets = ox.graph_to_gdfs(streets, nodes=False)
-        perimeter = unary_union(ox.project_gdf(perimeter).geometry)
+        try:
+            streets = ox.graph_from_polygon(
+                unary_union(perimeter.geometry).buffer(buffer)
+                if buffer > 0
+                else unary_union(perimeter.geometry),
+                custom_filter=custom_filter,
+            )
+            streets = ox.project_graph(streets)
+            streets = ox.graph_to_gdfs(streets, nodes=False)
+        except EmptyOverpassResponse:
+            return MultiLineString()
     # Boundary defined by polygon (perimeter)
     elif (point is not None) and (radius is not None):
         # Fetch streets data, save CRS & project
-        streets = ox.graph_from_point(
-            point,
-            dist=radius + dilate + buffer,
-            retain_all=retain_all,
-            custom_filter=custom_filter,
-        )
-        crs = ox.graph_to_gdfs(streets, nodes=False).crs
-        streets = ox.project_graph(streets)
-        # Compute perimeter from point & CRS
-        perimeter = get_boundary(point, radius, crs, circle=circle, dilate=dilate)
-        # Convert to GDF
-        streets = ox.graph_to_gdfs(streets, nodes=False)
-    
-    # Intersect with perimeter & filter empty elements
-    streets.geometry = streets.geometry.intersection(perimeter)
-    streets = streets[~streets.geometry.is_empty]
+        try:
+            streets = ox.graph_from_point(
+                point,
+                dist=radius + dilate + buffer,
+                retain_all=retain_all,
+                custom_filter=custom_filter,
+            )
+            crs = ox.graph_to_gdfs(streets, nodes=False).crs
+            streets = ox.project_graph(streets)
+            # Compute perimeter from point & CRS
+            perimeter = get_boundary(point, radius, crs, circle=circle, dilate=dilate)
+            # Convert to GDF
+            streets = ox.graph_to_gdfs(streets, nodes=False)
+            # Intersect with perimeter & filter empty elements
+            streets.geometry = streets.geometry.intersection(perimeter)
+            streets = streets[~streets.geometry.is_empty]
+        except EmptyOverpassResponse:
+            return MultiLineString()
 
     if type(width) == dict:
         streets = unary_union(
