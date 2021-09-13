@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>User reference &mdash; prettymaps 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to prettymaps’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> prettymaps
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-prettymaps">prettymaps module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">prettymaps</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>User reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/prettymaps.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-reference">
+<h1>User reference<a class="headerlink" href="#user-reference" title="Permalink to this headline">¶</a></h1>
+<p>User reference for the prettymaps package.</p>
+<div class="section" id="module-prettymaps">
+<span id="prettymaps-module"></span><h2>prettymaps module<a class="headerlink" href="#module-prettymaps" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="prettymaps.plot">
+<code class="sig-prename descclassname">prettymaps.</code><code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">backup</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">postprocessing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">radius</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">layers</span><span class="o">=</span><span class="default_value">{'perimeter': {}}</span></em>, <em class="sig-param"><span class="n">drawing_kwargs</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">osm_credit</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">10, 10</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vsketch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prettymaps.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a map from OpenStreetMap data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>string</em>) – The address to geocode and use as the central point around which to get the geometries</p></li>
+<li><p><strong>backup</strong> (<em>dict</em>) – (Optional) feed the output from a previous ‘plot()’ run to save time</p></li>
+<li><p><strong>postprocessing</strong> (<em>function</em>) – (Optional) Apply a postprocessing step to the ‘layers’ dict</p></li>
+<li><p><strong>radius</strong> – (Optional) If not None, draw the map centered around the address with this radius (in meters)</p></li>
+<li><p><strong>layers</strong> (<em>dict</em>) – Specify the name of each layer and the OpenStreetMap tags to fetch</p></li>
+<li><p><strong>drawing_kwargs</strong> (<em>dict</em>) – Drawing params for each layer (matplotlib params such as ‘fc’, ‘ec’, ‘fill’, etc.)</p></li>
+<li><p><strong>osm_credit</strong> (<em>dict</em>) – OSM Caption parameters</p></li>
+<li><p><strong>figsize</strong> (<em>Tuple</em>) – (Optional) Width and Height (in inches) for the Matplotlib figure. Defaults to (10, 10)</p></li>
+<li><p><strong>ax</strong> (<em>axes</em>) – Matplotlib axes</p></li>
+<li><p><strong>title</strong> (<em>String</em>) – (Optional) Title for the Matplotlib figure</p></li>
+<li><p><strong>vsketch</strong> (<em>Vsketch</em>) – (Optional) Vsketch object for pen plotting</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – (Optional) Horizontal displacement</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – (Optional) Vertical displacement</p></li>
+<li><p><strong>scale_x</strong> (<em>float</em>) – (Optional) Horizontal scale factor</p></li>
+<li><p><strong>scale_y</strong> (<em>float</em>) – (Optional) Vertical scale factor</p></li>
+<li><p><strong>rotation</strong> (<em>float</em>) – (Optional) Rotation in angles (0-360)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>layers</strong> – Dictionary of layers (each layer is a Shapely MultiPolygon)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to prettymaps’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Marcelo Prates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
