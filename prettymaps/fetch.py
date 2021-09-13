@@ -323,7 +323,19 @@ def get_streets(
         )
     else:
         # Dilate all streets by same amount 'width'
-        streets = MultiLineString(streets.geometry.tolist()).buffer(width)
+        streets=  MultiLineString(
+            streets[streets.geometry.type == "LineString"].geometry.tolist()
+            + list(
+                reduce(
+                    lambda x, y: x + y,
+                    [
+                        list(lines)
+                        for lines in streets[streets.geometry.type == "MultiLineString"].geometry
+                    ],
+                    [],
+                )
+            )
+        ).buffer(width)
 
     return streets
 
