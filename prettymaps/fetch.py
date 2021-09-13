@@ -143,6 +143,7 @@ def get_geometries(
     tags: Dict = {},
     perimeter_tolerance: float = 0,
     union: Boolean = True,
+    buffer: float = 0,
     circle: Boolean = True,
     dilate: float = 0,
 ) -> Union[Polygon, MultiPolygon]:
