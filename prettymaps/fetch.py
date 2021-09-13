@@ -232,6 +232,7 @@ def get_geometries(
 
 
 def get_streets(
+
     perimeter: Optional[GeoDataFrame] = None,
     point: Optional[Tuple] = None,
     radius: Optional[float] = None,
@@ -242,6 +243,8 @@ def get_streets(
     retain_all: Boolean = False,
     circle: Boolean = True,
     dilate: float = 0,
+    truncate_by_edge: Boolean = True
+  
 ) -> MultiPolygon:
     """
     Get streets
@@ -257,6 +260,7 @@ def get_streets(
         retain_all (Boolean, optional): [description]. Defaults to False.
         circle (Boolean, optional): [description]. Defaults to True.
         dilate (Number, optional): [description]. Defaults to 0.
+        truncate_by_edge (Boolean, optional): [description]. Defaults to True.
 
     Returns:
         MultiPolygon: [description]
@@ -288,6 +292,7 @@ def get_streets(
                 dist=radius + dilate + buffer,
                 retain_all=retain_all,
                 custom_filter=custom_filter,
+                truncate_by_edge = truncate_by_edge,
             )
             crs = ox.graph_to_gdfs(streets, nodes=False).crs
             streets = ox.project_graph(streets)
