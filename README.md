@@ -15,7 +15,7 @@ Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplot
 ## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
 ![](prints/hackernews-prettymaps.png)
 
-## Read the [docs](https://raw.githubusercontent.com/marceloprates/prettymaps/main/docs/build/html/index.html)
+## Read the [docs](https://prettymaps.readthedocs.io/en/latest/prettymaps.html#module-prettymaps)
 
 ## Google Colaboratory Demo
 
