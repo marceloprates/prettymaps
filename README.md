@@ -26,8 +26,7 @@ Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplot
 Install with
 
 ```
-$ pip install git+https://github.com/abey79/vsketch#egg=vsketch
-$ pip install git+https://github.com/marceloprates/prettymaps.git
+$ pip install prettymaps
 ```
 
 ## Usage example (For more examples, see [this Jupyter Notebook](https://nbviewer.jupyter.org/github/marceloprates/prettymaps/blob/main/notebooks/examples.ipynb)):
