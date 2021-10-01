@@ -125,7 +125,12 @@ def transform(layers, x, y, scale_x, scale_y, rotation):
 
 
 def draw_text(ax, text, x, y, **kwargs):
-    ax.text(x, y, text, **kwargs)
+    if 'bbox' in kwargs:
+        bbox_kwargs = kwargs.pop('bbox')
+        text = ax.text(x, y, text, **kwargs)
+        text.set_bbox(**bbox_kwargs)
+    else:
+        text = ax.text(x, y, text, **kwargs)
 
 
 # Plot
@@ -263,7 +268,7 @@ def plot(
 
     # Plot background
     if "background" in drawing_kwargs:
-        geom = scale(box(*layers["perimeter"].bounds), 2, 2)
+        geom = scale(box(*layers["perimeter"].bounds), 1.2, 1.2)
 
         if vsketch is None:
             ax.add_patch(PolygonPatch(geom, **drawing_kwargs["background"]))

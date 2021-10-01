@@ -146,6 +146,8 @@ def get_geometries(
     buffer: float = 0,
     circle: Boolean = True,
     dilate: float = 0,
+    point_size: float = 1,
+    line_width: float = 1
 ) -> Union[Polygon, MultiPolygon]:
     """Get geometries
 
@@ -163,8 +165,8 @@ def get_geometries(
         [type]: [description]
     """
 
+    # Boundary defined by polygon (perimeter)
     if perimeter is not None:
-        # Boundary defined by polygon (perimeter)
         geometries = ox.geometries_from_polygon(
             unary_union(perimeter.to_crs(3174).buffer(buffer+perimeter_tolerance).to_crs(4326).geometry)
             if buffer >0 or perimeter_tolerance > 0
@@ -172,9 +174,8 @@ def get_geometries(
             tags={tags: True} if type(tags) == str else tags,
         )
         perimeter = unary_union(ox.project_gdf(perimeter).geometry)
-
+    # Boundary defined by circle with radius 'radius' around point
     elif (point is not None) and (radius is not None):
-        # Boundary defined by circle with radius 'radius' around point
         geometries = ox.geometries_from_point(
             point,
             dist=radius + dilate + buffer,
@@ -189,50 +190,27 @@ def get_geometries(
         geometries = ox.project_gdf(geometries)
 
     # Intersect with perimeter
-    geometries = geometries.intersection(perimeter).buffer(0)
+    geometries = geometries.intersection(perimeter)
 
-    if union:
-        polys = unary_union(
-            reduce(
-                lambda x, y: x + y,
-                [
-                    [x] if type(x) == Polygon else list(x)
-                    for x in geometries
-                    if type(x) in [Polygon, MultiPolygon]
-                ],
-                [],
-            )
-        )
-        points = unary_union([
-            x for x in geometries
-            if isinstance(x, Point)
-        ]).buffer(2)
-
-        lines = unary_union([
-            x for x in geometries
-            if isinstance(x, LineString)
-        ]).buffer(3)
-
-        geometries = unary_union([polys, points, lines])
-
-    else:
-        geometries = MultiPolygon(
-            reduce(
-                lambda x, y: x + y,
-                [
-                    [x] if type(x) == Polygon else list(x)
-                    for x in geometries
-                    if type(x) in [Polygon, MultiPolygon]
-                ],
-                [],
-            )
-        )
+    # Get points, lines, polys & multipolys
+    points, lines, polys, multipolys = map(
+        lambda t: [x for x in geometries if isinstance(x, t)],
+        [Point, LineString, Polygon, MultiPolygon]
+    )
+    # Convert points, lines & polygons into multipolygons
+    points = [x.buffer(point_size) for x in points]
+    lines = [x.buffer(line_width) for x in lines]
+    # Concatenate multipolys
+    multipolys = reduce(lambda x,y: x+y, [list(x) for x in multipolys]) if len(multipolys) > 0 else []
+    # Group everything
+    geometries = MultiPolygon(points + lines + polys + multipolys)
+    # Compute union if specified
+    if union: geometries = unary_union(geometries);
 
     return geometries
 
 
 def get_streets(
-
     perimeter: Optional[GeoDataFrame] = None,
     point: Optional[Tuple] = None,
     radius: Optional[float] = None,
@@ -243,8 +221,7 @@ def get_streets(
     retain_all: Boolean = False,
     circle: Boolean = True,
     dilate: float = 0,
-    truncate_by_edge: Boolean = True
-  
+    truncate_by_edge: Boolean = True 
 ) -> MultiPolygon:
     """
     Get streets
