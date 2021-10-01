@@ -34,40 +34,8 @@ from shapely.geometry import box, Polygon, MultiLineString, GeometryCollection
 from shapely.affinity import translate, scale, rotate
 from descartes import PolygonPatch
 from tabulate import tabulate
-from IPython.display import Markdown, display
 
 from .fetch import get_perimeter, get_layer
-
-
-# Helper functions
-def get_hash(key):
-    return frozenset(key.items()) if type(key) == dict else key
-
-
-# Drawing functions
-def show_palette(palette, description=""):
-    """
-    Helper to display palette in Markdown
-    """
-
-    colorboxes = [
-        f"![](https://placehold.it/30x30/{c[1:]}/{c[1:]}?text=)" for c in palette
-    ]
-
-    display(Markdown((description)))
-    display(Markdown(tabulate(pd.DataFrame(colorboxes), showindex=False)))
-
-
-def get_patch(shape, **kwargs):
-    """
-    Convert shapely object to matplotlib patch
-    """
-    # if type(shape) == Path:
-    #    return patches.PathPatch(shape, **kwargs)
-    if type(shape) == Polygon and shape.area > 0:
-        return PolygonPatch(list(zip(*shape.exterior.xy)), **kwargs)
-    else:
-        return None
 
 
 # Plot a single shape
