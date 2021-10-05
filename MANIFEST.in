@@ -1,0 +1,11 @@
+prune **
+graft prettymaps
+
+include setup.py
+include LICENSE
+include README.md
+include MANIFEST.in
+
+include requirements.txt
+
+global-exclude __pycache__ *.py[cod]
