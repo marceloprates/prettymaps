@@ -5,7 +5,7 @@ parent_dir = Path(__file__).resolve().parent
 
 setup(
     name="prettymaps",
-    version="v0.1.2",
+    version="v0.1.3",
     description="A simple python library to draw pretty maps from OpenStreetMap data",
     long_description=parent_dir.joinpath("README.md").read_text(),
     long_description_content_type="text/markdown",
