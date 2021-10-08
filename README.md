@@ -2,10 +2,9 @@
 
 A minimal Python library to draw customized maps from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
 
-- **Because of the recent episodes of plagiarism and refusal to credit this project in the NFT Community (Twitter profiles [AeternaCivitas](https://twitter.com/AeternaCivitas) and [geoartnft](twitter.com/geoartnft)) I have decided to change my license to Creative Commons (CC-BY-4.0) which requires you to credit it everytime you use it.**
+- **Because of the recent episodes of plagiarism and refusal to credit this project in the NFT Community (Twitter profiles [AeternaCivitas](https://twitter.com/AeternaCivitas) and [geoartnft](twitter.com/geoartnft)) I have decided to change my license to Creative Commons (CC-BY-NC-4.0) which requires you to credit it everytime you use it and forbids you to use if for commercial purposes.**
 - **The printed message on the figures crediting OpenStreetMap and my repository, included by default, is mandatory.**
 - **I do not authorize people to sell NFTs using prettymaps and ask that you contact me if you know of someone who is doing it.**
-- **You can make and sell prints generated with prettymaps, always with the credit message printed.**
 - **CREDIT OPEN SOURCE DEVELOPERS**
 
 <a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
