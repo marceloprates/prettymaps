@@ -2,14 +2,14 @@
 
 A minimal Python library to draw customized maps from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
 
-[![CC BY NC 4.0][cc-by-nc-shield]](cc-by-nc)
+[![CC BY NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
-This work is licensed under a
-[Creative Commons Attribution-NonCommercial 4.0 International](cc-by-nc).
+This work is [licensed](LICENSE) under a
+[Creative Commons Attribution-NonCommercial 4.0 International][cc-by-nc].
 
-[![CC BY 4.0][cc-by-image]][cc-by]
+[![CC BY 4.0][cc-by-image]][cc-by-nc]
 
-[cc-by]: http://creativecommons.org/licenses/by-nc/4.0/
+[cc-by-nc]: http://creativecommons.org/licenses/by-nc/4.0/
 [cc-by-image]: https://i.creativecommons.org/l/by-nc/4.0/88x31.png
 [cc-by-nc-shield]: https://img.shields.io/badge/license-CC%20BY%20NC%204.0-lightgrey.svg
 
