@@ -4,7 +4,7 @@ A minimal Python library to draw customized maps from [OpenStreetMap](https://ww
 
 - **Because of the recent episodes of plagiarism and refusal to credit this project in the NFT Community (Twitter profiles [AeternaCivitas](https://twitter.com/AeternaCivitas) and [geoartnft](twitter.com/geoartnft)) I have decided to change my license to Creative Commons (CC-BY-4.0) which requires you to credit it everytime you use it.**
 - **The printed message on the figures crediting OpenStreetMap and my repository, included by default, is mandatory.**
-- **I do not authorize people to sell NFTs using prettymaps and ask that you contact me if know of someone who is doing it.**
+- **I do not authorize people to sell NFTs using prettymaps and ask that you contact me if you know of someone who is doing it.**
 - **You can make and sell prints generated with prettymaps, always with the credit message printed.**
 - **CREDIT OPEN SOURCE DEVELOPERS**
 
