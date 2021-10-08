@@ -1,8 +1,6 @@
 # prettymaps
 
-A minimal Python library to draw customized maps from OpenStreetMap data.
-
-Based on [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
+A minimal Python library to draw customized maps from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) libraries.
 
 - **Because of the recent episodes of plagiarism and refusal to credit this project in the NFT Community (Twitter profiles [AeternaCivitas](https://twitter.com/AeternaCivitas) and [geoartnft](twitter.com/geoartnft)) I have decided to change my license to Creative Commons (CC-BY-4.0) which requires you to credit it everytime you use it.**
 - **The printed message on the figures crediting OpenStreetMap and my repository, included by default, is mandatory.**
