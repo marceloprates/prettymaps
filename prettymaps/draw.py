@@ -21,6 +21,7 @@ from collections.abc import Iterable
 
 import osmnx as ox
 import pandas as pd
+import gpxpy
 from geopandas import GeoDataFrame
 import numpy as np
 from numpy.random import choice
@@ -233,6 +234,16 @@ def plot(
             )
             for layer, kwargs in layers.items()
         }
+
+        gpx_track = []
+        gpx_file = open('../Evening_Activity.gpx', 'r')
+        gpx = gpxpy.parse(gpx_file)
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    gpx_track.append(point)
+                    #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
+        gpx_file.close()
 
         # Apply transformation to layers (translate & scale)
         layers = transform(layers, x, y, scale_x, scale_y, rotation)
