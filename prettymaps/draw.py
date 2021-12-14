@@ -148,6 +148,7 @@ def plot(
     scale_x=None,
     scale_y=None,
     rotation=None,
+    gpx_path=""
 ):
     """
     
@@ -187,6 +188,8 @@ def plot(
         (Optional) Vertical scale factor
     rotation: float
         (Optional) Rotation in angles (0-360)
+    gpx_path string
+        (Optional) GPX file path to plot GPX track on map
     
     Returns
     -------
@@ -235,15 +238,18 @@ def plot(
             for layer, kwargs in layers.items()
         }
 
+        # GPX path vector
         gpx_track = []
-        gpx_file = open('../Evening_Activity.gpx', 'r')
-        gpx = gpxpy.parse(gpx_file)
-        for track in gpx.tracks:
-            for segment in track.segments:
-                for point in segment.points:
-                    gpx_track.append(point)
-                    #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
-        gpx_file.close()
+        if gpx_path != "":  
+            # Open and prse GPX file
+            gpx_file = open(gpx_path, 'r')
+            gpx = gpxpy.parse(gpx_file)
+            for track in gpx.tracks:
+                for segment in track.segments:
+                    for point in segment.points:
+                        gpx_track.append(point)
+                        #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
+            gpx_file.close()
 
         # Apply transformation to layers (translate & scale)
         layers = transform(layers, x, y, scale_x, scale_y, rotation)
