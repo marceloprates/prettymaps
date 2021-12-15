@@ -148,7 +148,8 @@ def plot(
     scale_x=None,
     scale_y=None,
     rotation=None,
-    gpx_path=""
+    gpx=False,
+    visualize_gpx=""
 ):
     """
     
@@ -201,8 +202,7 @@ def plot(
     
     """
 
-    # Interpret query
-    query_mode = parse_query(query)
+
 
     # Save maximum dilation for later use
     dilations = [kwargs["dilate"] for kwargs in layers.values() if "dilate" in kwargs]
@@ -212,6 +212,27 @@ def plot(
     ### Fetch Layers ###
     ####################
 
+    # GPX path vector
+    gpx_track = []
+    path_vector = []
+    if gpx:  
+        print(gpx)
+        # Open and prse GPX file
+        gpx_file = open(query, 'r')
+        gpx = gpxpy.parse(gpx_file)
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    gpx_track.append(point)
+                    path_vector.append((point.latitude, point.longitude))
+                    #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
+        gpx_file.close()
+
+    print(path_vector)
+    query = calculate_center(path_vector)
+    # Interpret query
+    query_mode = parse_query(query)
+    print(query)
     # Use backup if provided
     if backup is not None:
         layers = backup
@@ -237,19 +258,6 @@ def plot(
             )
             for layer, kwargs in layers.items()
         }
-
-        # GPX path vector
-        gpx_track = []
-        if gpx_path != "":  
-            # Open and prse GPX file
-            gpx_file = open(gpx_path, 'r')
-            gpx = gpxpy.parse(gpx_file)
-            for track in gpx.tracks:
-                for segment in track.segments:
-                    for point in segment.points:
-                        gpx_track.append(point)
-                        #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
-            gpx_file.close()
 
         # Apply transformation to layers (translate & scale)
         layers = transform(layers, x, y, scale_x, scale_y, rotation)
@@ -344,3 +352,17 @@ def plot(
 
     # Return perimeter
     return layers
+
+
+def calculate_center(gpx_track):
+    lat = 0
+    lon = 0
+
+    for i in gpx_track:
+        lat += i[0]
+        lon += i[1]
+    
+    if len(gpx_track) == 0:
+        return 0,0
+
+    return lat/len(gpx_track), lon/len(gpx_track)
