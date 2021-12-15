@@ -225,7 +225,8 @@ def plot(
                     gpx_track.append((point.latitude, point.longitude))
         gpx_file.close()
         query = calculate_center(gpx_track)
-        radius = calculate_radius(gpx_track)
+        if not radius:
+            radius = calculate_radius(gpx_track)
 
     # Interpret query
     query_mode = parse_query(query)
@@ -352,6 +353,15 @@ def plot(
 
 
 def calculate_center(gpx_track):
+    """
+    Calculate center of a list of coordinates.
+
+    Parameters:
+    gpx_track (lat, long)
+
+    Returns:
+    lat, long
+    """
     lat, lon = 0.0, 0.0
     n = len(gpx_track)
 
