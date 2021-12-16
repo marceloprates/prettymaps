@@ -159,7 +159,7 @@ def plot(
     Parameters
     ----------
     query : string
-        The address to geocode and use as the central point around which to get the geometries
+        The address to geocode and use as the central point around which to get the geometries. The query can be a gpx file if gpx is set to true
     backup : dict
         (Optional) feed the output from a previous 'plot()' run to save time
     postprocessing: function
@@ -190,8 +190,10 @@ def plot(
         (Optional) Vertical scale factor
     rotation: float
         (Optional) Rotation in angles (0-360)
-    gpx_path string
-        (Optional) GPX file path to plot GPX track on map
+    gpx: bool
+        (Optional) Flag to indicate query is a gpx file path
+    visualize_gpx: string
+        (Optional) color code to visualize gpx path, default does not visualize path
     
     Returns
     -------
