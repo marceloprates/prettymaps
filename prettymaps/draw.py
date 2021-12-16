@@ -22,6 +22,7 @@ from collections.abc import Iterable
 import osmnx as ox
 import pandas as pd
 import gpxpy
+import math
 from geopandas import GeoDataFrame
 import numpy as np
 from numpy.random import choice
@@ -158,7 +159,7 @@ def plot(
     Parameters
     ----------
     query : string
-        The address to geocode and use as the central point around which to get the geometries
+        The address to geocode and use as the central point around which to get the geometries. The query can be a gpx file if gpx is set to true
     backup : dict
         (Optional) feed the output from a previous 'plot()' run to save time
     postprocessing: function
@@ -189,8 +190,10 @@ def plot(
         (Optional) Vertical scale factor
     rotation: float
         (Optional) Rotation in angles (0-360)
-    gpx_path string
-        (Optional) GPX file path to plot GPX track on map
+    gpx: bool
+        (Optional) Flag to indicate query is a gpx file path
+    visualize_gpx: string
+        (Optional) color code to visualize gpx path, default does not visualize path
     
     Returns
     -------
@@ -213,26 +216,23 @@ def plot(
     ####################
 
     # GPX path vector
-    gpx_track = []
-    path_vector = []
-    if gpx:  
-        print(gpx)
+    if gpx:
+        gpx_track = []
         # Open and prse GPX file
         gpx_file = open(query, 'r')
         gpx = gpxpy.parse(gpx_file)
         for track in gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
-                    gpx_track.append(point)
-                    path_vector.append((point.latitude, point.longitude))
-                    #print('waypoint at ({0},{1})'.format(point.latitude, point.longitude))
+                    gpx_track.append((point.latitude, point.longitude))
         gpx_file.close()
+        query = calculate_center(gpx_track)
+        if not radius:
+            radius = calculate_radius(gpx_track)
 
-    print(path_vector)
-    query = calculate_center(path_vector)
     # Interpret query
     query_mode = parse_query(query)
-    print(query)
+
     # Use backup if provided
     if backup is not None:
         layers = backup
@@ -355,14 +355,62 @@ def plot(
 
 
 def calculate_center(gpx_track):
-    lat = 0
-    lon = 0
+    """
+    Calculate center of a list of coordinates.
 
-    for i in gpx_track:
-        lat += i[0]
-        lon += i[1]
+    Parameters:
+    gpx_track (lat, long)
+
+    Returns:
+    lat, long
+    """
+    lat, lon = 0.0, 0.0
+    n = len(gpx_track)
+
+    if n == 0:
+        return 0.0, 0.0
+
+    for point in gpx_track:
+        lat += point[0]
+        lon += point[1]
     
-    if len(gpx_track) == 0:
-        return 0,0
+    return lat/n, lon/n
 
-    return lat/len(gpx_track), lon/len(gpx_track)
+def haversine_distance(origin, destination):
+    """
+    Calculate Haversine distance between two coordinates.
+
+    Parameters:
+    origin (lat, long)
+    destination (lat, long)
+
+    Returns:
+    d (meters)
+    """
+    lat1, lon1 = origin
+    lat2, lon2 = destination
+    radius = 6371 * 1000.0 # radius of earth (m)
+
+    radlat = math.radians(lat2 - lat1)
+    radlon = math.radians(lon2 - lon1)
+    a = (math.sin(radlat / 2) * math.sin(radlat / 2) +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(radlon / 2) * math.sin(radlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = radius * c
+
+    return d
+
+def calculate_radius(gpx_track, border_padding=1.1):
+    n = len(gpx_track)
+
+    if n == 0:
+        return 0.0
+
+    border_radius = 0.0
+    center = calculate_center(gpx_track)
+
+    for point in gpx_track:
+        border_radius = max(border_radius, haversine_distance(center, point))
+
+    return border_radius * border_padding
