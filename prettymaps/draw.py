@@ -150,7 +150,6 @@ def plot(
     scale_y=None,
     rotation=None,
     gpx=False,
-    visualize_gpx=""
 ):
     """
     
@@ -192,8 +191,6 @@ def plot(
         (Optional) Rotation in angles (0-360)
     gpx: bool
         (Optional) Flag to indicate query is a gpx file path
-    visualize_gpx: string
-        (Optional) color code to visualize gpx path, default does not visualize path
     
     Returns
     -------
