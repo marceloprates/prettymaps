@@ -24,10 +24,20 @@ This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 
 
 ## Installation
 
+### PIP
+
 Install with
 
 ```
 $ pip install prettymaps
+```
+
+### Arch Linux
+
+Use the [AUR](https://aur.archlinux.org/packages/python-prettymaps/)
+
+```
+yay -S python-prettymaps
 ```
 
 ## Usage example (For more examples, see [this Jupyter Notebook](https://nbviewer.jupyter.org/github/marceloprates/prettymaps/blob/main/notebooks/examples.ipynb)):
