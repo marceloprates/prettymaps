@@ -1,3 +1,4 @@
 *.py[cod]
 *.egg-info
 cache
+*.svg
