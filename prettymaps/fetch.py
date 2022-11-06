@@ -376,7 +376,7 @@ def get_layer(layer: String, **kwargs) -> Union[Polygon, MultiPolygon]:
         else:
             raise Exception("Either 'perimeter' or 'point' & 'radius' must be provided")
     # Fetch streets or railway
-    if layer in ["streets", "railway", "waterway"]:
+    if layer in ["streets", "railway", "waterway", "aeroway"]:
         return get_streets(**kwargs, layer=layer)
     # Fetch Coastline
     elif layer == "coastline":
