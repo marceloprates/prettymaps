@@ -1,4 +1,4 @@
-'''
+"""
 Prettymaps - A minimal Python library to draw pretty maps from OpenStreetMap Data
 Copyright (C) 2021 Marcelo Prates
 
@@ -14,144 +14,842 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
+"""
+
+import prettymaps
 
 import re
-from collections.abc import Iterable
-
+import os
+import json
+import yaml
+import vsketch
+import IPython
+import warnings
+import matplotlib
+import shapely.ops
+import numpy as np
 import osmnx as ox
 import pandas as pd
-from geopandas import GeoDataFrame
-import numpy as np
-from numpy.random import choice
-from shapely.geometry import box, Polygon, MultiLineString, GeometryCollection
-from shapely.affinity import translate, scale, rotate
-from descartes import PolygonPatch
-from tabulate import tabulate
+import geopandas as gp
+import shapely.affinity
+from copy import deepcopy
+from .fetch import get_gdfs
+from dataclasses import dataclass
+from matplotlib import pyplot as plt
+from matplotlib.colors import hex2color
+from matplotlib.patches import Path, PathPatch
+from typing import Optional, Union, Tuple, List, Dict, Any, Iterable
+from shapely.geometry import Point, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection, box
+from shapely.geometry.base import BaseGeometry
 
-from .fetch import get_perimeter, get_layer
 
-
-# Plot a single shape
-def plot_shape(shape, ax, vsketch=None, **kwargs):
+class Subplot:
     """
-    Plot shapely object
+    Class implementing a prettymaps Subplot. Attributes:
+    - query: prettymaps.plot() query
+    - kwargs: dictionary of prettymaps.plot() parameters
     """
-    if isinstance(shape, Iterable) and type(shape) != MultiLineString:
-        for shape_ in shape:
-            plot_shape(shape_, ax, vsketch=vsketch, **kwargs)
-    else:
-        if not shape.is_empty:
 
-            if vsketch is None:
-                ax.add_patch(PolygonPatch(shape, **kwargs))
-            else:
-                if ("draw" not in kwargs) or kwargs["draw"]:
-
-                    if "stroke" in kwargs:
-                        vsketch.stroke(kwargs["stroke"])
-                    else:
-                        vsketch.stroke(1)
-
-                    if "penWidth" in kwargs:
-                        vsketch.penWidth(kwargs["penWidth"])
-                    else:
-                        vsketch.penWidth(0.3)
-
-                    if "fill" in kwargs:
-                        vsketch.fill(kwargs["fill"])
-                    else:
-                        vsketch.noFill()
-
-                    vsketch.geometry(shape)
+    def __init__(self, query, **kwargs):
+        self.query = query
+        self.kwargs = kwargs
 
 
-# Plot a collection of shapes
-def plot_shapes(shapes, ax, vsketch=None, palette=None, **kwargs):
+@dataclass
+class Plot:
     """
-    Plot collection of shapely objects (optionally, use a color palette)
+    Dataclass implementing a prettymaps Plot object. Attributes:
+    - geodataframes: A dictionary of GeoDataFrames (one for each plot layer)
+    - fig: A matplotlib figure
+    - ax: A matplotlib axis object
+    - background: Background layer (shapely object)
     """
-    if not isinstance(shapes, Iterable):
-        shapes = [shapes]
+    geodataframes: Dict[str, gp.GeoDataFrame]
+    fig: matplotlib.figure.Figure
+    ax: matplotlib.axes.Axes
+    background: BaseGeometry
 
-    for shape in shapes:
-        if palette is None:
-            plot_shape(shape, ax, vsketch=vsketch, **kwargs)
+
+@dataclass
+class Preset:
+    """
+    Dataclass implementing a prettymaps Preset object. Attributes:
+    - params: dictionary of prettymaps.plot() parameters
+    """
+    params: dict
+
+    def _ipython_display_(self):
+        """
+        Implements the _ipython_display_() function for the Preset class.
+        'params' will be displayed as a Markdown table with annotated hex colors
+        """
+
+        def light_color(hexstring):
+            rgb = np.array(hex2color(hexstring))
+            return rgb.mean() > .5
+
+        def annotate_colors(text):
+            matches = re.findall(
+                '#(?:\\d|[a-f]|[A-F]){6}|#(?:\\d|[a-f]|[A-F]){4}|#(?:\\d|[a-f]|[A-F]){3}', text)
+            for match in matches:
+                text = text.replace(
+                    match,
+                    f'<span style="background-color:{match}; color:{"#000" if light_color(match) else "#fff"}">{match}</span>'
+                )
+            return text
+
+        params = pd.DataFrame(self.params)
+        params = params.applymap(lambda x: annotate_colors(
+            yaml.dump(x, default_flow_style=False).replace('\n', '<br>')))
+        params.iloc[1:, 2:] = ''
+
+        IPython.display.display(IPython.display.Markdown(params.to_markdown()))
+
+
+def transform_gdfs(
+    gdfs: Dict[str, gp.GeoDataFrame],
+    x: float = 0,
+    y: float = 0,
+    scale_x: float = 1,
+    scale_y: float = 1,
+    rotation: float = 0
+) -> Dict[str, gp.GeoDataFrame]:
+    """
+    Apply geometric transformations to dictionary of GeoDataFrames
+
+    Args:
+        gdfs (Dict[str, gp.GeoDataFrame]): Dictionary of GeoDataFrames
+        x (float, optional): x-axis translation. Defaults to 0.
+        y (float, optional): y-axis translation. Defaults to 0.
+        scale_x (float, optional): x-axis scale. Defaults to 1.
+        scale_y (float, optional): y-axis scale. Defaults to 1.
+        rotation (float, optional): rotation angle (in radians). Defaults to 0.
+
+    Returns:
+        Dict[str, gp.GeoDataFrame]: dictionary of transformed GeoDataFrames
+    """
+    # Project geometries
+    gdfs = {
+        name: ox.project_gdf(gdf) if len(gdf) > 0 else gdf for name, gdf in gdfs.items()
+    }
+    # Create geometry collection from gdfs' geometries
+    collection = GeometryCollection(
+        [GeometryCollection(list(gdf.geometry)) for gdf in gdfs.values()]
+    )
+    # Translation, scale & rotation
+    collection = shapely.affinity.translate(collection, x, y)
+    collection = shapely.affinity.scale(
+        collection, scale_x, scale_y)
+    collection = shapely.affinity.rotate(collection, rotation)
+    # Update geometries
+    for i, layer in enumerate(gdfs):
+        gdfs[layer].geometry = list(collection.geoms[i].geoms)
+        # Reproject
+        if len(gdfs[layer]) > 0:
+            gdfs[layer] = ox.project_gdf(gdfs[layer], to_crs="EPSG:4326")
+
+    return gdfs
+
+
+def PolygonPatch(
+    shape: BaseGeometry,
+    **kwargs
+) -> PathPatch:
+    """_summary_
+
+    Args:
+        shape (BaseGeometry): Shapely geometry
+        kwargs: parameters for matplotlib's PathPatch constructor
+
+    Returns:
+        PathPatch: matplotlib PatchPatch created from input shapely geometry
+    """
+    # Init vertices and codes lists
+    vertices, codes = [], []
+    for poly in shape.geoms if isinstance(shape, Iterable) else [shape]:
+        # Get polygon's exterior and interiors
+        exterior = np.array(poly.exterior.xy)
+        interiors = [np.array(interior.xy) for interior in poly.interiors]
+        # Append to vertices and codes lists
+        vertices += [exterior] + interiors
+        codes += list(
+            map(
+                # Ring coding
+                lambda p: [Path.MOVETO]
+                + [Path.LINETO] * (p.shape[1] - 2)
+                + [Path.CLOSEPOLY],
+                [exterior] + interiors,
+            )
+        )
+    # Generate PathPatch
+    return PathPatch(
+        Path(np.concatenate(vertices, 1).T, np.concatenate(codes)), **kwargs
+    )
+
+
+def plot_gdf(
+    layer: str,
+    gdf: gp.GeoDataFrame,
+    ax: matplotlib.axes.Axes,
+    mode: str = 'matplotlib',
+    vsk: Optional[vsketch.SketchClass] = None,
+    palette: Optional[List[str]] = None,
+    width: Optional[Union[dict, float]] = None,
+    union: bool = False,
+    dilate_points: Optional[float] = None,
+    dilate_lines: Optional[float] = None,
+    **kwargs,
+) -> None:
+    """
+    Plot a layer
+
+    Args:
+        layer (str): layer name
+        gdf (gp.GeoDataFrame): GeoDataFrame
+        ax (matplotlib.axes.Axes): matplotlib axis object
+        mode (str): drawing mode. Options: 'matplotlib', 'vsketch'. Defaults to 'matplotlib'
+        vsk (Optional[vsketch.SketchClass]): Vsketch object. Mandatory if mode == 'plotter'
+        palette (Optional[List[str]], optional): Color palette. Defaults to None.
+        width (Optional[Union[dict, float]], optional): Street widths. Either a dictionary or a float. Defaults to None.
+        union (bool, optional): Whether to join geometries. Defaults to False.
+        dilate_points (Optional[float], optional): Amount of dilation to be applied to point (1D) geometries. Defaults to None.
+        dilate_lines (Optional[float], optional): Amount of dilation to be applied to line (2D) geometries. Defaults to None.
+
+    Raises:
+        Exception: _description_
+    """
+
+    # Get hatch and hatch_c parameter
+    hatch_c = kwargs.pop("hatch_c") if "hatch_c" in kwargs else None
+
+    # Convert GDF to shapely geometries
+    geometries = gdf_to_shapely(
+        layer, gdf, width, point_size=dilate_points, line_width=dilate_lines
+    )
+    geometries = geometries.geoms if isinstance(
+        geometries, Iterable) else [geometries]
+
+    # Unite geometries
+    if union:
+        geometries = shapely.ops.unary_union(geometries)
+
+    if (palette is None) and ("fc" in kwargs) and (type(kwargs["fc"]) != str):
+        palette = kwargs.pop("fc")
+
+    # Plot shapes
+    for shape in geometries:
+        if mode == "matplotlib":
+            if type(shape) in [Polygon, MultiPolygon]:
+                # Plot main shape (without silhouette)
+                ax.add_patch(
+                    PolygonPatch(
+                        shape,
+                        lw=0,
+                        ec=hatch_c
+                        if hatch_c
+                        else kwargs["ec"]
+                        if "ec" in kwargs
+                        else None,
+                        fc=kwargs["fc"]
+                        if "fc" in kwargs
+                        else np.random.choice(palette)
+                        if palette
+                        else None,
+                        **{
+                            k: v
+                            for k, v in kwargs.items()
+                            if k not in ["lw", "ec", "fc"]
+                        },
+                    ),
+                )
+                # Plot just silhouette
+                ax.add_patch(
+                    PolygonPatch(
+                        shape,
+                        fill=False,
+                        **{
+                            k: v
+                            for k, v in kwargs.items()
+                            if k not in ["hatch", "fill"]
+                        },
+                    )
+                )
+            elif type(shape) == LineString:
+                ax.plot(
+                    *shape.xy,
+                    c=kwargs["ec"] if "ec" in kwargs else None,
+                    **{
+                        k: v
+                        for k, v in kwargs.items()
+                        if k in ["lw", "lt", "dashes", "zorder"]
+                    },
+                )
+            elif type(shape) == MultiLineString:
+                for c in shape.geoms:
+                    ax.plot(
+                        *c.xy,
+                        c=kwargs["ec"] if "ec" in kwargs else None,
+                        **{
+                            k: v
+                            for k, v in kwargs.items()
+                            if k in ["lw", "lt", "dashes", "zorder"]
+                        },
+                    )
+        elif mode == "plotter":
+            if ("draw" not in kwargs) or kwargs["draw"]:
+
+                # Set stroke
+                if "stroke" in kwargs:
+                    vsk.stroke(kwargs["stroke"])
+                else:
+                    vsk.stroke(1)
+
+                # Set pen width
+                if "penWidth" in kwargs:
+                    vsk.penWidth(kwargs["penWidth"])
+                else:
+                    vsk.penWidth(0.3)
+
+                if "fill" in kwargs:
+                    vsk.fill(kwargs["fill"])
+                else:
+                    vsk.noFill()
+
+                vsk.geometry(shape)
         else:
-            plot_shape(shape, ax, vsketch=vsketch, fc=choice(palette), **kwargs)
+            raise Exception(f"Unknown mode {mode}")
+
+##########
 
 
-# Parse query (by coordinates, OSMId or name)
-def parse_query(query):
-    if isinstance(query, GeoDataFrame):
-        return "polygon"
-    elif isinstance(query, tuple):
-        return "coordinates"
-    elif re.match("""[A-Z][0-9]+""", query):
-        return "osmid"
+def plot_legends(gdf, ax):
+
+    for _, row in gdf.iterrows():
+        name = row.name
+        x, y = np.concatenate(row.geometry.centroid.xy)
+        ax.text(x, y, name)
+##########
+
+
+def graph_to_shapely(
+    gdf: gp.GeoDataFrame,
+    width: float = 1.
+) -> BaseGeometry:
+    """
+    Given a GeoDataFrame containing a graph (street newtork),
+    convert them to shapely geometries by applying dilation given by 'width'
+
+    Args:
+        gdf (gp.GeoDataFrame): input GeoDataFrame containing graph (street network) geometries
+        width (float, optional): Line geometries will be dilated by this amount. Defaults to 1..
+
+    Returns:
+        BaseGeometry: Shapely
+    """
+
+    def highway_to_width(highway):
+        if (type(highway) == str) and (highway in width):
+            return width[highway]
+        elif isinstance(highway, Iterable):
+            for h in highway:
+                if h in width:
+                    return width[h]
+            return np.nan
+        else:
+            return np.nan
+
+    # Annotate GeoDataFrame with the width for each highway type
+    gdf["width"] = gdf.highway.map(
+        highway_to_width) if type(width) == dict else width
+
+    # Remove rows with inexistent width
+    gdf.drop(gdf[gdf.width.isna()].index, inplace=True)
+
+    with warnings.catch_warnings():
+        # Supress shapely.errors.ShapelyDeprecationWarning
+        warnings.simplefilter(
+            "ignore", shapely.errors.ShapelyDeprecationWarning)
+        if not all(gdf.width.isna()):
+            # Dilate geometries based on their width
+            gdf.geometry.update(
+                gdf.apply(lambda row: row.geometry.buffer(row.width), axis=1)
+            )
+
+    return shapely.ops.unary_union(gdf.geometry)
+
+
+def geometries_to_shapely(
+    gdf: gp.GeoDataFrame,
+    point_size: Optional[float] = None,
+    line_width: Optional[float] = None
+) -> GeometryCollection:
+    """
+    Convert geometries in GeoDataFrame to shapely format
+
+    Args:
+        gdf (gp.GeoDataFrame): Input GeoDataFrame
+        point_size (Optional[float], optional): Point geometries (1D) will be dilated by this amount. Defaults to None.
+        line_width (Optional[float], optional): Line geometries (2D) will be dilated by this amount. Defaults to None.
+
+    Returns:
+        GeometryCollection: Shapely geometries computed from GeoDataFrame geometries
+    """
+
+    geoms = gdf.geometry.tolist()
+    collections = [x for x in geoms if type(x) == GeometryCollection]
+    points = [x for x in geoms if type(x) == Point] + [
+        y for x in collections for y in x.geoms if type(y) == Point
+    ]
+    lines = [x for x in geoms if type(x) in [LineString, MultiLineString]] + [
+        y
+        for x in collections
+        for y in x.geoms
+        if type(y) in [LineString, MultiLineString]
+    ]
+    polys = [x for x in geoms if type(x) in [Polygon, MultiPolygon]] + [
+        y for x in collections for y in x.geoms if type(y) in [Polygon, MultiPolygon]
+    ]
+
+    # Convert points into circles with radius "point_size"
+    if point_size:
+        points = [x.buffer(point_size)
+                  for x in points] if point_size > 0 else []
+    if line_width:
+        lines = [x.buffer(line_width) for x in lines] if line_width > 0 else []
+
+    return GeometryCollection(list(points) + list(lines) + list(polys))
+
+
+def gdf_to_shapely(
+        layer: str,
+        gdf: gp.GeoDataFrame,
+        width: Optional[Union[dict, float]] = None,
+        point_size: Optional[float] = None,
+        line_width: Optional[float] = None,
+        **kwargs
+) -> GeometryCollection:
+    """
+    Convert a dict of GeoDataFrames to a dict of shapely geometries
+
+    Args:
+        layer (str): Layer name
+        gdf (gp.GeoDataFrame): Input GeoDataFrame
+        width (Optional[Union[dict, float]], optional): Street network width. Can be either a dictionary or a float. Defaults to None.
+        point_size (Optional[float], optional): Point geometries (1D) will be dilated by this amount. Defaults to None.
+        line_width (Optional[float], optional): Line geometries (2D) will be dilated by this amount. Defaults to None.
+
+    Returns:
+        GeometryCollection: Output GeoDataFrame
+    """
+
+    # Project gdf
+    try:
+        gdf = ox.project_gdf(gdf)
+    except:
+        pass
+
+    if layer in ["streets", "railway", "waterway"]:
+        geometries = graph_to_shapely(gdf, width)
     else:
-        return "address"
+        geometries = geometries_to_shapely(
+            gdf, point_size=point_size, line_width=line_width
+        )
+
+    return geometries
 
 
-# Apply transformation (translation & scale) to layers
-def transform(layers, x, y, scale_x, scale_y, rotation):
-    # Transform layers (translate & scale)
-    k, v = zip(*layers.items())
-    v = GeometryCollection(v)
-    if (x is not None) and (y is not None):
-        v = translate(v, *(np.array([x, y]) - np.concatenate(v.centroid.xy)))
-    if scale_x is not None:
-        v = scale(v, scale_x, 1)
-    if scale_y is not None:
-        v = scale(v, 1, scale_y)
-    if rotation is not None:
-        v = rotate(v, rotation)
-    layers = dict(zip(k, v))
+def override_args(
+        layers: dict,
+        circle: Optional[bool],
+        dilate: Optional[Union[float, bool]]
+) -> dict:
+    """
+    Override arguments in layers' kwargs
+
+    Args:
+        layers (dict): prettymaps.plot() Layers parameters dict
+        circle (Optional[bool]): prettymaps.plot() 'Circle' parameter
+        dilate (Optional[Union[float, bool]]): prettymaps.plot() 'dilate' parameter
+
+    Returns:
+        dict: output dict
+    """
+    override_args = ["circle", "dilate"]
+    for layer in layers:
+        for arg in override_args:
+            if arg not in layers[layer]:
+                layers[layer][arg] = locals()[arg]
     return layers
 
 
-def draw_text(ax, text, x, y, **kwargs):
-    if 'bbox' in kwargs:
-        bbox_kwargs = kwargs.pop('bbox')
-        text = ax.text(x, y, text, **kwargs)
-        text.set_bbox(**bbox_kwargs)
-    else:
-        text = ax.text(x, y, text, **kwargs)
+def override_params(
+        default_dict: dict,
+        new_dict: dict
+) -> dict:
+    """
+    Override parameters in 'default_dict' with additional parameters from 'new_dict'
+
+    Args:
+        default_dict (dict): Default dict to be overriden with 'new_dict' parameters
+        new_dict (dict): New dict to override 'default_dict' parameters
+
+    Returns:
+        dict: default_dict overriden with new_dict parameters
+    """
+
+    final_dict = deepcopy(default_dict)
+
+    for key in new_dict.keys():
+        if type(new_dict[key]) == dict:
+            if key in final_dict:
+                final_dict[key] = override_params(
+                    final_dict[key], new_dict[key])
+            else:
+                final_dict[key] = new_dict[key]
+        else:
+            final_dict[key] = new_dict[key]
+
+    return final_dict
+
+
+def create_background(
+    gdfs: Dict[str, gp.GeoDataFrame],
+    style: Dict[str, dict]
+) -> Tuple[BaseGeometry, float, float, float, float, float, float]:
+    """
+    Create a background layer given a collection of GeoDataFrames
+
+    Args:
+        gdfs (Dict[str, gp.GeoDataFrame]): Dictionary of GeoDataFrames
+        style (Dict[str, dict]): Dictionary of matplotlib style parameters
+
+    Returns:
+        Tuple[BaseGeometry, float, float, float, float, float, float]: background geometry, bounds, width and height
+    """
+    # Create background
+    background_pad = 1.1
+    if "background" in style and "pad" in style["background"]:
+        background_pad = style["background"].pop("pad")
+
+    background = shapely.affinity.scale(
+        box(*
+            shapely.ops.unary_union(ox.project_gdf(gdfs["perimeter"]).geometry).bounds),
+        background_pad,
+        background_pad,
+    )
+
+    # Get bounds
+    xmin, ymin, xmax, ymax = background.bounds
+    dx, dy = xmax - xmin, ymax - ymin
+
+    return background, xmin, ymin, xmax, ymax, dx, dy
+
+
+def draw_text(
+    params: Dict[str, dict],
+    background: BaseGeometry
+) -> None:
+    """
+    Draw text with content and matplotlib style parameters specified by 'params' dictionary.
+    params['text'] should contain the message to be drawn
+
+    Args:
+        params (Dict[str, dict]): matplotlib style parameters for drawing text. params['text'] should contain the message to be drawn.
+        background (BaseGeometry): Background layer
+    """
+    # Override default osm_credit dict with provided parameters
+    params = override_params(
+        dict(
+            text="\n".join([
+                "data © OpenStreetMap contributors",
+                "github.com/marceloprates/prettymaps"
+            ]),
+            x=0, y=1,
+            horizontalalignment='left',
+            verticalalignment='top',
+            bbox=dict(boxstyle='square', fc='#fff', ec='#000'),
+            fontfamily='Ubuntu Mono'
+        ),
+        params
+    )
+    x, y, text = [params.pop(k) for k in ['x', 'y', 'text']]
+
+    # Get background bounds
+    xmin, ymin, xmax, ymax = background.bounds
+
+    x = np.interp([x], [0, 1], [xmin, xmax])[0]
+    y = np.interp([y], [0, 1], [ymin, ymax])[0]
+
+    plt.text(
+        x, y, text,
+        **params
+    )
+
+
+def create_preset(
+    name: str,
+    layers: Optional[Dict[str, dict]] = None,
+    style: Optional[Dict[str, dict]] = None,
+    circle: Optional[bool] = None,
+    radius: Optional[Union[float, bool]] = None,
+    dilate: Optional[Union[float, bool]] = None,
+) -> None:
+    """
+    Create a preset file and save it on the presets folder (prettymaps/presets/) under name 'name.json'
+
+    Args:
+        name (str): Preset name
+        layers (Dict[str, dict], optional): prettymaps.plot() 'layers' parameter dict. Defaults to None.
+        style (Dict[str, dict], optional): prettymaps.plot() 'style' parameter dict. Defaults to None.
+        circle (Optional[bool], optional): prettymaps.plot() 'circle' parameter. Defaults to None.
+        radius (Optional[Union[float, bool]], optional): prettymaps.plot() 'radius' parameter. Defaults to None.
+        dilate (Optional[Union[float, bool]], optional): prettymaps.plot() 'dilate' parameter. Defaults to None.
+    """
+
+    base_path = os.path.abspath(os.path.join(
+        os.path.dirname(prettymaps.__file__),
+        os.path.pardir
+    ))
+
+    # if not os.path.isdir('presets'):
+    #    os.makedirs('presets')
+
+    path = os.path.join(base_path, 'presets', f"{name}.json")
+    with open(path, "w") as f:
+        json.dump(
+            {
+                "layers": layers,
+                "style": style,
+                "circle": circle,
+                "radius": radius,
+                "dilate": dilate,
+            },
+            f,
+            ensure_ascii=False,
+        )
+
+
+def read_preset(name: str) -> Dict[str, dict]:
+    """
+    Read a preset from the presets folder (prettymaps/presets/)
+
+    Args:
+        name (str): Preset name
+
+    Returns:
+        (Dict[str,dict]): parameters dictionary
+    """
+    base_path = os.path.abspath(os.path.join(
+        os.path.dirname(prettymaps.__file__),
+        os.path.pardir
+    ))
+    path = os.path.join(base_path, 'presets', f"{name}.json")
+    with open(path, "r") as f:
+        # Load params from JSON file
+        params = json.load(f)
+    return params
+
+
+def delete_preset(name: str) -> None:
+    """
+    Delete a preset from the presets folder (prettymaps/presets/)
+
+    Args:
+        name (str): Preset name
+    """
+    base_path = os.path.abspath(os.path.join(
+        os.path.dirname(prettymaps.__file__),
+        os.path.pardir
+    ))
+    path = os.path.join(base_path, 'presets', f"{name}.json")
+    if os.path.exists(path):
+        os.remove(path)
+
+
+def override_preset(
+    name: str,
+    layers: Dict[str, dict] = {},
+    style: Dict[str, dict] = {},
+    circle: Optional[float] = None,
+    radius: Optional[Union[float, bool]] = None,
+    dilate: Optional[Union[float, bool]] = None
+) -> Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]]]:
+    """
+    Read the preset file given by 'name' and override it with additional parameters
+
+    Args:
+        name (str): _description_
+        layers (Dict[str, dict], optional): _description_. Defaults to {}.
+        style (Dict[str, dict], optional): _description_. Defaults to {}.
+        circle (Union[float, None], optional): _description_. Defaults to None.
+        radius (Union[float, None], optional): _description_. Defaults to None.
+        dilate (Union[float, None], optional): _description_. Defaults to None.
+
+    Returns:
+        Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]]]: Preset parameters overriden by additional provided parameters
+    """
+
+    params = read_preset(name)
+
+    # Override preset with kwargs
+    if "layers" in params:
+        layers = override_params(params["layers"], layers)
+    if "style" in params:
+        style = override_params(params["style"], style)
+    if circle is None and "circle" in params:
+        circle = params["circle"]
+    if radius is None and "radius" in params:
+        radius = params["radius"]
+    if dilate is None and "dilate" in params:
+        dilate = params["dilate"]
+
+    # Delete layers marked as 'False' in the parameter dict
+    for layer in [key for key in layers.keys() if layers[key] == False]:
+        del layers[layer]
+
+    # Return overriden presets
+    return layers, style, circle, radius, dilate
+
+
+def manage_presets(
+    load_preset: Optional[str],
+    save_preset: bool,
+    update_preset: Optional[str],
+    layers: Dict[str, dict],
+    style: Dict[str, dict],
+    circle: Optional[bool],
+    radius: Optional[Union[float, bool]],
+    dilate: Optional[Union[float, bool]]
+) -> Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]]]:
+    """_summary_
+
+    Args:
+        load_preset (Optional[str]): Load preset named 'load_preset', if provided
+        save_preset (Optional[str]): Save preset to file named 'save_preset', if provided
+        update_preset (Optional[str]): Load, update and save preset named 'update_preset', if provided
+        layers (Dict[str, dict]): prettymaps.plot() 'layers' parameter dict
+        style (Dict[str, dict]): prettymaps.plot() 'style' parameter dict
+        circle (Optional[bool]): prettymaps.plot() 'circle' parameter
+        radius (Optional[Union[float, bool]]): prettymaps.plot() 'radius' parameter
+        dilate (Optional[Union[float, bool]]): prettymaps.plot() 'dilate' parameter
+
+    Returns:
+        Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]]]: Updated layers, style, circle, radius, dilate parameters
+    """
+
+    # Update preset mode: load a preset, update it with additional parameters and update the JSON file
+    if update_preset:
+        load_preset = save_preset = True
+
+    # Load preset (if provided)
+    if load_preset:
+        layers, style, circle, radius, dilate = override_preset(
+            load_preset,
+            layers, style, circle, radius, dilate
+        )
+
+    # Save parameters as preset
+    if save_preset:
+        create_preset(
+            save_preset,
+            layers=layers,
+            style=style,
+            circle=circle,
+            radius=radius,
+            dilate=dilate,
+        )
+
+    return layers, style, circle, radius, dilate
+
+
+def presets():
+    base_path = os.path.abspath(os.path.join(
+        os.path.dirname(prettymaps.__file__),
+        os.path.pardir
+    ))
+    presets_folder = os.path.join(base_path, 'presets')
+    presets = [file.split('.')[0] for file in os.listdir(
+        presets_folder) if file.endswith('.json')]
+    presets = sorted(presets)
+    presets = pd.DataFrame({
+        'preset': presets,
+        'params': list(map(read_preset, presets))
+    })
+
+    #print('Available presets:')
+    # for i, preset in enumerate(presets):
+    #    print(f'{i+1}. {preset}')
+
+    return pd.DataFrame(presets)
+
+
+def preset(name):
+    base_path = os.path.abspath(os.path.join(
+        os.path.dirname(prettymaps.__file__),
+        os.path.pardir
+    ))
+    with open(os.path.join(base_path, "presets", f"{name}.json"), "r") as f:
+        # Load params from JSON file
+        params = json.load(f)
+        return Preset(params)
 
 
 # Plot
+
+
 def plot(
-    # Address
-    query,
-    # Whether to use a backup for the layers
-    backup=None,
+    # Your query. Example:
+    # - "Porto Alegre"
+    # - (-30.0324999, -51.2303767) (lat/long coordinates)
+    # - You can also provide a custom GeoDataFrame boundary as input
+    query: Union[str, Tuple[float, float], gp.GeoDataFrame],
+    # Which OpenStreetMap layers to plot
+    # Example: {'building': {'tags': {'building': True}}, 'streets': {'width': 2}}
+    # Run prettymaps.presets() for more examples
+    layers={},
+    # Matplotlib params for drawing each layer
+    style={},
+    # Whether to load params from preset
+    preset='default',
+    # Whether to save preset
+    save_preset=None,
+    # Whether to load and update preset with additional parameters
+    update_preset=None,
     # Custom postprocessing function on layers
     postprocessing=None,
-    # Radius (in case of circular plot)
+    # Circular boundary? Default: square
+    circle=None,
+    # Radius for circular or square boundary
     radius=None,
-    # Which layers to plot
-    layers={"perimeter": {}},
-    # Drawing params for each layer (matplotlib params such as 'fc', 'ec', 'fill', etc.)
-    drawing_kwargs={},
-    # OSM Caption parameters
-    osm_credit={},
+    # Dilate boundary by this much
+    dilate=None,
+    # Whether to save result
+    save_as=None,
     # Figure parameters
-    figsize=(10, 10),
+    fig=None,
     ax=None,
     title=None,
-    # Vsketch parameters
-    vsketch=None,
-    # Transform (translation & scale) params
-    x=None,
-    y=None,
-    scale_x=None,
-    scale_y=None,
-    rotation=None,
+    figsize=(12, 12),
+    constrained_layout=True,
+    # Credit message parameters
+    credit={},
+    # Mode ('matplotlib' or 'plotter')
+    mode='matplotlib',
+    # Multiplot mode
+    multiplot=False,
+    # Whether to display matplotlib
+    show=True,
+    # Transform (translation, scale, rotation) parameters
+    x=0,
+    y=0,
+    scale_x=1,
+    scale_y=1,
+    rotation=0,
 ):
     """
-    
+
     Draw a map from OpenStreetMap data.
-    
+
     Parameters
     ----------
     query : string
@@ -164,7 +862,7 @@ def plot(
         (Optional) If not None, draw the map centered around the address with this radius (in meters)
     layers: dict
         Specify the name of each layer and the OpenStreetMap tags to fetch
-    drawing_kwargs: dict
+    style: dict
         Drawing params for each layer (matplotlib params such as 'fc', 'ec', 'fill', etc.)
     osm_credit: dict
         OSM Caption parameters
@@ -186,144 +884,148 @@ def plot(
         (Optional) Vertical scale factor
     rotation: float
         (Optional) Rotation in angles (0-360)
-    
+
     Returns
     -------
     layers: dict
         Dictionary of layers (each layer is a Shapely MultiPolygon)
-    
+
     Notes
     -----
-    
+
     """
 
-    # Interpret query
-    query_mode = parse_query(query)
+    # 1. Manage presets
+    layers, style, circle, radius, dilate = manage_presets(
+        preset, save_preset, update_preset,
+        layers, style, circle, radius, dilate
+    )
 
-    # Save maximum dilation for later use
-    dilations = [kwargs["dilate"] for kwargs in layers.values() if "dilate" in kwargs]
-    max_dilation = max(dilations) if len(dilations) > 0 else 0
+    # 2. Init matplotlib figure
+    if (mode == "matplotlib") and (ax is None):
+        fig = plt.figure(figsize=figsize)
+        ax = plt.subplot(111, aspect='equal')
 
-    ####################
-    ### Fetch Layers ###
-    ####################
+    # 3. Override arguments in layers' kwargs dict
+    layers = override_args(layers, circle, dilate)
 
-    # Use backup if provided
-    if backup is not None:
-        layers = backup
-    # Otherwise, fetch layers
+    # 4. Fetch geodataframes
+    gdfs = get_gdfs(query, layers, radius, dilate, -rotation)
+
+    # 5. Apply transformations to GeoDataFrames (translation, scale, rotation)
+    gdfs = transform_gdfs(gdfs, x, y, scale_x, scale_y, rotation)
+
+    # 6. Apply a postprocessing function to the GeoDataFrames, if provided
+    if postprocessing:
+        gdfs = postprocessing(gdfs)
+
+    # 7. Create background GeoDataFrame and get (x,y) bounds
+    background, xmin, ymin, xmax, ymax, dx, dy = create_background(gdfs, style)
+
+    # 8. Draw layers
+    if mode == "plotter":
+        # 8.1. Draw layers in plotter (vsketch) mode
+        class Sketch(vsketch.SketchClass):
+
+            def draw(self, vsk: vsketch.Vsketch):
+
+                vsk.size("a4", landscape=True)
+
+                for layer in gdfs:
+                    if layer in layers:
+                        plot_gdf(
+                            layer,
+                            gdfs[layer],
+                            ax,
+                            width=layers[layer]["width"]
+                            if "width" in layers[layer]
+                            else None,
+                            mode=mode,
+                            vsk=vsk,
+                            **(style[layer] if layer in style else {}),
+                        )
+
+                if save_as:
+                    vsk.save(save_as)
+
+            def finalize(self, vsk: vsketch.Vsketch):
+                vsk.vpype("linemerge linesimplify reloop linesort")
+
+        sketch = Sketch()
+        sketch.display()
+    elif mode == "matplotlib":
+        # 8.2. Draw layers in matplotlib mode
+        for layer in gdfs:
+            if layer in layers:
+                plot_gdf(
+                    layer,
+                    gdfs[layer],
+                    ax,
+                    width=layers[layer]["width"] if "width" in layers[layer] else None,
+                    **(style[layer] if layer in style else {}),
+                )
     else:
-        # Define base kwargs
-        if radius:
-            base_kwargs = {
-                "point": query if query_mode == "coordinates" else ox.geocode(query),
-                "radius": radius,
-            }
-        else:
-            base_kwargs = {
-                "perimeter": query
-                if query_mode == "polygon"
-                else get_perimeter(query, by_osmid=query_mode == "osmid")
-            }
+        raise Exception(f'Unknown mode {mode}')
 
-        # Fetch layers
-        layers = {
-            layer: get_layer(
-                layer, **base_kwargs, **(kwargs if type(kwargs) == dict else {})
-            )
-            for layer, kwargs in layers.items()
-        }
+    # 9. Draw background
+    if "background" in style:
+        zorder = style["background"].pop(
+            "zorder") if "zorder" in style["background"] else -1
+        ax.add_patch(PolygonPatch(
+            background, **style["background"], zorder=zorder))
 
-        # Apply transformation to layers (translate & scale)
-        layers = transform(layers, x, y, scale_x, scale_y, rotation)
+    # 10. Draw credit message
+    if (mode == "matplotlib") and (credit != False) and (not multiplot):
+        draw_text(credit, background)
 
-        # Apply postprocessing step to layers
-        if postprocessing is not None:
-            layers = postprocessing(layers)
-
-    ############
-    ### Plot ###
-    ############
-
-    # Matplot-specific stuff (only run if vsketch mode isn't activated)
-    if vsketch is None:
-        # Ajust axis
+    # 11. Ajust figure and create PIL Image
+    if mode == "matplotlib":
+        # Adjust axis
         ax.axis("off")
         ax.axis("equal")
         ax.autoscale()
-
-    # Plot background
-    if "background" in drawing_kwargs:
-        geom = scale(box(*layers["perimeter"].bounds), 1.2, 1.2)
-
-        if vsketch is None:
-            ax.add_patch(PolygonPatch(geom, **drawing_kwargs["background"]))
-        else:
-            vsketch.geometry(geom)
-
-    # Adjust bounds
-    xmin, ymin, xmax, ymax = layers["perimeter"].buffer(max_dilation).bounds
-    dx, dy = xmax - xmin, ymax - ymin
-    if vsketch is None:
-        ax.set_xlim(xmin, xmax)
-        ax.set_ylim(ymin, ymax)
-
-    # Draw layers
-    for layer, shapes in layers.items():
-        kwargs = drawing_kwargs[layer] if layer in drawing_kwargs else {}
-        if "hatch_c" in kwargs:
-            # Draw hatched shape
-            plot_shapes(
-                shapes,
-                ax,
-                vsketch=vsketch,
-                lw=0,
-                ec=kwargs["hatch_c"],
-                **{k: v for k, v in kwargs.items() if k not in ["lw", "ec", "hatch_c"]},
-            )
-            # Draw shape contour only
-            plot_shapes(
-                shapes,
-                ax,
-                vsketch=vsketch,
-                fill=False,
-                **{
-                    k: v
-                    for k, v in kwargs.items()
-                    if k not in ["hatch_c", "hatch", "fill"]
-                },
-            )
-        else:
-            # Draw shape normally
-            plot_shapes(shapes, ax, vsketch=vsketch, **kwargs)
-
-    if ((isinstance(osm_credit, dict)) or (osm_credit is True)) and (vsketch is None):
-        x, y = figsize
-        d = 0.8 * (x ** 2 + y ** 2) ** 0.5
-        draw_text(
-            ax,
-            (
-                osm_credit["text"]
-                if "text" in osm_credit
-                else "data © OpenStreetMap contributors\ngithub.com/marceloprates/prettymaps"
-            ),
-            x=xmin + (osm_credit["x"] * dx if "x" in osm_credit else 0),
-            y=ymax - 4 * d - (osm_credit["y"] * dy if "y" in osm_credit else 0),
-            fontfamily=(
-                osm_credit["fontfamily"]
-                if "fontfamily" in osm_credit
-                else "Ubuntu Mono"
-            ),
-            fontsize=(osm_credit["fontsize"] * d if "fontsize" in osm_credit else d),
-            zorder=(
-                osm_credit["zorder"] if "zorder" in osm_credit else len(layers) + 1
-            ),
-            **{
-                k: v
-                for k, v in osm_credit.items()
-                if k not in ["text", "x", "y", "fontfamily", "fontsize", "zorder"]
-            },
+        # Adjust padding
+        plt.subplots_adjust(
+            left=0, bottom=0, right=1, top=1, wspace=0, hspace=0
         )
+        # Save result
+        if save_as:
+            img.save(save_as)
+        if not show:
+            plt.close()
 
-    # Return perimeter
-    return layers
+    return Plot(gdfs, fig, ax, background)
+
+
+def multiplot(*subplots, figsize=None, credit={}, **kwargs):
+
+    fig = plt.figure(figsize=figsize)
+    ax = plt.subplot(111, aspect='equal')
+
+    mode = "plotter" if "plotter" in kwargs and kwargs["plotter"] else "matplotlib"
+
+    subplots_results = [
+        plot(
+            subplot.query,
+            ax=ax,
+            multiplot=True,
+            **override_params(subplot.kwargs, {k: v for k, v in kwargs.items() if k != 'load_preset' or 'load_preset' not in subplot.kwargs})
+        )
+        for subplot in subplots
+    ]
+
+    if mode == "matplotlib":
+        ax.axis("off")
+        ax.axis("equal")
+        ax.autoscale()
+        plt.subplots_adjust(
+            left=0, bottom=0, right=1, top=1, wspace=0, hspace=0
+        )
+        if 'show' in kwargs and not kwargs['show']:
+            plt.close()
+
+        if credit != False:
+            backgrounds = [result.background for result in subplots_results]
+            global_background = box(
+                *shapely.ops.unary_union(backgrounds).bounds)
+            draw_text(credit, global_background)
