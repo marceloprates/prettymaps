@@ -17,7 +17,7 @@ This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 
 <a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
-![](../prints/hackernews-prettymaps.png)
+![](prints/hackernews-prettymaps.png)
 
 ## [prettymaps subreddit](https://www.reddit.com/r/prettymaps_/)
 ## [Google Colaboratory Demo](https://colab.research.google.com/github/marceloprates/prettymaps/blob/master/notebooks/examples.ipynb)
