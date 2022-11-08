@@ -64,7 +64,7 @@ plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
 
 
     
-![png](README__files/README__6_0.png)
+![png](README_files/README_6_0.png)
     
 
 
@@ -82,7 +82,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__8_0.png)
+![png](README_files/README_8_0.png)
     
 
 
@@ -345,7 +345,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__14_0.png)
+![png](README_files/README_14_0.png)
     
 
 
@@ -364,7 +364,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__16_0.png)
+![png](README_files/README_16_0.png)
     
 
 
@@ -736,7 +736,7 @@ plot.geodataframes['building'][
 
 
     
-![svg](README__files/README__20_0.svg)
+![svg](README_files/README_20_0.svg)
     
 
 
@@ -778,7 +778,7 @@ for ax,building in zip(np.concatenate(axes),buildings):
 
 
     
-![png](README__files/README__22_0.png)
+![png](README_files/README_22_0.png)
     
 
 
@@ -809,7 +809,7 @@ plt.show()
 
 
     
-![png](README__files/README__24_0.png)
+![png](README_files/README_24_0.png)
     
 
 
@@ -829,7 +829,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__26_0.png)
+![png](README_files/README_26_0.png)
     
 
 
@@ -848,7 +848,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__28_0.png)
+![png](README_files/README_28_0.png)
     
 
 
@@ -862,7 +862,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README__files/README__29_0.png)
+![png](README_files/README_29_0.png)
     
 
 
@@ -1120,6 +1120,6 @@ prettymaps.multiplot(
 
 
     
-![png](README__files/README__35_0.png)
+![png](README_files/README_35_0.png)
     
 
