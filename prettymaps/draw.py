@@ -756,13 +756,8 @@ def manage_presets(
 
 
 def presets():
-    base_path = os.path.abspath(os.path.join(
-        os.path.dirname(prettymaps.__file__),
-        os.path.pardir
-    ))
-    presets_folder = os.path.join(base_path, 'presets')
     presets = [file.split('.')[0] for file in os.listdir(
-        presets_folder) if file.endswith('.json')]
+        presets_directory()) if file.endswith('.json')]
     presets = sorted(presets)
     presets = pd.DataFrame({
         'preset': presets,
