@@ -22,14 +22,16 @@ setup(
     classifiers=[
         "Intended Audience :: Science/Research",
     ],
-    data_files=[(presets_dir, [
-        'presets/barcelona-plotter.json',
-        'presets/barcelona.json',
-        'presets/cb-bf-f.json',
-        'presets/default.json',
-        'presets/heerhugowaard.json',
-        'presets/macao.json',
-        'presets/minimal.json',
-        'presets/minimal.json',
-    ])],
+    package_dir={'prettymaps': '.'},
+    package_data={'prettymaps': ['presets/*.json']},
+    #data_files=[(presets_dir, [
+    #    'presets/barcelona-plotter.json',
+    #    'presets/barcelona.json',
+    #    'presets/cb-bf-f.json',
+    #    'presets/default.json',
+    #    'presets/heerhugowaard.json',
+    #    'presets/macao.json',
+    #    'presets/minimal.json',
+    #    'presets/tijuca.json',
+    #])],
 )
