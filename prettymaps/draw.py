@@ -16,14 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import prettymaps
 
 import re
 import os
 import json
 import yaml
-#import vsketch
 import IPython
+import pathlib
 import warnings
 import matplotlib
 import shapely.ops
@@ -41,6 +40,9 @@ from matplotlib.patches import Path, PathPatch
 from typing import Optional, Union, Tuple, List, Dict, Any, Iterable
 from shapely.geometry import Point, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection, box
 from shapely.geometry.base import BaseGeometry
+
+
+#import vsketch
 
 
 class Subplot:
@@ -587,6 +589,10 @@ def draw_text(
     )
 
 
+def presets_directory():
+    return os.path.join(pathlib.Path(__file__).resolve().parent.parent, 'presets')
+
+
 def create_preset(
     name: str,
     layers: Optional[Dict[str, dict]] = None,
@@ -607,15 +613,10 @@ def create_preset(
         dilate (Optional[Union[float, bool]], optional): prettymaps.plot() 'dilate' parameter. Defaults to None.
     """
 
-    base_path = os.path.abspath(os.path.join(
-        os.path.dirname(prettymaps.__file__),
-        os.path.pardir
-    ))
-
     # if not os.path.isdir('presets'):
     #    os.makedirs('presets')
 
-    path = os.path.join(base_path, 'presets', f"{name}.json")
+    path = os.path.join(presets_directory(), f"{name}.json")
     with open(path, "w") as f:
         json.dump(
             {
@@ -640,11 +641,7 @@ def read_preset(name: str) -> Dict[str, dict]:
     Returns:
         (Dict[str,dict]): parameters dictionary
     """
-    base_path = os.path.abspath(os.path.join(
-        os.path.dirname(prettymaps.__file__),
-        os.path.pardir
-    ))
-    path = os.path.join(base_path, 'presets', f"{name}.json")
+    path = os.path.join(presets_directory(), f"{name}.json")
     with open(path, "r") as f:
         # Load params from JSON file
         params = json.load(f)
@@ -658,11 +655,8 @@ def delete_preset(name: str) -> None:
     Args:
         name (str): Preset name
     """
-    base_path = os.path.abspath(os.path.join(
-        os.path.dirname(prettymaps.__file__),
-        os.path.pardir
-    ))
-    path = os.path.join(base_path, 'presets', f"{name}.json")
+
+    path = os.path.join(presets_directory(), f"{name}.json")
     if os.path.exists(path):
         os.remove(path)
 

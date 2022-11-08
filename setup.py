@@ -1,6 +1,6 @@
-from setuptools import setup, find_packages
-from pathlib import Path
 import os
+from pathlib import Path
+from setuptools import setup, find_packages
 
 parent_dir = Path(__file__).resolve().parent
 presets_dir = os.path.abspath(os.path.join(os.path.pardir, 'presets'))
@@ -23,13 +23,13 @@ setup(
         "Intended Audience :: Science/Research",
     ],
     data_files=[(presets_dir, [
-        'presets/barcelona-plotter.json',
-        'presets/barcelona.json',
-        'presets/cb-bf-f.json',
-        'presets/default.json',
-        'presets/heerhugowaard.json',
-        'presets/macao.json',
-        'presets/minimal.json',
-        'presets/minimal.json',
+        os.path.join(presets_dir, 'barcelona-plotter.json'),
+        os.path.join(presets_dir, 'barcelona.json'),
+        os.path.join(presets_dir, 'cb-bf-f.json'),
+        os.path.join(presets_dir, 'default.json'),
+        os.path.join(presets_dir, 'heerhugowaard.json'),
+        os.path.join(presets_dir, 'macao.json'),
+        os.path.join(presets_dir, 'minimal.json'),
+        os.path.join(presets_dir, 'minimal.json'),
     ])],
 )
