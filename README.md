@@ -94,14 +94,6 @@ prettymaps.presets()
 
 to list all available presets:
 
-
-```python
-prettymaps.presets()
-```
-
-
-
-
 <div>
 <table border="1" class="dataframe">
   <thead>
