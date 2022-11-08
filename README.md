@@ -2,7 +2,7 @@
 
 A minimal Python library to draw customized maps from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) packages.
 
-![](prints/heerhugowaard.png)
+![](https://github.com/marceloprates/prettymaps/raw/main/prints/heerhugowaard.png)
 
 
 This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 (you can make commercial use, distribute and modify this project, but must **disclose** the source code with the license and copyright notice)
@@ -17,18 +17,31 @@ This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 
 <a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
-![](prints/hackernews-prettymaps.png)
+![](https://github.com/marceloprates/prettymaps/raw/main/prints/hackernews-prettymaps.png)
 
 ## [prettymaps subreddit](https://www.reddit.com/r/prettymaps_/)
 ## [Google Colaboratory Demo](https://colab.research.google.com/github/marceloprates/prettymaps/blob/master/notebooks/examples.ipynb)
 
 # Installation
 
+OBS. I'm trying to solve a dependency issue with [vsketch](https://vsketch.readthedocs.io/en/latest/install.html) before publishing prettymaps v0.1.3, so, for now, please install directly from GitHub.
+
+### Install locally:
 Install prettymaps with:
 
 ```
-pip install prettymaps
+git+https://github.com/marceloprates/prettymaps
 ```
+
+### Install on Google Colaboratory:
+
+Install prettymaps with:
+
+```
+!pip install -e "git+https://github.com/marceloprates/prettymaps#egg=prettymaps"
+```
+
+Then **restart the runtime** (Runtime -> Restart Runtime) before importing prettymaps
 
 # Tutorial
 
@@ -51,7 +64,7 @@ plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
 
 
     
-![png](prints/README_files/README_5_0.png)
+![png](README__files/README__6_0.png)
     
 
 
@@ -69,7 +82,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_7_0.png)
+![png](README__files/README__8_0.png)
     
 
 
@@ -332,7 +345,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_13_0.png)
+![png](README__files/README__14_0.png)
     
 
 
@@ -351,7 +364,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_15_0.png)
+![png](README__files/README__16_0.png)
     
 
 
@@ -723,7 +736,7 @@ plot.geodataframes['building'][
 
 
     
-![svg](prints/README_files/README_19_0.svg)
+![svg](README__files/README__20_0.svg)
     
 
 
@@ -765,7 +778,7 @@ for ax,building in zip(np.concatenate(axes),buildings):
 
 
     
-![png](prints/README_files/README_21_0.png)
+![png](README__files/README__22_0.png)
     
 
 
@@ -796,7 +809,7 @@ plt.show()
 
 
     
-![png](prints/README_files/README_23_0.png)
+![png](README__files/README__24_0.png)
     
 
 
@@ -816,7 +829,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_25_0.png)
+![png](README__files/README__26_0.png)
     
 
 
@@ -835,7 +848,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_27_0.png)
+![png](README__files/README__28_0.png)
     
 
 
@@ -849,7 +862,7 @@ plot = prettymaps.plot(
 
 
     
-![png](prints/README_files/README_28_0.png)
+![png](README__files/README__29_0.png)
     
 
 
@@ -1107,6 +1120,6 @@ prettymaps.multiplot(
 
 
     
-![png](prints/README_files/README_34_0.png)
+![png](README__files/README__35_0.png)
     
 
