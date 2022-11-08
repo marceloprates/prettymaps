@@ -30,7 +30,7 @@ OBS. I'm trying to solve a dependency issue with [vsketch](https://vsketch.readt
 Install prettymaps with:
 
 ```
-git+https://github.com/marceloprates/prettymaps
+pip install git+https://github.com/marceloprates/prettymaps
 ```
 
 ### Install on Google Colaboratory:
