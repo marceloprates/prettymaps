@@ -772,11 +772,7 @@ def presets():
 
 
 def preset(name):
-    base_path = os.path.abspath(os.path.join(
-        os.path.dirname(prettymaps.__file__),
-        os.path.pardir
-    ))
-    with open(os.path.join(base_path, "presets", f"{name}.json"), "r") as f:
+    with open(os.path.join(presets_directory(), f"{name}.json"), "r") as f:
         # Load params from JSON file
         params = json.load(f)
         return Preset(params)
