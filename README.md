@@ -341,14 +341,9 @@ plot = prettymaps.plot(
 )
 ```
 
-
-    
 ![png](README_files/README_16_0.png)
-    
-
-
+   
 You can access layers's GeoDataFrames directly like this:
-
 
 ```python
 # Run prettymaps in show = False mode (we're only interested in obtaining the GeoDataFrames)
@@ -356,23 +351,7 @@ plot = prettymaps.plot('Centro Histórico, Porto Alegre', show = False)
 plot.geodataframes['building']
 ```
 
-
-
-
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
