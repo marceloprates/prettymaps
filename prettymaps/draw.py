@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-
 import re
 import os
 import json
@@ -40,7 +39,6 @@ from matplotlib.patches import Path, PathPatch
 from typing import Optional, Union, Tuple, List, Dict, Any, Iterable
 from shapely.geometry import Point, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection, box
 from shapely.geometry.base import BaseGeometry
-
 
 #import vsketch
 
@@ -590,7 +588,7 @@ def draw_text(
 
 
 def presets_directory():
-    return os.path.join(pathlib.Path(__file__).resolve().parent.parent, 'presets')
+    return os.path.join(pathlib.Path(__file__).resolve().parent, 'presets')
 
 
 def create_preset(
