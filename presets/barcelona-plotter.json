@@ -1,0 +1,43 @@
+{
+    "layers": {
+        "streets": {
+            "width": {
+                "primary": 5,
+                "secondary": 4,
+                "tertiary": 3,
+                "residential": 2,
+                "footway": 1
+            }
+        },
+        "building": {
+            "tags": {
+                "building": true
+            }
+        },
+        "green": {
+            "tags": {
+                "landuse": [
+                    "grass",
+                    "village_green"
+                ],
+                "leisure": "park"
+            }
+        }
+    },
+    "style": {
+        "perimeter": {
+            "draw": false
+        },
+        "streets": {
+            "stroke": 1,
+            "fill": 1,
+            "penWidth": 2
+        },
+        "buildings": {
+            "stroke": 2
+        }
+    },
+    "circle": null,
+    "radius": 500,
+    "dilate": 100
+}

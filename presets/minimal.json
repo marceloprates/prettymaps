@@ -1,0 +1,44 @@
+{
+    "layers": {
+        "perimeter": {},
+        "streets": {
+            "width": {
+                "motorway": 5,
+                "trunk": 5,
+                "primary": 4,
+                "secondary": 3,
+                "tertiary": 2,
+                "residential": 2
+            }
+        },
+        "building": {
+            "tags": {
+                "building": true
+            }
+        }
+    },
+    "style": {
+        "perimeter": {
+            "fill": false,
+            "lw": 0,
+            "zorder": 0
+        },
+        "background": {
+            "fc": "#fff",
+            "zorder": -1
+        },
+        "streets": {
+            "fc": "#000",
+            "lw": 0,
+            "zorder": 4
+        },
+        "building": {
+            "fc": "#fff",
+            "ec": "#000",
+            "lw": 0.5,
+            "zorder": 5
+        }
+    },
+    "circle": null,
+    "radius": 400
+}

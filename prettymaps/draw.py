@@ -22,7 +22,7 @@ import re
 import os
 import json
 import yaml
-import vsketch
+#import vsketch
 import IPython
 import warnings
 import matplotlib
@@ -192,7 +192,8 @@ def plot_gdf(
     gdf: gp.GeoDataFrame,
     ax: matplotlib.axes.Axes,
     mode: str = 'matplotlib',
-    vsk: Optional[vsketch.SketchClass] = None,
+    #vsk: Optional[vsketch.SketchClass] = None,
+    vsk=None,
     palette: Optional[List[str]] = None,
     width: Optional[Union[dict, float]] = None,
     union: bool = False,
@@ -925,6 +926,7 @@ def plot(
     # 8. Draw layers
     if mode == "plotter":
         # 8.1. Draw layers in plotter (vsketch) mode
+        '''
         class Sketch(vsketch.SketchClass):
 
             def draw(self, vsk: vsketch.Vsketch):
@@ -953,6 +955,7 @@ def plot(
 
         sketch = Sketch()
         sketch.display()
+        '''
     elif mode == "matplotlib":
         # 8.2. Draw layers in matplotlib mode
         for layer in gdfs:
