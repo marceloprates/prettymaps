@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
 from pathlib import Path
+import os
 
 parent_dir = Path(__file__).resolve().parent
+presets_dir = os.path.abspath(os.path.join(os.path.pardir, 'presets'))
 
 setup(
     name="prettymaps",
@@ -13,9 +15,21 @@ setup(
     author="Marcelo Prates",
     author_email="marceloorp@gmail.com",
     license="MIT License",
-    packages=find_packages(exclude=("assets", "notebooks", "prints", "script")),
-    install_requires=parent_dir.joinpath("requirements.txt").read_text().splitlines(),
+    packages=find_packages(
+        exclude=("assets", "notebooks", "prints", "script")),
+    install_requires=parent_dir.joinpath(
+        "requirements.txt").read_text().splitlines(),
     classifiers=[
         "Intended Audience :: Science/Research",
     ],
+    data_files=[(presets_dir, [
+        'presets/barcelona-plotter.json',
+        'presets/barcelona.json',
+        'presets/cb-bf-f.json',
+        'presets/default.json',
+        'presets/heerhugowaard.json',
+        'presets/macao.json',
+        'presets/minimal.json',
+        'presets/minimal.json',
+    ])],
 )
