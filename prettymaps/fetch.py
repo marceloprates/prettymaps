@@ -204,7 +204,7 @@ def get_gdf(
 
 
 # Fetch GeoDataFrames given query and a dictionary of layers
-def get_gdfs(query, layers_dict, radius, dilate, rotation=0) -> Dict:
+def get_gdfs(query, layers_dict, radius, dilate, rotation=0) -> dict:
 
     perimeter_kwargs = {}
     if "perimeter" in layers_dict:
@@ -221,10 +221,11 @@ def get_gdfs(query, layers_dict, radius, dilate, rotation=0) -> Dict:
     )
 
     # Get other layers as GeoDataFrames
-    gdfs = {"perimeter": perimeter} | {
+    gdfs = {"perimeter": perimeter}
+    gdfs.update({
         layer: get_gdf(layer, perimeter, **kwargs)
         for layer, kwargs in layers_dict.items()
         if layer != "perimeter"
-    }
+    })
 
     return gdfs
