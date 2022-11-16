@@ -976,7 +976,7 @@ def plot(
         )
         # Save result
         if save_as:
-            img.save(save_as)
+            plt.savefig(save_as)
         if not show:
             plt.close()
 
