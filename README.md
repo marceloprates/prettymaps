@@ -172,7 +172,7 @@ prettymaps.preset('default')
 
 
 
-Insted of using the default configuration you can customize several parameters. The most important are:
+Instead of using the default configuration you can customize several parameters. The most important are:
 
 - layers: A dictionary of OpenStreetMap layers to fetch.
     - Keys: layer names (arbitrary)
