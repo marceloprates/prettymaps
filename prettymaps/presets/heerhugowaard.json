@@ -69,6 +69,7 @@
         },
         "background": {
             "fc": "#F2F4CB",
+            "pad": 1.1,
             "zorder": -1
         },
         "green": {
