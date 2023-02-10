@@ -7,7 +7,7 @@ presets_dir = os.path.abspath(os.path.join(os.path.pardir, 'presets'))
 
 setup(
     name="prettymaps",
-    version="v0.1.3",
+    version="v0.1.4",
     description="A simple python library to draw pretty maps from OpenStreetMap data",
     long_description=parent_dir.joinpath("README.md").read_text(),
     long_description_content_type="text/markdown",

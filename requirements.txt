@@ -2,4 +2,5 @@ osmnx==1.1.2
 tabulate==0.8.9
 Shapely>=1.8,<2.0
 descartes==1.1.0
+ipykernel==5.3.4
 pyyaml==6.0.0

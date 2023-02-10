@@ -527,6 +527,7 @@ def create_background(
     Returns:
         Tuple[BaseGeometry, float, float, float, float, float, float]: background geometry, bounds, width and height
     """
+    
     # Create background
     background_pad = 1.1
     if "background" in style and "pad" in style["background"]:
@@ -538,6 +539,9 @@ def create_background(
         background_pad,
         background_pad,
     )
+
+    if "background" in style and "dilate" in style["background"]:
+        background = background.buffer(style['background'].pop("dilate"))
 
     # Get bounds
     xmin, ymin, xmax, ymax = background.bounds
@@ -958,7 +962,7 @@ def plot(
         zorder = style["background"].pop(
             "zorder") if "zorder" in style["background"] else -1
         ax.add_patch(PolygonPatch(
-            background, **style["background"], zorder=zorder))
+            background, **{k:v for k,v in style["background"].items() if k != 'dilate'}, zorder=zorder))
 
     # 10. Draw credit message
     if (mode == "matplotlib") and (credit != False) and (not multiplot):
