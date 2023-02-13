@@ -20,7 +20,7 @@ import re
 import os
 import json
 import yaml
-import IPython
+#import IPython
 import pathlib
 import warnings
 import matplotlib
@@ -78,6 +78,7 @@ class Preset:
     """
     params: dict
 
+    '''
     def _ipython_display_(self):
         """
         Implements the _ipython_display_() function for the Preset class.
@@ -104,7 +105,7 @@ class Preset:
         params.iloc[1:, 2:] = ''
 
         IPython.display.display(IPython.display.Markdown(params.to_markdown()))
-
+    '''
 
 def transform_gdfs(
     gdfs: Dict[str, gp.GeoDataFrame],
