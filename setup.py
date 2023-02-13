@@ -22,6 +22,6 @@ setup(
     classifiers=[
         "Intended Audience :: Science/Research",
     ],
-    package_dir={'prettymaps': '.'},
+    package_dir={'prettymaps': 'prettymaps'},
     package_data={'prettymaps': ['presets/*.json']},
 )
