@@ -37,8 +37,8 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import hex2color
 from matplotlib.patches import Path, PathPatch
 from typing import Optional, Union, Tuple, List, Dict, Any, Iterable
-from shapely.geometry import Point, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection, box
 from shapely.geometry.base import BaseGeometry
+from shapely.geometry import Point, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection, box
 
 #import vsketch
 

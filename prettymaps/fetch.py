@@ -16,19 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from ast import Dict
-from functools import reduce
-from tokenize import Number, String
-from typing import Optional, Union, Tuple
-
-# from unittest.runner import _ResultClassType
-from xmlrpc.client import Boolean
-
 import re
-import osmnx as ox
-from osmnx import utils_geo
-from osmnx._errors import EmptyOverpassResponse
+import warnings
 import numpy as np
+import osmnx as ox
+from copy import deepcopy
 from shapely.geometry import (
     box,
     Point,
@@ -37,12 +29,10 @@ from shapely.geometry import (
     LineString,
     MultiLineString,
 )
+from geopandas import GeoDataFrame
 from shapely.affinity import rotate
 from shapely.ops import unary_union
-from geopandas import GeoDataFrame, read_file
-import warnings
 from shapely.errors import ShapelyDeprecationWarning
-from copy import deepcopy
 
 
 # Parse query (by coordinates, OSMId or name)
