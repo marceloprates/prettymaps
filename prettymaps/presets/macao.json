@@ -59,6 +59,7 @@
             "fc": "#F2F4CB",
             "ec": "#dadbc1",
             "hatch": "ooo...",
+            "pad": 1.1,
             "zorder": -1
         },
         "perimeter": {

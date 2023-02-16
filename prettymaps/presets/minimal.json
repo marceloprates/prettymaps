@@ -25,6 +25,7 @@
         },
         "background": {
             "fc": "#fff",
+            "pad": 1.1,
             "zorder": -1
         },
         "streets": {

@@ -530,13 +530,21 @@ def create_background(
     """
     
     # Create background
-    background_pad = 1.1
+    # pad is the value with which to scale the perimeter to get the background.
+    # dilate is the value in metter to add to the perimeter to get the background.
+    # the pad scaling is applied after the dilate addition.
+
+    background_pad = 1
     if "background" in style and "pad" in style["background"]:
         background_pad = style["background"].pop("pad")
 
+    background_dilate = 0
+    if "background" in style and "dilate" in style["background"]:
+        background_dilate = style["background"].pop("dilate")
+
     background = shapely.affinity.scale(
         box(*
-            shapely.ops.unary_union(ox.project_gdf(gdfs["perimeter"]).geometry).bounds),
+            shapely.ops.unary_union(ox.project_gdf(gdfs["perimeter"]).geometry.buffer(background_dilate)).bounds),
         background_pad,
         background_pad,
     )
@@ -806,10 +814,12 @@ def plot(
     update_preset=None,
     # Custom postprocessing function on layers
     postprocessing=None,
-    # Circular boundary? Default: square
+    # Circular boundary? Default: rectangular
     circle=None,
-    # Radius for circular or square boundary
+    # Radius for circular or rectangular boundary
     radius=None,
+    # Ratio width/height for rectangular boundary. Radius is the height of the rectangle. Default: square
+    ratio=1,
     # Dilate boundary by this much
     dilate=None,
     # Whether to save result
@@ -899,7 +909,7 @@ def plot(
     layers = override_args(layers, circle, dilate)
 
     # 4. Fetch geodataframes
-    gdfs = get_gdfs(query, layers, radius, dilate, -rotation)
+    gdfs = get_gdfs(query, layers, radius, ratio, dilate, -rotation)
 
     # 5. Apply transformations to GeoDataFrames (translation, scale, rotation)
     gdfs = transform_gdfs(gdfs, x, y, scale_x, scale_y, rotation)
