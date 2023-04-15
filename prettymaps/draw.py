@@ -33,6 +33,7 @@ import shapely.affinity
 from copy import deepcopy
 from .fetch import get_gdfs
 from dataclasses import dataclass
+from matplotlib import font_manager
 from matplotlib import pyplot as plt
 from matplotlib.colors import hex2color
 from matplotlib.patches import Path, PathPatch
@@ -563,6 +564,20 @@ def draw_text(
         params (Dict[str, dict]): matplotlib style parameters for drawing text. params['text'] should contain the message to be drawn.
         background (BaseGeometry): Background layer
     """
+    def _get_available_fontfamily() -> str:
+        """
+        Returns 'Ubuntu Mono' if it is an available fontfamily.
+        Otherwise returns a fontfamily that is available (Prefers '*Mono' fontfamily among others)
+        """
+        all_fontfamily_names = [f.name for f in matplotlib.font_manager.fontManager.ttflist]
+        if 'Ubuntu Mono' in all_fontfamily_names or not len(all_fontfamily_names):
+            return 'Ubuntu Mono'
+        else:
+            mono_fontfamily_names = [name for name in all_fontfamily_names if 'Mono' in name]
+            if len(mono_fontfamily_names):
+                return mono_fontfamily_names[0]
+            else:
+                return all_fontfamily_names[0]
     # Override default osm_credit dict with provided parameters
     params = override_params(
         dict(
@@ -574,7 +589,7 @@ def draw_text(
             horizontalalignment='left',
             verticalalignment='top',
             bbox=dict(boxstyle='square', fc='#fff', ec='#000'),
-            fontfamily='Ubuntu Mono'
+            fontfamily=_get_available_fontfamily()
         ),
         params
     )
