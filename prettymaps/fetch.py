@@ -60,15 +60,19 @@ def get_boundary(query, radius, circle=False, rotation=0):
     if circle:  # Circular shape
         # use .buffer() to expand point into circle
         boundary.geometry = boundary.geometry.buffer(radius)
-    else:  # Square shape
+    else:  # Rectangular shape
         x, y = np.concatenate(boundary.geometry[0].xy)
-        r = radius
+        if type(radius) is tuple:
+            x_radius = radius[0]
+            y_radius = radius[1]
+        else:
+            x_radius = y_radius = radius
         boundary = GeoDataFrame(
             geometry=[
                 rotate(
                     Polygon(
-                        [(x - r, y - r), (x + r, y - r),
-                         (x + r, y + r), (x - r, y + r)]
+                        [(x - x_radius, y - y_radius), (x + x_radius, y - y_radius),
+                         (x + x_radius, y + y_radius), (x - x_radius, y + y_radius)]
                     ),
                     rotation,
                 )
