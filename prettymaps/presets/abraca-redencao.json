@@ -1,0 +1,125 @@
+{
+    "layers": {
+        "perimeter": {},
+        "streets": {
+            "width": {
+                "path": 1.5,
+                "footway": 2,
+                "service": 3
+            }
+        },
+        "building": {
+            "tags": {
+                "building": true,
+                "leisure": ["track","pitch"],
+                "landuse": "construction"
+            }
+        },
+        "school": {
+            "tags": {
+                "amenity": "school"
+            }
+        },
+        "water": {
+            "tags": {
+                "amenity": "fountain",
+                "natural": [
+                    "water",
+                    "bay"
+                ]
+            }
+        },
+        "forest": {
+            "tags": {
+                "landuse": "forest"
+            }
+        },
+        "garden": {
+            "tags": {
+                "landuse": "grass",
+                "leisure": ["garden","dog_park","playground"]
+            }
+        },
+        "green": {
+            "tags": {
+                "landuse": [
+                    "grass",
+                    "orchard"
+                ],
+                "natural": [
+                    "island",
+                    "wood"
+                ],
+                "leisure": "park"
+            }
+        },
+        "park": {
+            "tags": {
+                "leisure": ["park", "sports_centre"]
+            }
+        }
+    },
+    "style": {
+        "perimeter": {
+            "fill": false,
+            "lw": 0,
+            "zorder": 0
+        },
+        "background": {
+            "dilate": 20,
+            "fc": "#F2F4CB",
+            "zorder": -1
+        },
+        "green": {
+            "fc": "#8BB174",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 1
+        },
+        "forest": {
+            "fc": "#64B96A",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 2
+        },
+        "garden": {
+            "fc": "#98fb98",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 2
+        },
+        "water": {
+            "fc": "#a8e1e6",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 3
+        },
+        "school": {
+            "fc": "#FCE19C",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 3
+        },
+        "park": {
+            "fill": false,
+            "ec": "#000",
+            "lw": 1,
+            "zorder": 3
+        },
+        "streets": {
+            "fc": "#ffefd5",
+            "ec": "#2a3037",
+            "lw": 1,
+            "zorder": 4
+        },
+        "building": {
+            "palette": [
+                "#fff"
+            ],
+            "ec": "#000",
+            "lw": 0.5,
+            "zorder": 5
+        }
+    },
+    "radius": false
+}

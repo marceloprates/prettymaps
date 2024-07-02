@@ -30,9 +30,11 @@ from shapely.geometry import (
     MultiLineString,
 )
 from geopandas import GeoDataFrame
-from shapely.affinity import rotate
+from shapely.affinity import rotate, scale
 from shapely.ops import unary_union
 from shapely.errors import ShapelyDeprecationWarning
+
+from IPython.display import display
 
 
 # Parse query (by coordinates, OSMId or name)
@@ -67,8 +69,7 @@ def get_boundary(query, radius, circle=False, rotation=0):
             geometry=[
                 rotate(
                     Polygon(
-                        [(x - r, y - r), (x + r, y - r),
-                         (x + r, y + r), (x - r, y + r)]
+                        [(x - r, y - r), (x + r, y - r), (x + r, y + r), (x - r, y + r)]
                     ),
                     rotation,
                 )
@@ -84,13 +85,19 @@ def get_boundary(query, radius, circle=False, rotation=0):
 
 # Get perimeter from query
 def get_perimeter(
-    query, radius=None, by_osmid=False, circle=False, dilate=None, rotation=0, **kwargs
+    query,
+    radius=None,
+    by_osmid=False,
+    circle=False,
+    dilate=None,
+    rotation=0,
+    aspect_ratio=1,
+    **kwargs
 ):
 
     if radius:
         # Perimeter is a circular or square shape
-        perimeter = get_boundary(
-            query, radius, circle=circle, rotation=rotation)
+        perimeter = get_boundary(query, radius, circle=circle, rotation=rotation)
     else:
         # Perimeter is a OSM or user-provided polygon
         if parse_query(query) == "polygon":
@@ -103,6 +110,11 @@ def get_perimeter(
                 by_osmid=by_osmid,
                 **kwargs,
             )
+
+    # Scale according to aspect ratio
+    perimeter = ox.project_gdf(perimeter)
+    perimeter.loc[0, "geometry"] = scale(perimeter.loc[0, "geometry"], aspect_ratio, 1)
+    perimeter = perimeter.to_crs(4326)
 
     # Apply dilation
     perimeter = ox.project_gdf(perimeter)
@@ -122,7 +134,6 @@ def get_gdf(
     osmid=None,
     custom_filter=None,
     union=False,
-    elevation=None,
     vert_exag=1,
     azdeg=90,
     altdeg=80,
@@ -133,57 +144,38 @@ def get_gdf(
     **kwargs
 ):
 
-    # Supress shapely deprecation warning
-    warnings.simplefilter("ignore", ShapelyDeprecationWarning)
-
     # Apply tolerance to the perimeter
     perimeter_with_tolerance = (
         ox.project_gdf(perimeter).buffer(perimeter_tolerance).to_crs(4326)
     )
-    perimeter_with_tolerance = unary_union(
-        perimeter_with_tolerance.geometry).buffer(0)
+    perimeter_with_tolerance = unary_union(perimeter_with_tolerance.geometry).buffer(0)
 
     # Fetch from perimeter's bounding box, to avoid missing some geometries
     bbox = box(*perimeter_with_tolerance.bounds)
 
-    if layer == "hillshade":
-        gdf = get_hillshade(
-            mask_elevation(get_elevation(elevation), perimeter),
-            pad=pad,
-            azdeg=azdeg,
-            altdeg=altdeg,
-            vert_exag=vert_exag,
-            min_height=min_height,
-            max_height=max_height,
-        )
-    elif layer == "level_curves":
-        gdf = get_level_curves(
-            mask_elevation(get_elevation(elevation), perimeter),
-            pad=pad,
-            n_curves=n_curves,
-            min_height=min_height,
-            max_height=max_height,
-        )
-    elif layer in ["streets", "railway", "waterway"]:
-        graph = ox.graph_from_polygon(
-            bbox,
-            custom_filter=custom_filter,
-            truncate_by_edge=True,
-        )
-        gdf = ox.graph_to_gdfs(graph, nodes=False)
-    elif layer == "coastline":
-        # Fetch geometries from OSM
-        gdf = ox.geometries_from_polygon(
-            bbox, tags={tags: True} if type(tags) == str else tags
-        )
-    else:
-        if osmid is None:
+    try:
+        if layer in ["streets", "railway", "waterway"]:
+            graph = ox.graph_from_polygon(
+                bbox,
+                custom_filter=custom_filter,
+                truncate_by_edge=True,
+            )
+            gdf = ox.graph_to_gdfs(graph, nodes=False)
+        elif layer == "coastline":
             # Fetch geometries from OSM
-            gdf = ox.geometries_from_polygon(
+            gdf = ox.features_from_polygon(
                 bbox, tags={tags: True} if type(tags) == str else tags
             )
         else:
-            gdf = ox.geocode_to_gdf(osmid, by_osmid=True)
+            if osmid is None:
+                # Fetch geometries from OSM
+                gdf = ox.features_from_polygon(
+                    bbox, tags={tags: True} if type(tags) == str else tags
+                )
+            else:
+                gdf = ox.geocode_to_gdf(osmid, by_osmid=True)
+    except:
+        gdf = GeoDataFrame(geometry=[])
 
     # Intersect with perimeter
     gdf.geometry = gdf.geometry.intersection(perimeter_with_tolerance)
@@ -207,15 +199,17 @@ def get_gdfs(query, layers_dict, radius, dilate, rotation=0) -> dict:
         radius=radius,
         rotation=rotation,
         dilate=dilate,
-        **perimeter_kwargs
+        **perimeter_kwargs,
     )
 
     # Get other layers as GeoDataFrames
     gdfs = {"perimeter": perimeter}
-    gdfs.update({
-        layer: get_gdf(layer, perimeter, **kwargs)
-        for layer, kwargs in layers_dict.items()
-        if layer != "perimeter"
-    })
+    gdfs.update(
+        {
+            layer: get_gdf(layer, perimeter, **kwargs)
+            for layer, kwargs in layers_dict.items()
+            if layer != "perimeter"
+        }
+    )
 
     return gdfs

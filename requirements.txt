@@ -1,3 +1,5 @@
-osmnx==1.2.2
-Shapely>=1.8,<2.0
-pyyaml==6.0.0
+numpy==1.24.4
+matplotlib==3.9.0
+shapely==2.0.4
+osmnx==1.9.3
+ipykernel==6.29.5

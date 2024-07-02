@@ -1,36 +1,52 @@
+```python
+# Install prettymaps using pip:
+#!pip install prettymaps
+```
+
 # prettymaps
 
-A Python package to draw maps with customizable styles from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) data. Created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) packages.
-
-> **This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 (you can make commercial use, distribute and modify this project, but must **disclose** the source code with the license and copyright notice)**
-
-<a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
-# Installation
-
-### Install using with [pip](https://pypi.org):
-
-```
-pip install prettymaps
-```
-
-# [Google Colab Demo](https://colab.research.google.com/github/marceloprates/prettymaps/blob/master/notebooks/examples.ipynb)
+A minimal Python library to draw customized maps from [OpenStreetMap](https://www.openstreetmap.org/#map=12/11.0733/106.3078) created using the [osmnx](https://github.com/gboeing/osmnx), [matplotlib](https://matplotlib.org/), [shapely](https://shapely.readthedocs.io/en/stable/index.html) and [vsketch](https://github.com/abey79/vsketch) packages.
 
 ![](https://github.com/marceloprates/prettymaps/raw/main/prints/heerhugowaard.png)
 
 
-# Note about crediting and NFTs:
+This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 (you can make commercial use, distribute and modify this project, but must **disclose** the source code with the license and copyright notice)
+
+## Note about crediting and NFTs:
 - Please keep the printed message on the figures crediting my repository and OpenStreetMap ([mandatory by their license](https://www.openstreetmap.org/copyright)).
 - I am personally **against** NFTs for their [environmental impact](https://earth.org/nfts-environmental-impact/), the fact that they're a [giant money-laundering pyramid scheme](https://twitter.com/smdiehl/status/1445795667826208770) and the structural incentives they create for [theft](https://twitter.com/NFTtheft) in the open source and generative art communities.
 - **I do not authorize in any way this project to be used for selling NFTs**, although I cannot legally enforce it. **Respect the creator**.
 - The [AeternaCivitas](https://magiceden.io/marketplace/aeterna_civitas) and [geoartnft](https://www.geo-nft.com/) projects have used this work to sell NFTs and refused to credit it. See how they reacted after being exposed: [AeternaCivitas](etc/NFT_theft_AeternaCivitas.jpg), [geoartnft](etc/NFT_theft_geoart.jpg).
 - **I have closed my other generative art projects on Github and won't be sharing new ones as open source to protect me from the NFT community**.
 
-# As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
+<a href='https://ko-fi.com/marceloprates_' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+## As seen on [Hacker News](https://web.archive.org/web/20210825160918/https://news.ycombinator.com/news):
 ![](https://github.com/marceloprates/prettymaps/raw/main/prints/hackernews-prettymaps.png)
 
-# [prettymaps subreddit](https://www.reddit.com/r/prettymaps_/)
+## [prettymaps subreddit](https://www.reddit.com/r/prettymaps_/)
+## [Google Colaboratory Demo](https://colab.research.google.com/github/marceloprates/prettymaps/blob/master/notebooks/examples.ipynb)
 
+# Installation
+
+OBS. I'm trying to solve a dependency issue with [vsketch](https://vsketch.readthedocs.io/en/latest/install.html) before publishing prettymaps v0.1.3, so, for now, please install directly from GitHub.
+
+### Install locally:
+Install prettymaps with:
+
+```
+pip install git+https://github.com/marceloprates/prettymaps
+```
+
+### Install on Google Colaboratory:
+
+Install prettymaps with:
+
+```
+!pip install -e "git+https://github.com/marceloprates/prettymaps#egg=prettymaps"
+```
+
+Then **restart the runtime** (Runtime -> Restart Runtime) before importing prettymaps
 
 # Tutorial
 
@@ -46,6 +62,9 @@ prettymaps.plot(your_query)
 
 
 ```python
+%load_ext autoreload
+%autoreload 2
+
 import prettymaps
 
 plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
@@ -53,7 +72,7 @@ plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
 
 
     
-![png](README_files/README_6_0.png)
+![png](README_files/README_7_0.png)
     
 
 
@@ -63,6 +82,8 @@ See below an example using the "minimal" preset
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     'Stad van de Zon, Heerhugowaard, Netherlands',
     preset = 'minimal'
@@ -71,7 +92,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_8_0.png)
+![png](README_files/README_9_0.png)
     
 
 
@@ -83,7 +104,30 @@ prettymaps.presets()
 
 to list all available presets:
 
+
+```python
+import prettymaps
+
+prettymaps.presets()
+```
+
+
+
+
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -95,41 +139,51 @@ to list all available presets:
   <tbody>
     <tr>
       <th>0</th>
+      <td>abraca-redencao</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>barcelona</td>
       <td>{'layers': {'perimeter': {'circle': False}, 's...</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>2</th>
       <td>barcelona-plotter</td>
       <td>{'layers': {'streets': {'width': {'primary': 5...</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>3</th>
       <td>cb-bf-f</td>
       <td>{'layers': {'streets': {'width': {'trunk': 6, ...</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>4</th>
       <td>default</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>5</th>
       <td>heerhugowaard</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>6</th>
       <td>macao</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'cust...</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>7</th>
       <td>minimal</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>8</th>
+      <td>plotter</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>9</th>
       <td>tijuca</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
@@ -143,21 +197,16 @@ To examine a specific preset, run:
 
 
 ```python
+import prettymaps
+
 prettymaps.preset('default')
 ```
 
 
-|            | layers                                                                                                                                                                                                          | style                                                                                                                                                                                                                                                                         | circle          | radius         |
-|:-----------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------|:---------------|
-| perimeter  | {}<br>                                                                                                                                                                                                          | fill: false<br>lw: 0<br>zorder: 0<br>                                                                                                                                                                                                                                         | null<br>...<br> | 500<br>...<br> |
-| streets    | width:<br>  cycleway: 3.5<br>  footway: 1<br>  motorway: 5<br>  pedestrian: 2<br>  primary: 4.5<br>  residential: 3<br>  secondary: 4<br>  service: 2<br>  tertiary: 3.5<br>  trunk: 5<br>  unclassified: 2<br> | alpha: 1<br>ec: '<span style="background-color:#475657; color:#fff">#475657</span>'<br>fc: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>lw: 0<br>zorder: 4<br>                                                                                      |                 |                |
-| building   | tags:<br>  building: true<br>  landuse: construction<br>                                                                                                                                                        | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>lw: 0.5<br>palette:<br>- '<span style="background-color:#433633; color:#fff">#433633</span>'<br>- '<span style="background-color:#FF5E5B; color:#000">#FF5E5B</span>'<br>zorder: 5<br>             |                 |                |
-| water      | tags:<br>  natural:<br>  - water<br>  - bay<br>                                                                                                                                                                 | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#a8e1e6; color:#000">#a8e1e6</span>'<br>hatch: ooo...<br>hatch_c: '<span style="background-color:#9bc3d4; color:#000">#9bc3d4</span>'<br>lw: 1<br>zorder: 3<br> |                 |                |
-| forest     | tags:<br>  landuse: forest<br>                                                                                                                                                                                  | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#64B96A; color:#000">#64B96A</span>'<br>lw: 1<br>zorder: 2<br>                                                                                                  |                 |                |
-| green      | tags:<br>  landuse:<br>  - grass<br>  - orchard<br>  leisure: park<br>  natural:<br>  - island<br>  - wood<br>                                                                                                  | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#8BB174; color:#000">#8BB174</span>'<br>hatch: ooo...<br>hatch_c: '<span style="background-color:#A7C497; color:#000">#A7C497</span>'<br>lw: 1<br>zorder: 1<br> |                 |                |
-| beach      | tags:<br>  natural: beach<br>                                                                                                                                                                                   | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#FCE19C; color:#000">#FCE19C</span>'<br>hatch: ooo...<br>hatch_c: '<span style="background-color:#d4d196; color:#000">#d4d196</span>'<br>lw: 1<br>zorder: 3<br> |                 |                |
-| parking    | tags:<br>  amenity: parking<br>  highway: pedestrian<br>  man_made: pier<br>                                                                                                                                    | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#F2F4CB; color:#000">#F2F4CB</span>'<br>lw: 1<br>zorder: 3<br>                                                                                                  |                 |                |
-| background | .nan<br>...<br>                                                                                                                                                                                                 | fc: '<span style="background-color:#F2F4CB; color:#000">#F2F4CB</span>'<br>zorder: -1<br>                                                                                                                                                                                     |                 |                |
+
+
+    Preset(params={'layers': {'perimeter': {}, 'streets': {'width': {'motorway': 5, 'trunk': 5, 'primary': 4.5, 'secondary': 4, 'tertiary': 3.5, 'cycleway': 3.5, 'residential': 3, 'service': 2, 'unclassified': 2, 'pedestrian': 2, 'footway': 1}}, 'building': {'tags': {'building': True, 'landuse': 'construction'}}, 'water': {'tags': {'natural': ['water', 'bay']}}, 'forest': {'tags': {'landuse': 'forest'}}, 'green': {'tags': {'landuse': ['grass', 'orchard'], 'natural': ['island', 'wood'], 'leisure': 'park'}}, 'beach': {'tags': {'natural': 'beach'}}, 'parking': {'tags': {'amenity': 'parking', 'highway': 'pedestrian', 'man_made': 'pier'}}}, 'style': {'perimeter': {'fill': False, 'lw': 0, 'zorder': 0}, 'background': {'fc': '#F2F4CB', 'zorder': -1}, 'green': {'fc': '#8BB174', 'ec': '#2F3737', 'hatch_c': '#A7C497', 'hatch': 'ooo...', 'lw': 1, 'zorder': 1}, 'forest': {'fc': '#64B96A', 'ec': '#2F3737', 'lw': 1, 'zorder': 2}, 'water': {'fc': '#a8e1e6', 'ec': '#2F3737', 'hatch_c': '#9bc3d4', 'hatch': 'ooo...', 'lw': 1, 'zorder': 3}, 'beach': {'fc': '#FCE19C', 'ec': '#2F3737', 'hatch_c': '#d4d196', 'hatch': 'ooo...', 'lw': 1, 'zorder': 3}, 'parking': {'fc': '#F2F4CB', 'ec': '#2F3737', 'lw': 1, 'zorder': 3}, 'streets': {'fc': '#2F3737', 'ec': '#475657', 'alpha': 1, 'lw': 0, 'zorder': 4}, 'building': {'palette': ['#433633', '#FF5E5B'], 'ec': '#2F3737', 'lw': 0.5, 'zorder': 5}}, 'circle': None, 'radius': 500})
+
 
 
 
@@ -215,6 +264,8 @@ Here's an example of running prettymaps.plot() with customized parameters:
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     'Praça Ferreira do Amaral, Macau',
     circle = True,
@@ -313,7 +364,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_14_0.png)
+![png](README_files/README_15_0.png)
     
 
 
@@ -325,22 +376,47 @@ radius = False
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     'Bom Fim, Porto Alegre, Brasil', radius = False,
 )
 ```
 
-![png](README_files/README_16_0.png)
-   
+
+    
+![png](README_files/README_17_0.png)
+    
+
+
 You can access layers's GeoDataFrames directly like this:
 
+
 ```python
+import prettymaps
+
 # Run prettymaps in show = False mode (we're only interested in obtaining the GeoDataFrames)
 plot = prettymaps.plot('Centro Histórico, Porto Alegre', show = False)
 plot.geodataframes['building']
 ```
 
+
+
+
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -403,7 +479,7 @@ plot.geodataframes['building']
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>POINT (-51.23212 -30.03670)</td>
+      <td>POINT (-51.23212 -30.0367)</td>
       <td>90010-460</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -452,7 +528,7 @@ plot.geodataframes['building']
       <td>NaN</td>
       <td>NaN</td>
       <td>http://www.ruadapraiashopping.com.br</td>
-      <td>POLYGON ((-51.23167 -30.03066, -51.23160 -30.0...</td>
+      <td>POLYGON ((-51.23167 -30.03066, -51.2316 -30.03...</td>
       <td>90020-015</td>
       <td>Rua da Praia Shopping</td>
       <td>NaN</td>
@@ -476,7 +552,7 @@ plot.geodataframes['building']
       <td>NaN</td>
       <td>NaN</td>
       <td>http://www.memorial.rs.gov.br</td>
-      <td>POLYGON ((-51.23117 -30.02891, -51.23120 -30.0...</td>
+      <td>POLYGON ((-51.23117 -30.02891, -51.2312 -30.02...</td>
       <td>90010-191</td>
       <td>Memorial do Rio Grande do Sul</td>
       <td>NaN</td>
@@ -574,7 +650,7 @@ plot.geodataframes['building']
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>POLYGON ((-51.23203 -30.03340, -51.23203 -30.0...</td>
+      <td>POLYGON ((-51.23203 -30.0334, -51.23203 -30.03...</td>
       <td>NaN</td>
       <td>Atheneu Espírita Cruzeiro do Sul</td>
       <td>NaN</td>
@@ -679,11 +755,15 @@ plot.geodataframes['building'][
 ].geometry[0]
 ```
 
+    /home/marcelo/anaconda3/envs/prettymaps/lib/python3.11/site-packages/geopandas/geoseries.py:720: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+      val = getattr(super(), mtd)(*args, **kwargs)
+
+
 
 
 
     
-![svg](README_files/README_20_0.svg)
+![svg](README_files/README_21_1.svg)
     
 
 
@@ -692,10 +772,10 @@ Plot mosaic of building footprints
 
 
 ```python
+import prettymaps
 import numpy as np
 import osmnx as ox
 from matplotlib import pyplot as plt
-from matplotlib.font_manager import FontProperties
 
 # Run prettymaps in show = False mode (we're only interested in obtaining the GeoDataFrames)
 plot = prettymaps.plot('Porto Alegre', show = False)
@@ -714,8 +794,7 @@ fig.patch.set_facecolor('#5cc0eb')
 fig.suptitle(
     'Buildings of Porto Alegre',
     size = 25,
-    color = '#fff',
-    fontproperties = FontProperties(fname = '../assets/PermanentMarker-Regular.ttf')
+    color = '#fff'
 )
 # Draw each building footprint on a separate axis
 for ax,building in zip(np.concatenate(axes),buildings):
@@ -725,7 +804,7 @@ for ax,building in zip(np.concatenate(axes),buildings):
 
 
     
-![png](README_files/README_22_0.png)
+![png](README_files/README_23_0.png)
     
 
 
@@ -733,7 +812,7 @@ Access plot.ax or plot.fig to add new elements to the matplotlib plot:
 
 
 ```python
-from matplotlib.font_manager import FontProperties
+import prettymaps
 
 plot = prettymaps.plot(
     (41.39491,2.17557),
@@ -743,20 +822,16 @@ plot = prettymaps.plot(
 # Change background color
 plot.fig.patch.set_facecolor('#F2F4CB')
 # Add title
-plot.ax.set_title(
+_ = plot.ax.set_title(
     'Barcelona',
-    fontproperties = FontProperties(
-        fname = '../assets/PermanentMarker-Regular.ttf',
-        size = 50
-    )
+    font = 'serif',
+    size = 50
 )
-
-plt.show()
 ```
 
 
     
-![png](README_files/README_24_0.png)
+![png](README_files/README_25_0.png)
     
 
 
@@ -764,6 +839,8 @@ Use **plotter** mode to export a pen plotter-compatible SVG (thanks to abey79's 
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     (41.39491,2.17557),
     mode = 'plotter',
@@ -776,7 +853,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_26_0.png)
+![png](README_files/README_27_0.png)
     
 
 
@@ -784,6 +861,8 @@ Some other examples
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     # City name
     'Barra da Tijuca',
@@ -795,12 +874,14 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_28_0.png)
+![png](README_files/README_29_0.png)
     
 
 
 
 ```python
+import prettymaps
+
 plot = prettymaps.plot(
     'Stad van de Zon, Heerhugowaard, Netherlands',
     preset = 'heerhugowaard',
@@ -809,7 +890,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_29_0.png)
+![png](README_files/README_30_0.png)
     
 
 
@@ -817,6 +898,8 @@ Use prettymaps.create_preset() to create a preset:
 
 
 ```python
+import prettymaps
+
 prettymaps.create_preset(
     "my-preset",
     layers = {
@@ -869,11 +952,10 @@ prettymaps.preset('my-preset')
 ```
 
 
-|           | layers                                                                                                                                            | style                                                                                                                                                                                                                                   | circle          | radius          | dilate          |
-|:----------|:--------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------|:----------------|:----------------|
-| building  | tags:<br>  building: true<br>  leisure:<br>  - track<br>  - pitch<br>                                                                             | ec: '<span style="background-color:#2F3737; color:<span style="background-color:#fff; color:#000">#fff</span>">#2F3737</span>'<br>lw: 1<br>palette:<br>- '<span style="background-color:#fff; color:#000">#fff</span>'<br>zorder: 4<br> | null<br>...<br> | null<br>...<br> | null<br>...<br> |
-| streets   | width:<br>  footway: 3<br>  path: 3<br>  pedestrian: 3<br>  primary: 6<br>  residential: 3.5<br>  secondary: 5<br>  tertiary: 4<br>  trunk: 6<br> | ec: '<span style="background-color:#2F3737; color:#fff">#2F3737</span>'<br>fc: '<span style="background-color:#F1E6D0; color:#000">#F1E6D0</span>'<br>lw: 1.5<br>zorder: 3<br>                                                          |                 |                 |                 |
-| perimeter | .nan<br>...<br>                                                                                                                                   | fill: false<br>lw: 0<br>zorder: 0<br>                                                                                                                                                                                                   |                 |                 |                 |
+
+
+    Preset(params={'layers': {'building': {'tags': {'building': True, 'leisure': ['track', 'pitch']}}, 'streets': {'width': {'trunk': 6, 'primary': 6, 'secondary': 5, 'tertiary': 4, 'residential': 3.5, 'pedestrian': 3, 'footway': 3, 'path': 3}}}, 'style': {'perimeter': {'fill': False, 'lw': 0, 'zorder': 0}, 'streets': {'fc': '#F1E6D0', 'ec': '#2F3737', 'lw': 1.5, 'zorder': 3}, 'building': {'palette': ['#fff'], 'ec': '#2F3737', 'lw': 1, 'zorder': 4}}, 'circle': None, 'radius': None, 'dilate': None})
+
 
 
 Use prettymaps.delete_preset() to delete presets:
@@ -895,6 +977,19 @@ display(prettymaps.presets())
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -906,46 +1001,56 @@ display(prettymaps.presets())
   <tbody>
     <tr>
       <th>0</th>
+      <td>abraca-redencao</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>barcelona</td>
       <td>{'layers': {'perimeter': {'circle': False}, 's...</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>2</th>
       <td>barcelona-plotter</td>
       <td>{'layers': {'streets': {'width': {'primary': 5...</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>3</th>
       <td>cb-bf-f</td>
       <td>{'layers': {'streets': {'width': {'trunk': 6, ...</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>4</th>
       <td>default</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>5</th>
       <td>heerhugowaard</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>6</th>
       <td>macao</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'cust...</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>7</th>
       <td>minimal</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>8</th>
       <td>my-preset</td>
       <td>{'layers': {'building': {'tags': {'building': ...</td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>9</th>
+      <td>plotter</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>10</th>
       <td>tijuca</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
@@ -959,6 +1064,19 @@ display(prettymaps.presets())
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -970,41 +1088,51 @@ display(prettymaps.presets())
   <tbody>
     <tr>
       <th>0</th>
+      <td>abraca-redencao</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>barcelona</td>
       <td>{'layers': {'perimeter': {'circle': False}, 's...</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>2</th>
       <td>barcelona-plotter</td>
       <td>{'layers': {'streets': {'width': {'primary': 5...</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>3</th>
       <td>cb-bf-f</td>
       <td>{'layers': {'streets': {'width': {'trunk': 6, ...</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>4</th>
       <td>default</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>5</th>
       <td>heerhugowaard</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>6</th>
       <td>macao</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'cust...</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>7</th>
       <td>minimal</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>8</th>
+      <td>plotter</td>
+      <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
+    </tr>
+    <tr>
+      <th>9</th>
       <td>tijuca</td>
       <td>{'layers': {'perimeter': {}, 'streets': {'widt...</td>
     </tr>
@@ -1017,8 +1145,10 @@ Use **prettymaps.multiplot** and **prettymaps.Subplot** to draw multiple regions
 
 
 ```python
+import prettymaps
+
 # Draw several regions on the same canvas
-prettymaps.multiplot(
+plot = prettymaps.multiplot(
     prettymaps.Subplot(
         'Cidade Baixa, Porto Alegre',
         style={'building': {'palette': ['#49392C', '#E1F2FE', '#98D2EB']}}
@@ -1036,11 +1166,27 @@ prettymaps.multiplot(
     # Figure size
     figsize=(12, 12)
 )
-
 ```
 
 
     
-![png](README_files/README_35_0.png)
+![png](README_files/README_36_0.png)
     
 
+
+
+    <Figure size 3600x3600 with 0 Axes>
+
+
+
+    <Figure size 3600x3600 with 0 Axes>
+
+
+
+    <Figure size 3600x3600 with 0 Axes>
+
+
+
+```python
+
+```
