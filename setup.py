@@ -3,7 +3,7 @@ from pathlib import Path
 from setuptools import setup, find_packages
 
 parent_dir = Path(__file__).resolve().parent
-presets_dir = os.path.abspath(os.path.join(os.path.pardir, 'presets'))
+presets_dir = os.path.abspath(os.path.join(os.path.pardir, "presets"))
 
 setup(
     name="prettymaps",
@@ -15,16 +15,16 @@ setup(
     author="Marcelo Prates",
     author_email="marceloorp@gmail.com",
     license="MIT License",
-    packages=find_packages(
-        exclude=("assets", "notebooks", "prints", "script")),
-    install_requires=parent_dir.joinpath(
-        "requirements.txt").read_text().splitlines() + [
-            'vsketch @ git+https://github.com/abey79/vsketch@1.0.0'
-        ],
+    packages=find_packages(exclude=("assets", "notebooks", "prints", "script")),
+    install_requires=parent_dir.joinpath("requirements.txt")
+    .read_text()
+    .splitlines(),  # + [
+    #'vsketch @ git+https://github.com/abey79/vsketch@1.0.0'
+    # ],
     classifiers=[
         "Intended Audience :: Science/Research",
     ],
-    package_dir={'prettymaps': 'prettymaps'},
-    package_data={'prettymaps': ['presets/*.json']},
-    python_requires = '>=3.11',
+    package_dir={"prettymaps": "prettymaps"},
+    package_data={"prettymaps": ["presets/*.json"]},
+    python_requires=">=3.11",
 )

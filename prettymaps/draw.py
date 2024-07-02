@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import re
 import os
 import json
-import vsketch
 import pathlib
 import warnings
 import matplotlib
@@ -46,6 +45,13 @@ from shapely.geometry import (
     GeometryCollection,
     box,
 )
+
+try:
+    import vsketch
+except:
+    warnings.warn(
+        'Install Vsketch with "pip install git+https://github.com/abey79/vsketch@1.0.0" to enable pen plotter mode.'
+    )
 
 
 class Subplot:

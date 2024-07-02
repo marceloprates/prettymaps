@@ -29,13 +29,17 @@ This work is [licensed](LICENSE) under a GNU Affero General Public License v3.0 
 
 # Installation
 
-OBS. I'm trying to solve a dependency issue with [vsketch](https://vsketch.readthedocs.io/en/latest/install.html) before publishing prettymaps v0.1.3, so, for now, please install directly from GitHub.
+To enable plotter mode:
+
+```
+pip install git+https://github.com/abey79/vsketch@1.0.0
+```
 
 ### Install locally:
 Install prettymaps with:
 
 ```
-pip install git+https://github.com/marceloprates/prettymaps
+pip install prettymaps
 ```
 
 ### Install on Google Colaboratory:
@@ -62,9 +66,6 @@ prettymaps.plot(your_query)
 
 
 ```python
-%load_ext autoreload
-%autoreload 2
-
 import prettymaps
 
 plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
@@ -72,7 +73,7 @@ plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
 
 
     
-![png](README_files/README_7_0.png)
+![png](README_files/README_8_0.png)
     
 
 
@@ -92,7 +93,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_9_0.png)
+![png](README_files/README_10_0.png)
     
 
 
@@ -364,7 +365,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_15_0.png)
+![png](README_files/README_16_0.png)
     
 
 
@@ -385,7 +386,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_17_0.png)
+![png](README_files/README_18_0.png)
     
 
 
@@ -763,7 +764,7 @@ plot.geodataframes['building'][
 
 
     
-![svg](README_files/README_21_1.svg)
+![svg](README_files/README_22_1.svg)
     
 
 
@@ -804,7 +805,7 @@ for ax,building in zip(np.concatenate(axes),buildings):
 
 
     
-![png](README_files/README_23_0.png)
+![png](README_files/README_24_0.png)
     
 
 
@@ -831,7 +832,7 @@ _ = plot.ax.set_title(
 
 
     
-![png](README_files/README_25_0.png)
+![png](README_files/README_26_0.png)
     
 
 
@@ -853,7 +854,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_27_0.png)
+![png](README_files/README_28_0.png)
     
 
 
@@ -873,12 +874,6 @@ plot = prettymaps.plot(
 ```
 
 
-    
-![png](README_files/README_29_0.png)
-    
-
-
-
 ```python
 import prettymaps
 
@@ -890,7 +885,7 @@ plot = prettymaps.plot(
 
 
     
-![png](README_files/README_30_0.png)
+![png](README_files/README_31_0.png)
     
 
 
@@ -1170,7 +1165,7 @@ plot = prettymaps.multiplot(
 
 
     
-![png](README_files/README_36_0.png)
+![png](README_files/README_37_0.png)
     
 
 
