@@ -1,5 +1,5 @@
 numpy>=1.20,<1.25
 matplotlib>=3.9.0
 shapely>=2.0.0
-osmnx>=1.9.3
+osmnx>=1.9.3,<2.0
 ipykernel>=6.29.5
