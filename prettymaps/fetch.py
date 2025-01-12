@@ -157,6 +157,7 @@ def get_gdf(
         if layer in ["streets", "railway", "waterway"]:
             graph = ox.graph_from_polygon(
                 bbox,
+                retain_all=True,
                 custom_filter=custom_filter,
                 truncate_by_edge=True,
             )
