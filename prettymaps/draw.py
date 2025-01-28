@@ -561,7 +561,7 @@ def draw_text(params: Dict[str, dict], background: BaseGeometry) -> None:
         params (Dict[str, dict]): matplotlib style parameters for drawing text. params['text'] should contain the message to be drawn.
         background (BaseGeometry): Background layer
     """
-    # Override default osm_credit dict with provided parameters
+    # Override default credit dict with provided parameters
     params = override_params(
         dict(
             text="\n".join(
@@ -864,7 +864,7 @@ def plot(
         Specify the name of each layer and the OpenStreetMap tags to fetch
     style: dict
         Drawing params for each layer (matplotlib params such as 'fc', 'ec', 'fill', etc.)
-    osm_credit: dict
+    credit: dict
         OSM Caption parameters
     figsize: Tuple
         (Optional) Width and Height (in inches) for the Matplotlib figure. Defaults to (10, 10)
