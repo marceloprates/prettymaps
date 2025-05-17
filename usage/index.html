@@ -237,19 +237,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Usage
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -261,70 +248,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customizing-layers-and-styles" class="md-nav__link">
-    <span class="md-ellipsis">
-      Customizing Layers and Styles
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-presets" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using Presets
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#highlighting-keypoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      Highlighting Keypoints
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#saving-maps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Saving Maps
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -372,59 +295,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customizing-layers-and-styles" class="md-nav__link">
-    <span class="md-ellipsis">
-      Customizing Layers and Styles
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-presets" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using Presets
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#highlighting-keypoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      Highlighting Keypoints
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#saving-maps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Saving Maps
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -440,45 +310,8 @@
 
 
 <h1 id="usage">Usage</h1>
-<h2 id="basic-usage">Basic Usage</h2>
-<p>The main entry point is the <code>plot()</code> function:</p>
-<pre><code class="language-python">import prettymaps
-prettymaps.plot(&quot;Porto Alegre&quot;)
-</code></pre>
-<p>This will generate a map for the given location using default layers and styles.</p>
-<h2 id="customizing-layers-and-styles">Customizing Layers and Styles</h2>
-<p>You can customize which OpenStreetMap layers are shown and how they are styled:</p>
-<pre><code class="language-python">layers = {
-    &quot;perimeter&quot;: {},
-    &quot;streets&quot;: {&quot;width&quot;: 8},
-    &quot;buildings&quot;: {},
-}
-style = {
-    &quot;perimeter&quot;: {&quot;fc&quot;: &quot;#f2efe9&quot;},
-    &quot;streets&quot;: {&quot;fc&quot;: &quot;#cccccc&quot;, &quot;ec&quot;: &quot;#333333&quot;},
-    &quot;buildings&quot;: {&quot;fc&quot;: &quot;#bdbdbd&quot;},
-}
-prettymaps.plot(&quot;Porto Alegre&quot;, layers=layers, style=style)
-</code></pre>
-<h2 id="using-presets">Using Presets</h2>
-<p>Presets are reusable configurations for layers and styles. You can load, save, or update presets:</p>
-<pre><code class="language-python">prettymaps.plot(&quot;Porto Alegre&quot;, preset=&quot;default&quot;)
-</code></pre>
-<p>You can also create your own presets and save them for later use.</p>
-<h2 id="highlighting-keypoints">Highlighting Keypoints</h2>
-<p>You can highlight specific keypoints (e.g., landmarks) on the map:</p>
-<pre><code class="language-python">keypoints = {
-    &quot;tags&quot;: {&quot;tourism&quot;: &quot;attraction&quot;},
-    &quot;kwargs&quot;: {&quot;bbox&quot;: {&quot;fc&quot;: &quot;yellow&quot;}},
-}
-prettymaps.plot(&quot;Porto Alegre&quot;, keypoints=keypoints)
-</code></pre>
-<h2 id="saving-maps">Saving Maps</h2>
-<p>You can save the generated map to a file:</p>
-<pre><code class="language-python">prettymaps.plot(&quot;Porto Alegre&quot;, save_as=&quot;map.png&quot;)
-</code></pre>
-<hr />
-<p>See the <a href="../api/">API Reference</a> for details on all functions and parameters. </p>
+<p>This page will describe how to use Prettymaps.</p>
+<p><em>More details coming soon!</em> </p>
 
 
 
