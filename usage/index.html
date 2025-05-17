@@ -237,6 +237,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -248,6 +261,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-layers-and-styles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Layers and Styles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving Maps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Features
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -295,6 +372,59 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-layers-and-styles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Layers and Styles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving Maps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Features
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -310,8 +440,43 @@
 
 
 <h1 id="usage">Usage</h1>
-<p>This page will describe how to use Prettymaps.</p>
-<p><em>More details coming soon!</em> </p>
+<h2 id="installation">Installation</h2>
+<p>Install Prettymaps and its dependencies:</p>
+<pre><code class="language-sh">pip install prettymaps
+</code></pre>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>Generate a map for a location:</p>
+<pre><code class="language-python">import prettymaps
+
+prettymaps.plot(&quot;Paris, France&quot;)
+</code></pre>
+<h2 id="customizing-layers-and-styles">Customizing Layers and Styles</h2>
+<p>You can customize which map layers to show and their appearance:</p>
+<pre><code class="language-python">layers = {
+    &quot;perimeter&quot;: {},
+    &quot;streets&quot;: {&quot;width&quot;: 8},
+    &quot;buildings&quot;: {},
+    &quot;water&quot;: {},
+}
+style = {
+    &quot;perimeter&quot;: {&quot;fc&quot;: &quot;#f2efe9&quot;, &quot;ec&quot;: &quot;#333&quot;},
+    &quot;streets&quot;: {&quot;fc&quot;: &quot;#cccccc&quot;},
+    &quot;buildings&quot;: {&quot;fc&quot;: &quot;#b0b0b0&quot;},
+    &quot;water&quot;: {&quot;fc&quot;: &quot;#aadaff&quot;},
+}
+prettymaps.plot(&quot;Berlin, Germany&quot;, layers=layers, style=style)
+</code></pre>
+<h2 id="saving-maps">Saving Maps</h2>
+<p>You can save the generated map to a file:</p>
+<pre><code class="language-python">prettymaps.plot(&quot;Tokyo, Japan&quot;, save_as=&quot;tokyo_map.png&quot;)
+</code></pre>
+<h2 id="advanced-features">Advanced Features</h2>
+<ul>
+<li><strong>Keypoints:</strong> Highlight specific places or features on the map.</li>
+<li><strong>Presets:</strong> Save and reuse your favorite map styles.</li>
+<li><strong>Hillshade:</strong> Add elevation shading for a 3D effect.</li>
+</ul>
+<p>See the <a href="../api/">API Reference</a> for all available options. </p>
 
 
 
