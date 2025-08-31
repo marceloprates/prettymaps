@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -1008,7 +1008,9 @@ along with this program.  If not, see <a href="https://www.gnu.org/licenses/">ht
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -1112,6 +1114,7 @@ along with this program.  If not, see <a href="https://www.gnu.org/licenses/">ht
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>prettymaps/draw.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
@@ -1155,6 +1158,7 @@ along with this program.  If not, see <a href="https://www.gnu.org/licenses/">ht
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1249,6 +1253,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
             </tr>
       </tbody>
     </table>
+
 
 
 
@@ -1361,6 +1366,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1560,6 +1566,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>prettymaps/draw.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
@@ -1587,6 +1594,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1628,6 +1636,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>prettymaps/draw.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
@@ -1655,6 +1664,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1820,7 +1830,7 @@ kwargs: Parameters for matplotlib's PathPatch constructor.</p>
 
     <span class="n">background</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span>
         <span class="n">box</span><span class="p">(</span>
-            <span class="o">*</span><span class="n">shapely</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">unary_union</span><span class="p">(</span><span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdfs</span><span class="p">[</span><span class="s2">&quot;perimeter&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">bounds</span>
+            <span class="o">*</span><span class="n">shapely</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">unary_union</span><span class="p">(</span><span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdfs</span><span class="p">[</span><span class="s2">&quot;perimeter&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">bounds</span>
         <span class="p">),</span>
         <span class="n">background_pad</span><span class="p">,</span>
         <span class="n">background_pad</span><span class="p">,</span>
@@ -2574,7 +2584,7 @@ params['text'] should contain the message to be drawn.</p>
 
     <span class="c1"># Project gdf if applicable</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">gdf</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">gdf</span><span class="o">.</span><span class="n">crs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">gdf</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">layer</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;streets&quot;</span><span class="p">,</span> <span class="s2">&quot;railway&quot;</span><span class="p">,</span> <span class="s2">&quot;waterway&quot;</span><span class="p">]:</span>
         <span class="n">geometries</span> <span class="o">=</span> <span class="n">graph_to_shapely</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
@@ -5120,7 +5130,7 @@ Returns:
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Project geometries</span>
     <span class="n">gdfs</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">gdf</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">gdf</span> <span class="ow">in</span> <span class="n">gdfs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">gdf</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">gdf</span> <span class="ow">in</span> <span class="n">gdfs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="c1"># Create geometry collection from gdfs&#39; geometries</span>
     <span class="n">collection</span> <span class="o">=</span> <span class="n">GeometryCollection</span><span class="p">(</span>
@@ -5135,7 +5145,7 @@ Returns:
         <span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">geoms</span><span class="p">)</span>
         <span class="c1"># Reproject</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">],</span> <span class="n">to_crs</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">)</span>
+            <span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdfs</span><span class="p">[</span><span class="n">layer</span><span class="p">],</span> <span class="n">to_crs</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">gdfs</span>
 </code></pre></div></td></tr></table></div>
@@ -5185,7 +5195,9 @@ along with this program.  If not, see <a href="https://www.gnu.org/licenses/">ht
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -5292,7 +5304,7 @@ geopandas.GeoDataFrame: A GeoDataFrame containing the keypoints that match the s
 <span class="sd">    Returns:</span>
 <span class="sd">    geopandas.GeoDataFrame: A GeoDataFrame containing the keypoints that match the specified tags within the given perimeter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">keypoints_df</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span><span class="n">perimeter</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)</span>
+    <span class="n">keypoints_df</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span><span class="n">perimeter</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">keypoints_df</span>
 </code></pre></div></td></tr></table></div>
@@ -5546,7 +5558,7 @@ output_dir (str): Directory to save the downloaded tiles.</p>
 
     <span class="n">raster</span> <span class="o">=</span> <span class="n">rxr</span><span class="o">.</span><span class="n">open_rasterio</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
-    <span class="n">raster</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">to_string</span><span class="p">()))</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">to_string</span><span class="p">()))</span>
 
     <span class="c1"># convert to numpy array</span>
     <span class="n">elevation_data</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">data</span>
@@ -5810,7 +5822,7 @@ dict: Dictionary of GeoDataFrames for each layer.</p>
 <span class="sd">    dict: Dictionary of GeoDataFrames for each layer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Apply tolerance to the perimeter</span>
-    <span class="n">perimeter_with_tolerance</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">perimeter</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span>
+    <span class="n">perimeter_with_tolerance</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">project_gdf</span><span class="p">(</span><span class="n">perimeter</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span>
     <span class="n">perimeter_with_tolerance</span> <span class="o">=</span> <span class="n">unary_union</span><span class="p">(</span><span class="n">perimeter_with_tolerance</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Fetch from perimeter&#39;s bounding box, to avoid missing some geometries</span>
@@ -5831,7 +5843,7 @@ dict: Dictionary of GeoDataFrames for each layer.</p>
 
     <span class="c1"># Fetch all features in one request</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">all_features</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">combined_tags</span><span class="p">)</span>
+        <span class="n">all_features</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">combined_tags</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">all_features</span> <span class="o">=</span> <span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">[])</span>
 
@@ -5850,7 +5862,7 @@ dict: Dictionary of GeoDataFrames for each layer.</p>
             <span class="k">elif</span> <span class="n">layer</span> <span class="o">==</span> <span class="s2">&quot;sea&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">coastline</span> <span class="o">=</span> <span class="n">unary_union</span><span class="p">(</span>
-                        <span class="n">ox</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span>
+                        <span class="n">ox</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">features_from_polygon</span><span class="p">(</span>
                             <span class="n">bbox</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;natural&quot;</span><span class="p">:</span> <span class="s2">&quot;coastline&quot;</span><span class="p">}</span>
                         <span class="p">)</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
                     <span class="p">)</span>
@@ -5908,7 +5920,7 @@ dict: Dictionary of GeoDataFrames for each layer.</p>
                                 <span class="p">]</span>
                             <span class="n">gdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">gdf</span><span class="p">,</span> <span class="n">filtered_features</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">gdf</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">geocode_to_gdf</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;osmid&quot;</span><span class="p">),</span> <span class="n">by_osmid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">gdf</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">geocoder</span><span class="o">.</span><span class="n">geocode_to_gdf</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;osmid&quot;</span><span class="p">),</span> <span class="n">by_osmid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">perimeter_with_tolerance</span><span class="p">)</span>
@@ -6071,10 +6083,10 @@ cache_dir (str): Directory to save the cached GeoDataFrame.</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
       
     
   </body>
