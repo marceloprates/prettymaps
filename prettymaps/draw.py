@@ -91,6 +91,7 @@ class Plot:
         ax (matplotlib.axes.Axes): A matplotlib axis object.
         background (BaseGeometry): Background layer (shapely object).
         keypoints (gp.GeoDataFrame): Keypoints GeoDataFrame.
+        custom_markers (gp.GeoDataFrame): Custom markers GeoDataFrame.
     """
 
     geodataframes: Dict[str, gp.GeoDataFrame]
@@ -98,6 +99,7 @@ class Plot:
     ax: matplotlib.axes.Axes
     background: BaseGeometry
     keypoints: gp.GeoDataFrame
+    custom_markers: gp.GeoDataFrame
 
 
 @dataclass
@@ -489,6 +491,162 @@ def draw_keypoints(keypoints, gdfs, ax, logging=False):
 
 
 @log_execution_time
+def draw_custom_markers(
+    custom_markers: List[Dict[str, Any]],
+    gdfs: Dict[str, gp.GeoDataFrame],
+    ax: plt.Axes,
+    marker_defaults: Dict[str, Any] = {},
+    logging: bool = False
+) -> gp.GeoDataFrame:
+    """
+    Draw custom markers (points) on the map at user-specified coordinates.
+
+    Args:
+        custom_markers: List of marker dictionaries with coordinates/query and style parameters.
+            Each marker can specify coordinates in three ways:
+            1. Separate lat/lon: {'lat': 52.36, 'lon': 4.90, ...}
+            2. Tuple query: {'query': (52.36, 4.90), ...}
+            3. String query: {'query': 'Amsterdam Central Station', ...}
+        gdfs: Dictionary of GeoDataFrames (needed for CRS reference)
+        ax: Matplotlib axes object
+        marker_defaults: Default marker style from preset
+        logging: Enable logging
+
+    Returns:
+        GeoDataFrame containing the custom markers
+    """
+
+    # If empty list, return empty GeoDataFrame
+    if not custom_markers or len(custom_markers) == 0:
+        return gp.GeoDataFrame(
+            geometry=[],
+            crs="EPSG:4326"
+        )
+
+    # Get perimeter for bounds checking
+    perimeter = gdfs["perimeter"].geometry[0]
+    perimeter_projected = ox.projection.project_gdf(gdfs["perimeter"]).geometry[0]
+
+    # Create list to store Point geometries
+    geometries = []
+    marker_styles = []
+    skipped_count = 0
+
+    for marker_dict in custom_markers:
+        # Extract coordinates - support multiple formats
+        lat = None
+        lon = None
+        marker_name = marker_dict.get('name', '')
+
+        # Option 1: Check for 'query' field (tuple or string)
+        if 'query' in marker_dict:
+            query = marker_dict['query']
+
+            # Tuple format: (lat, lon)
+            if isinstance(query, tuple) and len(query) == 2:
+                lat, lon = query
+                if not marker_name:
+                    marker_name = f"at ({lat:.4f}, {lon:.4f})"
+
+            # String format: geocode it
+            elif isinstance(query, str):
+                try:
+                    # Use osmnx to geocode the query string
+                    lat, lon = ox.geocode(query)
+                    if not marker_name:
+                        marker_name = query
+                    if logging:
+                        print(f"Geocoded '{query}' to ({lat:.4f}, {lon:.4f})")
+                except Exception as e:
+                    if logging:
+                        print(f"Warning: Failed to geocode '{query}': {e}")
+                    skipped_count += 1
+                    continue
+            else:
+                if logging:
+                    print(f"Warning: Invalid query format: {query}")
+                skipped_count += 1
+                continue
+
+        # Option 2: Fall back to separate lat/lon fields
+        else:
+            lat = marker_dict.get('lat')
+            lon = marker_dict.get('lon')
+            if not marker_name:
+                if lat is not None and lon is not None:
+                    marker_name = f"at ({lat:.4f}, {lon:.4f})"
+
+        # Validate coordinates
+        if lat is None or lon is None:
+            if logging:
+                print(f"Warning: Skipping marker with missing coordinates: {marker_dict}")
+            skipped_count += 1
+            continue
+
+        # Create Point geometry (in EPSG:4326)
+        point = Point(lon, lat)  # Note: Point(x, y) = Point(lon, lat)
+
+        # Validate if point is within perimeter bounds
+        if not perimeter.contains(point) and not perimeter.intersects(point):
+            marker_name = marker_dict.get('name', f"at ({lat:.4f}, {lon:.4f})")
+            if logging:
+                print(f"Warning: Marker '{marker_name}' is outside map bounds and will be skipped")
+            skipped_count += 1
+            continue
+
+        geometries.append(point)
+
+        # Merge default style with individual marker style
+        style = {**marker_defaults, **marker_dict}
+        marker_styles.append(style)
+
+    # Create GeoDataFrame with markers in EPSG:4326
+    markers_gdf = gp.GeoDataFrame(
+        {'style': marker_styles},
+        geometry=geometries,
+        crs="EPSG:4326"
+    )
+
+    # Project to same CRS as the map
+    if len(markers_gdf) > 0:
+        markers_gdf = ox.projection.project_gdf(markers_gdf)
+
+    # Plot each marker
+    for idx, row in markers_gdf.iterrows():
+        # Get projected coordinates
+        x, y = row.geometry.x, row.geometry.y
+        style = row['style']
+
+        # Extract style parameters with defaults
+        marker_type = style.get('marker', 'o')
+        size = style.get('size', 80)
+        color = style.get('color', '#FF5E5B')
+        edgecolor = style.get('edgecolor', None)
+        linewidth = style.get('linewidth', 0)
+        alpha = style.get('alpha', 1.0)
+        zorder = style.get('zorder', 1000)
+
+        # Plot marker using ax.scatter
+        ax.scatter(
+            x, y,
+            marker=marker_type,
+            s=size,
+            c=color,
+            edgecolors=edgecolor,
+            linewidths=linewidth,
+            alpha=alpha,
+            zorder=zorder
+        )
+
+    if logging:
+        total_markers = len(custom_markers)
+        drawn_markers = len(markers_gdf)
+        print(f"Drew {drawn_markers} custom markers ({skipped_count} skipped - outside bounds)")
+
+    return markers_gdf
+
+
+@log_execution_time
 def draw_layers(layers, gdfs, style, fig, ax, vsk, mode, logging=False):
     for layer in gdfs:
         if (layer in layers) or (layer in style):
@@ -779,6 +937,7 @@ def manage_presets(
     Optional[float],
     Optional[Union[float, bool]],
     Optional[Union[float, bool]],
+    dict,
 ]:
     """_summary_
 
@@ -793,7 +952,7 @@ def manage_presets(
         dilate (Optional[Union[float, bool]]): prettymaps.plot() 'dilate' parameter
 
     Returns:
-        Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]]]: Updated layers, style, circle, radius, dilate parameters
+        Tuple[dict, dict, Optional[float], Optional[Union[float, bool]], Optional[Union[float, bool]], dict]: Updated layers, style, circle, radius, dilate parameters, and marker_defaults
     """
 
     # Update preset mode: load a preset, update it with additional parameters and update the JSON file
@@ -802,10 +961,15 @@ def manage_presets(
         load_preset = save_preset = update_preset
 
     # Load preset (if provided)
+    marker_defaults = {}
     if load_preset is not None:
         layers, style, circle, radius, dilate = override_preset(
             load_preset, layers, style, circle, radius, dilate
         )
+        # Load marker defaults from preset (if exists)
+        preset_params = read_preset(load_preset)
+        if 'markers' in preset_params:
+            marker_defaults = preset_params['markers'].get('default_style', {})
 
     # Save parameters as preset
     if save_preset is not None:
@@ -818,7 +982,7 @@ def manage_presets(
             dilate=dilate,
         )
 
-    return layers, style, circle, radius, dilate
+    return layers, style, circle, radius, dilate, marker_defaults
 
 
 def presets():
@@ -1104,6 +1268,7 @@ def plot(
     layers: Dict[str, Dict[str, Any]] = {},
     style: Dict[str, Dict[str, Any]] = {},
     keypoints: Dict[str, Any] = {},
+    custom_markers: List[Dict[str, Any]] = [],
     preset: str = "default",
     use_preset: bool = True,
     save_preset: str | None = None,
@@ -1138,6 +1303,16 @@ def plot(
         layers: The OpenStreetMap layers to plot. Defaults to an empty dictionary.
         style: Matplotlib parameters for drawing each layer. Defaults to an empty dictionary.
         keypoints: Keypoints to highlight on the map. Defaults to an empty dictionary.
+        custom_markers: List of custom markers to plot on the map. Each marker is a dictionary with keys:
+            - lat (float): Latitude in EPSG:4326
+            - lon (float): Longitude in EPSG:4326
+            - marker (str): Matplotlib marker style (default: 'o')
+            - size (float): Marker size (default: 80)
+            - color (str): Marker face color (default: from preset)
+            - edgecolor (str): Marker edge color (optional)
+            - linewidth (float): Edge line width (optional)
+            - alpha (float): Transparency 0-1 (default: 1.0)
+            - zorder (int): Rendering order (default: 1000)
         preset: Preset configuration to use. Defaults to "default".
         use_preset: Whether to use the preset configuration. Defaults to True.
         save_preset: Path to save the preset configuration. Defaults to None.
@@ -1166,7 +1341,7 @@ def plot(
     """
 
     # 1. Manage presets
-    layers, style, circle, radius, dilate = manage_presets(
+    layers, style, circle, radius, dilate, marker_defaults = manage_presets(
         preset if use_preset else None,
         save_preset,
         update_preset,
@@ -1214,7 +1389,16 @@ def plot(
     # 9. Draw keypoints
     keypoints = draw_keypoints(keypoints, gdfs, ax, logging=logging)
 
-    # 9. Draw background
+    # 9.5 Draw custom markers
+    custom_markers_gdf = draw_custom_markers(
+        custom_markers,
+        gdfs,
+        ax,
+        marker_defaults,
+        logging=logging
+    )
+
+    # 10. Draw background
     draw_background(background, ax, style, mode, logging=logging)
 
     # 10. Draw credit message
@@ -1230,7 +1414,7 @@ def plot(
     )
 
     # 12. Create Plot object
-    plot = Plot(gdfs, fig, ax, background, keypoints)
+    plot = Plot(gdfs, fig, ax, background, keypoints, custom_markers_gdf)
 
     # 13. Save plot as image
     if save_as is not None:
