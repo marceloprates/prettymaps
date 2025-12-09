@@ -1056,7 +1056,235 @@ plot = prettymaps.plot(
 
 
 
-    
+
 ![png](pictures/README/temp_readme_files/temp_readme_37_1.png)
-    
+
+
+## Add custom markers
+
+Custom markers allow you to place visual symbols at specific coordinates on your map. Unlike keypoints (which are text labels extracted from OpenStreetMap data), custom markers are user-defined points that you can place anywhere with full control over their appearance.
+
+### Custom markers vs Keypoints
+
+| Feature | Custom Markers | Keypoints |
+|---------|---------------|-----------|
+| **Data Source** | User-defined coordinates | OpenStreetMap POI data |
+| **Visual Type** | Symbols (circles, stars, etc.) | Text labels |
+| **Positioning** | Explicit lat/lon coordinates | Extracted from OSM data |
+| **Styling** | Full individual control | Preset-based text styling |
+| **Quantity** | 0 to unlimited | Based on OSM data availability |
+| **Use Cases** | Highlight specific locations, custom POIs | Label notable places from OSM |
+| **Validation** | Bounds checking, coordinate ranges | Fuzzy name matching |
+
+### Basic usage
+
+Custom markers support three coordinate formats:
+
+```python
+import prettymaps
+
+# Define custom markers using different coordinate formats
+markers = [
+    # Format 1: Separate lat/lon (precise coordinates)
+    {
+        'lat': 52.3676,
+        'lon': 4.9041,
+        'marker': 'o',
+        'size': 150,
+        'color': '#FF0000'
+    },
+
+    # Format 2: Tuple query (coordinates as tuple)
+    {
+        'query': (52.3700, 4.9100),
+        'marker': '*',
+        'size': 200,
+        'color': '#00FF00'
+    },
+
+    # Format 3: String query (geocoding - place name or address)
+    {
+        'query': 'Amsterdam Central Station',
+        'marker': '^',
+        'size': 180,
+        'color': '#0000FF'
+    }
+]
+
+# Create map with custom markers
+plot = prettymaps.plot(
+    'Stad van de Zon, Heerhugowaard, Netherlands',
+    radius=1000,
+    preset='default',
+    custom_markers=markers
+)
+```
+
+### Query format
+
+The `query` parameter provides flexible ways to specify marker locations:
+
+**Tuple format**: Direct coordinate specification
+```python
+{'query': (52.3676, 4.9041), 'marker': 'o', 'color': '#FF0000'}
+```
+
+**String format**: Automatic geocoding via OpenStreetMap Nominatim
+```python
+# Works with any searchable location
+{'query': 'Eiffel Tower, Paris', 'marker': '*', 'color': '#FF5E5B'}
+{'query': 'Times Square, New York', 'marker': 's', 'color': '#00FF00'}
+{'query': 'Tokyo Tower', 'marker': 'D', 'color': '#0000FF'}
+```
+
+**Important notes about string queries**:
+- Uses OpenStreetMap Nominatim geocoding service
+- Requires internet connection
+- May have rate limits for frequent requests
+- More descriptive queries yield better results (e.g., "Central Station, Amsterdam" vs just "station")
+- If geocoding fails, the marker is skipped with a warning (if logging enabled)
+
+### Available marker types
+
+Matplotlib marker styles are supported:
+- `'o'` - Circle
+- `'*'` - Star
+- `'^'` - Triangle up
+- `'v'` - Triangle down
+- `'s'` - Square
+- `'D'` - Diamond
+- `'p'` - Pentagon
+- `'h'` - Hexagon
+- `'P'` - Plus
+- `'X'` - X mark
+
+### Marker parameters
+
+Each marker is a dictionary with the following parameters:
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `lat` | float | Conditional* | - | Latitude in EPSG:4326 (-90 to 90) |
+| `lon` | float | Conditional* | - | Longitude in EPSG:4326 (-180 to 180) |
+| `query` | tuple or str | Conditional* | - | Tuple `(lat, lon)` or geocodable string |
+| `marker` | str | No | 'o' | Matplotlib marker style |
+| `size` | float | No | 80 | Marker size in points² |
+| `color` | str | No | '#FF5E5B' | Face color (hex or named) |
+| `edgecolor` | str | No | None | Edge color (hex or named) |
+| `linewidth` | float | No | 0 | Edge line width |
+| `alpha` | float | No | 1.0 | Transparency (0.0 to 1.0) |
+| `zorder` | int | No | 1000 | Rendering order (higher = on top) |
+| `name` | str | No | - | Optional label (for UI only) |
+
+**\*Coordinate Requirements**: You must provide coordinates using one of these methods:
+- **Separate coordinates**: Both `lat` and `lon` fields
+- **Query tuple**: `query` field with tuple `(lat, lon)`
+- **Query string**: `query` field with geocodable location string
+
+### Advanced styling
+
+```python
+# Marker with custom edge and transparency
+marker_with_edge = {
+    'lat': 52.3676,
+    'lon': 4.9041,
+    'marker': 'D',
+    'size': 200,
+    'color': '#FF5E5B',
+    'edgecolor': '#2F3737',
+    'linewidth': 3.0,
+    'alpha': 0.8,
+    'zorder': 1500
+}
+
+# Multiple markers with different styles
+markers = [
+    {'lat': 52.36, 'lon': 4.90, 'marker': 'o', 'size': 100, 'color': '#FF0000'},
+    {'lat': 52.37, 'lon': 4.91, 'marker': '*', 'size': 200, 'color': '#00FF00'},
+    {'lat': 52.38, 'lon': 4.92, 'marker': '^', 'size': 150, 'color': '#0000FF'}
+]
+
+plot = prettymaps.plot(
+    'Stad van de Zon, Heerhugowaard, Netherlands',
+    custom_markers=markers,
+    preset='default'
+)
+```
+
+### Validation and bounds checking
+
+Custom markers are automatically validated:
+
+1. **Coordinate range validation**: Latitude must be between -90 and 90, longitude between -180 and 180
+2. **Bounds checking**: Markers outside the map perimeter are automatically skipped
+3. **Missing coordinates**: Markers without lat/lon are skipped with a warning (if logging enabled)
+
+```python
+markers = [
+    {'lat': 52.36, 'lon': 4.90, 'marker': 'o'},  # Valid - will be drawn
+    {'lat': 52.36, 'lon': None, 'marker': 'o'},  # Invalid - skipped (missing lon)
+    {'lat': 92.00, 'lon': 4.90, 'marker': 'o'},  # Invalid - skipped (lat > 90)
+    {'lat': 55.00, 'lon': 10.00, 'marker': 'o'}  # May be skipped if outside map bounds
+]
+
+plot = prettymaps.plot(
+    'Amsterdam',
+    custom_markers=markers,
+    logging=True  # Enable warnings for skipped markers
+)
+```
+
+### Preset integration
+
+You can define default marker styles in presets. Individual markers override these defaults:
+
+```json
+{
+  "layers": { ... },
+  "style": { ... },
+  "markers": {
+    "default_style": {
+      "marker": "o",
+      "size": 100,
+      "color": "#FF5E5B",
+      "edgecolor": "#2F3737",
+      "linewidth": 2.0,
+      "alpha": 0.9,
+      "zorder": 1000
+    }
+  }
+}
+```
+
+```python
+# Using preset with marker defaults
+markers = [
+    {'lat': 52.36, 'lon': 4.90},              # Uses all preset defaults
+    {'lat': 52.37, 'lon': 4.91, 'color': '#00FF00'}  # Overrides only color
+]
+
+plot = prettymaps.plot(
+    'Amsterdam',
+    preset='my_preset',  # Loads marker defaults from preset
+    custom_markers=markers
+)
+```
+
+### Streamlit frontend
+
+The Streamlit app provides a full UI for managing custom markers:
+
+1. **Add markers**: Use the "Add New Marker" form with a flexible Location input that accepts:
+   - **Coordinates**: Enter as `"lat, lon"` (e.g., `"52.3676, 4.9041"`) for precise positioning
+   - **Place names**: Enter any location name (e.g., `"Amsterdam Central Station"`) for automatic geocoding
+   - The input automatically detects which format you're using - no mode selection needed!
+2. **Configure styling**: Choose marker type, size, color, and advanced options (edge, opacity, z-order)
+3. **Edit markers**: Modify existing markers using the edit button with the same flexible input
+4. **Delete markers**: Remove individual markers or clear all
+5. **Real-time preview**: Generate the map to see your markers rendered
+
+The Location field intelligently parses your input:
+- If it contains two comma-separated numbers within valid coordinate ranges, it's treated as coordinates
+- Otherwise, it's treated as a place name and will be geocoded when generating the map
+- Supports various formats: `"52.3676, 4.9041"`, `"52.3676,4.9041"`, or `"Eiffel Tower, Paris"`
 
