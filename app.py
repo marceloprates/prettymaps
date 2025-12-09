@@ -495,7 +495,6 @@ with cols[1]:
                 preset=selected_preset,
                 show=False,
                 ax=ax,
-                credit=False,
             )
             buf = io.BytesIO()
             plt.savefig(buf, format="png", bbox_inches="tight", dpi=150)
