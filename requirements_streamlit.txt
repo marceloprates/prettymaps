@@ -1,0 +1,2 @@
+# Additional requirements for Streamlit version
+streamlit>=1.42.2
