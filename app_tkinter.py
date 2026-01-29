@@ -49,6 +49,8 @@ class PrettymapsApp:
         self.last_coords = None
         self.map_selection = None  # Will hold selection from browser
         self.http_server_port = 8765
+        self._initial_geocode_done = False  # Flag to prevent multiple updates at startup
+        self._preview_update_pending = False  # Flag to debounce preview updates
         
         # Get presets
         self.presets = prettymaps.presets().to_dict()
@@ -213,9 +215,34 @@ class PrettymapsApp:
         ttk.Label(scrollable_frame, text="Location:").grid(row=row, column=0, sticky=tk.W, pady=5)
         row += 1
         self.location_text = tk.Text(scrollable_frame, height=3, width=40)
-        self.location_text.insert("1.0", "Stad van de Zon, Heerhugowaard, Netherlands")
+        self.location_text.insert("1.0", "Via Alessandro Spagolla 5a, 38051")
         self.location_text.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        self.location_text.bind("<KeyRelease>", lambda e: self.update_map_preview())
+        # Don't bind key event yet - will be bound after initial geocoding
+        
+        # Trigger initial geocoding in background
+        def initial_geocode():
+            if not GEOPY_AVAILABLE:
+                self._initial_geocode_done = True
+                self.location_text.bind("<KeyRelease>", lambda e: self.update_map_preview())
+                return
+            
+            try:
+                location = self.location_text.get("1.0", tk.END).strip()
+                from geopy.geocoders import Nominatim
+                geolocator = Nominatim(user_agent="prettymaps_app")
+                geo_location = geolocator.geocode(location, timeout=10)
+                if geo_location:
+                    self.last_coords = (geo_location.latitude, geo_location.longitude)
+            except Exception as e:
+                logging.debug(f"Initial geocode error: {e}")
+            finally:
+                self._initial_geocode_done = True
+                # Now bind the key event for user edits
+                self.location_text.bind("<KeyRelease>", lambda e: self.update_map_preview())
+                # And trigger initial map preview
+                self.update_map_preview()
+        
+        self.root.after(200, initial_geocode)
         row += 1
         
         # Radius slider
@@ -463,9 +490,16 @@ class PrettymapsApp:
                                         foreground="red")
             return
         
+        # Debounce: if already pending, skip
+        if self._preview_update_pending:
+            return
+        
+        self._preview_update_pending = True
+        
         try:
             location = self.location_text.get("1.0", tk.END).strip()
             if not location:
+                self._preview_update_pending = False
                 return
             
             # Update status
@@ -480,6 +514,7 @@ class PrettymapsApp:
         except Exception as e:
             logging.error(f"Error updating map preview: {e}")
             self.map_status_label.config(text=f"Error: {str(e)[:50]}", foreground="red")
+            self._preview_update_pending = False
     
     def _geocode_and_update_map(self, location):
         """Geocode location and update map (runs in background thread)"""
@@ -494,6 +529,7 @@ class PrettymapsApp:
             if not geo_location:
                 self.root.after(0, lambda: self.map_status_label.config(
                     text=f"Location not found: {location}", foreground="red"))
+                self._preview_update_pending = False
                 return
             
             # Store coords
@@ -538,6 +574,8 @@ class PrettymapsApp:
             logging.error(f"Error in geocoding: {e}")
             self.root.after(0, lambda: self.map_status_label.config(
                 text=f"Error: {str(e)[:40]}", foreground="red"))
+        finally:
+            self._preview_update_pending = False
     
     def _add_interactive_map_js(self, m, is_circular, radius_km):
         """Add JavaScript to handle map interactions with shape preview"""
@@ -550,6 +588,15 @@ class PrettymapsApp:
         palette = [self.custom_palette.get(i, "#433633") for i in range(num_colors)]
         palette_json = json.dumps(palette)
         
+        # Get page size, dpi, and layers
+        page_size = self.page_size_var.get() if hasattr(self, "page_size_var") else "A4"
+        dpi = self.dpi_var.get() if hasattr(self, "dpi_var") else 100
+        layers_dict = {}
+        if hasattr(self, "layer_vars"):
+            for k, v in self.layer_vars.items():
+                layers_dict[k] = v.get()
+        layers_json = json.dumps(layers_dict)
+        
         js_code = f"""
         <script>
         var shapeLayer = null;
@@ -560,7 +607,10 @@ class PrettymapsApp:
             currentLat: null,
             currentLng: null,
             numColors: {num_colors},
-            colors: {palette_json}
+            colors: {palette_json},
+            pageSize: "{page_size}",
+            dpi: {dpi},
+            layers: {layers_json}
         }};
         
         setTimeout(function() {{
@@ -656,23 +706,45 @@ class PrettymapsApp:
             
             drawShape();
             
-            // Add control panel (radius, circular, colors)
+            // Add control panel (radius, circular, colors, page size, dpi, layers)
             var settingsDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
             settingsDiv.style.backgroundColor = 'white';
             settingsDiv.style.padding = '10px';
             settingsDiv.style.borderRadius = '6px';
-            settingsDiv.style.minWidth = '220px';
+            settingsDiv.style.minWidth = '240px';
+            settingsDiv.style.maxHeight = '600px';
+            settingsDiv.style.overflowY = 'auto';
             settingsDiv.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
             settingsDiv.style.fontSize = '12px';
+            
+            var layersHtml = '';
+            if (mapConfig.layers && Object.keys(mapConfig.layers).length > 0) {{
+                layersHtml = '<div style="margin-top:10px; padding-top:10px; border-top:1px solid #ccc;">';
+                layersHtml += '<div style="font-weight:bold;margin-bottom:6px;">Layers</div>';
+                for (var lkey in mapConfig.layers) {{
+                    var checked = mapConfig.layers[lkey] ? 'checked' : '';
+                    var lname = lkey.charAt(0).toUpperCase() + lkey.slice(1);
+                    layersHtml += '<div style="margin:3px 0;"><label><input type="checkbox" class="layerCheckbox" data-layer="' + lkey + '" ' + checked + ' /> ' + lname + '</label></div>';
+                }}
+                layersHtml += '</div>';
+            }}
+            
             settingsDiv.innerHTML = '' +
-                '<div style="font-weight:bold;margin-bottom:6px;">Map Settings</div>' +
+                '<div style="font-weight:bold;margin-bottom:8px;">Map Settings</div>' +
                 '<div style="margin-bottom:6px;">Radius (km): <span id="radiusVal">' + mapConfig.radiusKm.toFixed(2) + '</span></div>' +
                 '<input id="radiusInput" type="range" min="0.2" max="5" step="0.1" value="' + mapConfig.radiusKm + '" style="width:100%;" />' +
                 '<div style="margin:8px 0 6px 0;">' +
                     '<label><input id="circularInput" type="checkbox" ' + (mapConfig.isCircular ? 'checked' : '') + ' /> Circular</label>' +
                 '</div>' +
+                '<div style="margin-bottom:6px;">Page Size: <select id="pageSizeInput" style="width:100%;">' +
+                    '<option value="A4" ' + (mapConfig.pageSize === 'A4' ? 'selected' : '') + '>A4</option>' +
+                    '<option value="A5" ' + (mapConfig.pageSize === 'A5' ? 'selected' : '') + '>A5</option>' +
+                    '<option value="Square" ' + (mapConfig.pageSize === 'Square' ? 'selected' : '') + '>Square</option>' +
+                '</select></div>' +
+                '<div style="margin-bottom:6px;">DPI: <input id="dpiInput" type="number" min="50" max="300" step="10" value="' + mapConfig.dpi + '" style="width:100%;" /></div>' +
                 '<div style="margin-bottom:6px;">Colors: <input id="colorCount" type="number" min="1" max="20" value="' + mapConfig.numColors + '" style="width:60px;" /></div>' +
-                '<div id="colorList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>';
+                '<div id="colorList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>' +
+                layersHtml;
 
             var settingsControl = L.control({{position: 'topright'}});
             settingsControl.onAdd = function() {{ return settingsDiv; }};
@@ -741,6 +813,31 @@ class PrettymapsApp:
                 }};
             }}
 
+            var pageSizeInput = settingsDiv.querySelector('#pageSizeInput');
+            if (pageSizeInput) {{
+                pageSizeInput.onchange = function(e) {{
+                    mapConfig.pageSize = e.target.value;
+                }};
+            }}
+
+            var dpiInput = settingsDiv.querySelector('#dpiInput');
+            if (dpiInput) {{
+                dpiInput.onchange = function(e) {{
+                    var val = parseInt(e.target.value || mapConfig.dpi);
+                    if (isNaN(val) || val < 50) val = 50;
+                    if (val > 300) val = 300;
+                    mapConfig.dpi = val;
+                }};
+            }}
+
+            var layerCheckboxes = settingsDiv.querySelectorAll('.layerCheckbox');
+            for (var i = 0; i < layerCheckboxes.length; i++) {{
+                layerCheckboxes[i].onchange = function(e) {{
+                    var layer = e.target.getAttribute('data-layer');
+                    mapConfig.layers[layer] = e.target.checked;
+                }};
+            }}
+
             // Add OK button
             var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
             div.style.backgroundColor = 'white';
@@ -761,7 +858,10 @@ class PrettymapsApp:
                     radius: mapConfig.radiusKm,
                     circular: mapConfig.isCircular,
                     num_colors: mapConfig.numColors,
-                    colors: mapConfig.colors
+                    colors: mapConfig.colors,
+                    page_size: mapConfig.pageSize,
+                    dpi: mapConfig.dpi,
+                    layers: mapConfig.layers
                 }};
                 
                 console.log('Sending selection:', data);
@@ -907,6 +1007,31 @@ class PrettymapsApp:
                         self.update_color_pickers()
 
                     self.root.after(0, apply_palette)
+
+                # Update page size if provided
+                if 'page_size' in data:
+                    ps = data.get('page_size', 'A4')
+                    if ps in ['A4', 'A5', 'Square']:
+                        self.root.after(0, lambda: self.page_size_var.set(ps))
+
+                # Update DPI if provided
+                if 'dpi' in data:
+                    try:
+                        dpi_val = int(data.get('dpi', 100))
+                        if 50 <= dpi_val <= 300:
+                            self.root.after(0, lambda: self.dpi_var.set(dpi_val))
+                    except Exception:
+                        pass
+
+                # Update layers if provided
+                if 'layers' in data:
+                    def apply_layers():
+                        layers_dict = data.get('layers', {})
+                        if isinstance(layers_dict, dict):
+                            for layer_key, layer_var in self.layer_vars.items():
+                                if layer_key in layers_dict:
+                                    layer_var.set(bool(layers_dict[layer_key]))
+                    self.root.after(0, apply_layers)
                 
                 # Auto-generate the map with new coordinates
                 self.root.after(0, self.generate_map)
