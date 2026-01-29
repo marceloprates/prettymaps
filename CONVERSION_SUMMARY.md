@@ -96,7 +96,7 @@ This PR successfully converts the web-based Streamlit application to a native de
 - **Image Library**: PIL/Pillow for image manipulation
 - **Layout**: Grid-based responsive layout
 - **State Management**: Class-based state (similar to Streamlit session state)
-- **Threading**: Non-blocking UI with status updates
+- **Execution**: Synchronous UI on main thread with status updates during generation
 
 ### Key Implementation Features
 1. **Responsive Design**: Window and widgets resize properly

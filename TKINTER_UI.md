@@ -90,7 +90,7 @@ The Tkinter desktop application (`app_tkinter.py`) provides a native desktop int
 - **Scrolling**: Left panel is scrollable for smaller screens
 - **State Management**: Class-based state management (similar to Streamlit session state)
 - **File Handling**: Native file dialogs for saving PNG/SVG files
-- **Threading**: Non-blocking UI during map generation (with status updates)
+- **Execution**: Synchronous UI on main thread with status updates during generation
 
 ## Running the Application
 

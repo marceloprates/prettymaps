@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk, colorchooser, filedialog, messagebox
 import logging
 from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import sys
 import os
 import io
+import tempfile
 from PIL import Image, ImageTk
 
 # Add repo root to sys.path
@@ -218,7 +218,6 @@ class PrettymapsApp:
         for widget in self.color_widgets:
             widget.destroy()
         self.color_widgets = []
-        self.custom_palette = {}
         
         # Get palette from current preset
         preset_name = self.preset_var.get()
@@ -229,16 +228,18 @@ class PrettymapsApp:
                 if "building" in style and "palette" in style["building"]
                 else ["#433633", "#FF5E5B"]
             )
-        except:
+        except Exception:
             palette = ["#433633", "#FF5E5B"]
         
         # Update number of colors if needed
         num_colors = self.num_colors_var.get()
         
-        # Create color picker buttons
+        # Create color picker buttons, preserving existing custom colors
         for i in range(num_colors):
-            color = palette[i % len(palette)]
-            self.custom_palette[i] = color
+            # Use existing custom color if available, otherwise use palette default
+            if i not in self.custom_palette:
+                self.custom_palette[i] = palette[i % len(palette)]
+            color = self.custom_palette[i]
             
             frame = ttk.Frame(self.colors_frame)
             frame.grid(row=i // 4, column=i % 4, padx=5, pady=5)
@@ -258,12 +259,13 @@ class PrettymapsApp:
         color = colorchooser.askcolor(initialcolor=current_color, title=f"Choose Color {idx+1}")
         if color[1]:
             self.custom_palette[idx] = color[1]
-            # Update button background
-            for widget in self.color_widgets:
+            # Update only the specific button background
+            # Find the button widget for this index
+            button_index = idx * 3 + 2  # Each color has frame, label, button
+            if button_index < len(self.color_widgets):
+                widget = self.color_widgets[button_index]
                 if isinstance(widget, tk.Button) and widget.winfo_exists():
-                    # Find the button for this index
-                    pass
-            self.update_color_pickers()
+                    widget.config(bg=color[1])
     
     def show_placeholder(self):
         """Show placeholder image"""
@@ -277,8 +279,8 @@ class PrettymapsApp:
                 font=("TkDefaultFont", 14),
                 fill="gray"
             )
-        except:
-            pass
+        except Exception as e:
+            logging.debug(f"Failed to show placeholder image: {e}")
     
     def generate_map(self):
         """Generate the map based on current settings"""
@@ -292,6 +294,7 @@ class PrettymapsApp:
             radius = self.radius_var.get()
             circular = self.circular_var.get()
             selected_preset = self.preset_var.get()
+            dpi = self.dpi_var.get()
             
             # Get page size
             page_size = self.page_size_var.get()
@@ -305,8 +308,8 @@ class PrettymapsApp:
             # Get layers
             layers = {k: (False if not v.get() else {}) for k, v in self.layer_vars.items()}
             
-            # Create figure
-            fig, ax = plt.subplots(figsize=(width, height), dpi=300)
+            # Create figure with user-specified DPI
+            fig, ax = plt.subplots(figsize=(width, height), dpi=dpi)
             prettymaps.plot(
                 query,
                 radius=1000 * radius,
@@ -319,20 +322,21 @@ class PrettymapsApp:
                 ax=ax,
             )
             
-            # Save to buffer
+            # Save to buffer with user-specified DPI
             buf = io.BytesIO()
-            plt.savefig(buf, format="png", bbox_inches="tight", dpi=150)
+            plt.savefig(buf, format="png", bbox_inches="tight", dpi=dpi)
             buf.seek(0)
             self.last_image = buf
             
-            # Save to file
-            self.last_png_path = "/tmp/generated_map.png"
+            # Save to file using platform-independent temp directory
+            temp_dir = tempfile.gettempdir()
+            self.last_png_path = os.path.join(temp_dir, "generated_map.png")
             with open(self.last_png_path, "wb") as f:
                 f.write(self.last_image.getbuffer())
             
-            # Save SVG
-            self.last_svg_path = "/tmp/generated_map_download.svg"
-            plt.savefig(self.last_svg_path, format="svg", bbox_inches="tight", dpi=150)
+            # Save SVG with user-specified DPI
+            self.last_svg_path = os.path.join(temp_dir, "generated_map_download.svg")
+            plt.savefig(self.last_svg_path, format="svg", bbox_inches="tight", dpi=dpi)
             
             plt.close(fig)
             
@@ -422,6 +426,7 @@ def main():
     root = tk.Tk()
     app = PrettymapsApp(root)
     root.mainloop()
+    return app
 
 
 if __name__ == "__main__":
