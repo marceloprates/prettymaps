@@ -37,7 +37,7 @@ class PrettymapsApp:
     def __init__(self, root):
         self.root = root
         self.root.title("prettymaps")
-        self.root.geometry("1400x900")
+        self.root.state('zoomed')  # Schermo intero su Windows
         
         # State variables
         self.last_image = None
