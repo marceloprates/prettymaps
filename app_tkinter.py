@@ -52,8 +52,25 @@ class PrettymapsApp:
         self._initial_geocode_done = False  # Flag to prevent multiple updates at startup
         self._preview_update_pending = False  # Flag to debounce preview updates
         
-        # Get presets
-        self.presets = prettymaps.presets().to_dict()
+        # Define color themes
+        self.themes = {
+            "Autumn": ["#433633", "#FF5E5B", "#D4A574", "#8B6F47"],
+            "Ocean": ["#1F4788", "#2E8BC0", "#A2D5F7", "#5A9FBD"],
+            "Forest": ["#1B4D3E", "#2D6A4F", "#40916C", "#95D5B2"],
+            "Desert": ["#D4A574", "#EBA644", "#B8860B", "#CD853F"],
+        }
+        
+        # Get default layer styles from prettymaps
+        self.default_style = prettymaps.preset("default").params["style"]
+        
+        # Dictionary to store custom layer properties
+        self.layer_styles = {}
+        for layer in ["building", "streets", "waterway", "water", "sea", "forest", "green", "rock", "beach", "parking"]:
+            if layer in self.default_style:
+                # Deep copy the default style for this layer
+                self.layer_styles[layer] = self.default_style[layer].copy()
+            else:
+                self.layer_styles[layer] = {}
         
         # Start local HTTP server for map communication
         self._start_http_server()
@@ -252,8 +269,17 @@ class PrettymapsApp:
         self.radius_slider = ttk.Scale(scrollable_frame, from_=0.2, to=5.0, 
                                        variable=self.radius_var, orient=tk.HORIZONTAL)
         self.radius_slider.grid(row=row, column=0, sticky=(tk.W, tk.E), pady=5)
-        self.radius_label = ttk.Label(scrollable_frame, text="0.75")
-        self.radius_label.grid(row=row, column=1, sticky=tk.W, padx=5)
+        self.radius_spinbox = ttk.Spinbox(scrollable_frame, from_=0.2, to=5.0, increment=0.1,
+                                          textvariable=self.radius_var, width=10, format="%.2f")
+        self.radius_spinbox.grid(row=row, column=1, sticky=tk.W, padx=5)
+        # Format the value to 2 decimals when changed
+        def format_radius(*args):
+            try:
+                val = self.radius_var.get()
+                self.radius_var.set(round(val, 2))
+            except:
+                pass
+        self.radius_var.trace_add("write", format_radius)
         self.radius_var.trace_add("write", lambda *args: self.update_radius_label_and_map())
         row += 1
         
@@ -265,15 +291,14 @@ class PrettymapsApp:
         )
         row += 1
         
-        # Preset selector
-        ttk.Label(scrollable_frame, text="Select a Preset:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        # Theme selector
+        ttk.Label(scrollable_frame, text="Theme:").grid(row=row, column=0, sticky=tk.W, pady=5)
         row += 1
-        preset_options = list(self.presets["preset"].values())
-        self.preset_var = tk.StringVar(value="default")
-        self.preset_combo = ttk.Combobox(scrollable_frame, textvariable=self.preset_var, 
-                                         values=preset_options, state="readonly", width=37)
-        self.preset_combo.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        self.preset_combo.bind("<<ComboboxSelected>>", lambda e: self.update_color_pickers())
+        self.theme_var = tk.StringVar(value="Autumn")
+        theme_combo = ttk.Combobox(scrollable_frame, textvariable=self.theme_var,
+                                   values=["Autumn", "Ocean", "Forest", "Desert"], state="readonly", width=37)
+        theme_combo.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        self.theme_var.trace_add("write", lambda *args: self.update_color_pickers())
         row += 1
         
         # Number of colors
@@ -315,29 +340,42 @@ class PrettymapsApp:
         )
         row += 1
         
-        # Get default style for initial layer values
-        style = prettymaps.preset("default").params["style"]
-        
         self.layer_vars = {}
         layers_list = [
-            ("building", "Buildings", "building" in style),
-            ("streets", "Streets", "streets" in style),
-            ("waterway", "Waterway", "waterway" in style),
-            ("water", "Water", "water" in style),
-            ("sea", "Sea", "sea" in style),
-            ("forest", "Forest", "forest" in style),
-            ("green", "Green", "green" in style),
-            ("rock", "Rock", "rock" in style),
-            ("beach", "Beach", "beach" in style),
-            ("parking", "Parking", "parking" in style),
+            ("building", "Buildings", True),
+            ("streets", "Streets", True),
+            ("waterway", "Waterway", True),
+            ("water", "Water", True),
+            ("sea", "Sea", True),
+            ("forest", "Forest", True),
+            ("green", "Green", True),
+            ("rock", "Rock", True),
+            ("beach", "Beach", True),
+            ("parking", "Parking", True),
         ]
         
         for layer_key, layer_label, default_val in layers_list:
             var = tk.BooleanVar(value=default_val)
             self.layer_vars[layer_key] = var
-            ttk.Checkbutton(scrollable_frame, text=layer_label, variable=var).grid(
-                row=row, column=0, sticky=tk.W, pady=2
-            )
+            
+            # Create a frame for the layer with checkbox, color button, and settings button
+            layer_frame = ttk.Frame(scrollable_frame)
+            layer_frame.grid(row=row, column=0, columnspan=2, sticky=tk.W, pady=2)
+            
+            # Checkbox
+            ttk.Checkbutton(layer_frame, text=layer_label, variable=var).pack(side=tk.LEFT, padx=2)
+            
+            # Color button (shows the facecolor if available)
+            layer_color = self.get_layer_color(layer_key)
+            color_btn = tk.Button(layer_frame, bg=layer_color, width=3, height=1,
+                                 command=lambda lk=layer_key: self.pick_layer_color(lk))
+            color_btn.pack(side=tk.LEFT, padx=2)
+            
+            # Settings button
+            settings_btn = ttk.Button(layer_frame, text="+", width=2,
+                                     command=lambda lk=layer_key: self.open_layer_settings(lk))
+            settings_btn.pack(side=tk.LEFT, padx=2)
+            
             row += 1
     
     def create_right_panel(self):
@@ -400,23 +438,15 @@ class PrettymapsApp:
         self.current_map_path = None
     
     def update_color_pickers(self):
-        """Update color pickers based on current preset and number of colors"""
+        """Update color pickers based on selected theme and number of colors"""
         # Clear existing color widgets
         for widget in self.color_widgets:
             widget.destroy()
         self.color_widgets = []
         
-        # Get palette from current preset
-        preset_name = self.preset_var.get()
-        try:
-            style = prettymaps.preset(preset_name).params["style"]
-            palette = (
-                style["building"]["palette"]
-                if "building" in style and "palette" in style["building"]
-                else ["#433633", "#FF5E5B"]
-            )
-        except Exception:
-            palette = ["#433633", "#FF5E5B"]
+        # Get theme colors
+        theme_name = self.theme_var.get()
+        palette = self.themes.get(theme_name, ["#433633", "#FF5E5B"])
         
         # Update number of colors if needed
         num_colors = self.num_colors_var.get()
@@ -454,9 +484,155 @@ class PrettymapsApp:
                 if isinstance(widget, tk.Button) and widget.winfo_exists():
                     widget.config(bg=color[1])
     
+    def get_layer_color(self, layer_key):
+        """Get the facecolor of a layer, or default if not available"""
+        style = self.layer_styles.get(layer_key, {})
+        return style.get("fc", style.get("palette", ["#CCCCCC"])[0] if "palette" in style else "#CCCCCC")
+    
+    def pick_layer_color(self, layer_key):
+        """Open color picker for a layer"""
+        current_color = self.get_layer_color(layer_key)
+        color = colorchooser.askcolor(initialcolor=current_color, title=f"Choose color for {layer_key}")
+        if color[1]:
+            # Update the layer style
+            if layer_key not in self.layer_styles:
+                self.layer_styles[layer_key] = {}
+            self.layer_styles[layer_key]["fc"] = color[1]
+            self.update_map_preview()
+    
+    def open_layer_settings(self, layer_key):
+        """Open a window to edit all properties of a layer"""
+        # Create new window
+        settings_window = tk.Toplevel(self.root)
+        settings_window.title(f"Settings for {layer_key}")
+        settings_window.geometry("400x500")
+        
+        # Create scrollable frame
+        canvas = tk.Canvas(settings_window)
+        scrollbar = ttk.Scrollbar(settings_window, orient=tk.VERTICAL, command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor=tk.NW)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Get current style for this layer
+        current_style = self.layer_styles.get(layer_key, {})
+        
+        # Dictionary to store entry values
+        entries = {}
+        
+        # Define editable properties with descriptions and types
+        properties = {
+            "fc": ("Facecolor (fc)", "color", "Main fill color of the element"),
+            "ec": ("Edgecolor (ec)", "color", "Border/outline color"),
+            "alpha": ("Transparency (alpha)", "float", "0.0 = transparent, 1.0 = opaque"),
+            "lw": ("Line width (lw)", "float", "Border thickness in pixels"),
+            "hatch": ("Hatch pattern", "hatch", "Pattern: .=dots, /=lines, o=circles, etc."),
+            "hatch_c": ("Hatch color (hatch_c)", "color", "Color of the hatch pattern"),
+            "zorder": ("Z-order (zorder)", "int", "Layer order (higher = on top)"),
+        }
+        
+        row = 0
+        for prop_key, (prop_label, prop_type, description) in properties.items():
+            # Label with description
+            label_frame = ttk.Frame(scrollable_frame)
+            label_frame.grid(row=row, column=0, columnspan=2, sticky=tk.W, padx=5, pady=(10, 2))
+            
+            ttk.Label(label_frame, text=prop_label, font=("TkDefaultFont", 10, "bold")).pack(anchor=tk.W)
+            ttk.Label(label_frame, text=description, font=("TkDefaultFont", 8, "italic"), foreground="gray").pack(anchor=tk.W)
+            
+            row += 1
+            
+            if prop_type == "color":
+                current_value = current_style.get(prop_key, "#CCCCCC")
+                color_frame = ttk.Frame(scrollable_frame)
+                color_frame.grid(row=row, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
+                
+                entry = ttk.Entry(color_frame, width=15)
+                entry.insert(0, current_value)
+                entry.pack(side=tk.LEFT, padx=2)
+                
+                def pick_color_callback(e=None, key=prop_key, ent=entry):
+                    color = colorchooser.askcolor(initialcolor=ent.get())
+                    if color[1]:
+                        ent.delete(0, tk.END)
+                        ent.insert(0, color[1])
+                
+                btn = ttk.Button(color_frame, text="Pick Color", command=pick_color_callback)
+                btn.pack(side=tk.LEFT, padx=2)
+                
+                entries[prop_key] = entry
+            elif prop_type == "hatch":
+                # Hatch pattern selector
+                current_value = current_style.get(prop_key, "")
+                hatch_options = ["", ".", ",", "/", "\\", "|", "-", "+", "x", "o", "O", "*", "ooo...", "///"]
+                hatch_frame = ttk.Frame(scrollable_frame)
+                hatch_frame.grid(row=row, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
+                
+                hatch_var = tk.StringVar(value=current_value)
+                hatch_combo = ttk.Combobox(hatch_frame, textvariable=hatch_var, values=hatch_options, width=15, state="readonly")
+                hatch_combo.pack(side=tk.LEFT, padx=2)
+                entries[prop_key] = hatch_var
+            else:
+                current_value = current_style.get(prop_key, "")
+                entry = ttk.Entry(scrollable_frame, width=20)
+                entry.insert(0, str(current_value))
+                entry.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
+                entries[prop_key] = entry
+            
+            row += 1
+        
+        # Save and Reset buttons
+        button_frame = ttk.Frame(scrollable_frame)
+        button_frame.grid(row=row, column=0, columnspan=2, pady=10)
+        
+        def save_settings():
+            """Save the modified settings"""
+            for prop_key, entry_widget in entries.items():
+                # Handle both Entry widgets and StringVar (for hatch)
+                if isinstance(entry_widget, tk.StringVar):
+                    value_str = entry_widget.get().strip()
+                else:
+                    value_str = entry_widget.get().strip()
+                
+                # Only save non-empty values
+                if value_str or prop_key == "hatch":  # Allow empty hatch
+                    try:
+                        if prop_key in ["alpha", "lw"]:
+                            self.layer_styles[layer_key][prop_key] = float(value_str)
+                        elif prop_key == "zorder":
+                            self.layer_styles[layer_key][prop_key] = int(value_str)
+                        elif prop_key == "hatch" and value_str:  # Only set if not empty
+                            self.layer_styles[layer_key][prop_key] = value_str
+                        elif value_str:
+                            self.layer_styles[layer_key][prop_key] = value_str
+                    except ValueError:
+                        pass
+            self.update_map_preview()
+            settings_window.destroy()
+        
+        def reset_to_default():
+            """Reset to default values"""
+            if layer_key in self.default_style:
+                self.layer_styles[layer_key] = self.default_style[layer_key].copy()
+            else:
+                self.layer_styles[layer_key] = {}
+            self.update_map_preview()
+            settings_window.destroy()
+        
+        ttk.Button(button_frame, text="Save", command=save_settings).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Reset to Default", command=reset_to_default).pack(side=tk.LEFT, padx=5)
+    
     def update_radius_label_and_map(self):
-        """Update radius label and map preview when radius changes"""
-        self.radius_label.config(text=f"{self.radius_var.get():.2f}")
+        """Update map preview when radius changes"""
         self.update_map_preview()
     def show_placeholder(self):
         """Show placeholder image"""
@@ -1033,8 +1209,8 @@ class PrettymapsApp:
                                     layer_var.set(bool(layers_dict[layer_key]))
                     self.root.after(0, apply_layers)
                 
-                # Auto-generate the map with new coordinates
-                self.root.after(0, self.generate_map)
+                # Show notification that settings have been loaded
+                self.root.after(0, lambda: messagebox.showinfo("Map Selection", "Location and settings loaded. Click 'Generate' to create the map."))
                 
         except Exception as e:
             logging.error(f"Error applying map selection: {e}")
@@ -1064,7 +1240,6 @@ class PrettymapsApp:
             
             radius = self.radius_var.get()
             circular = self.circular_var.get()
-            selected_preset = self.preset_var.get()
             dpi = self.dpi_var.get()
             
             # Get page size
@@ -1076,8 +1251,22 @@ class PrettymapsApp:
             }
             width, height = page_sizes[page_size]
             
-            # Get layers
-            layers = {k: (False if not v.get() else {}) for k, v in self.layer_vars.items()}
+            # Get layers with their custom styles
+            layers = {}
+            style = {}
+            for layer_key, var in self.layer_vars.items():
+                if var.get():
+                    # Layer is selected, add it with its custom style
+                    layers[layer_key] = self.layer_styles.get(layer_key, {})
+                else:
+                    # Layer is not selected
+                    layers[layer_key] = False
+            
+            # Add building palette to style
+            style["building"] = {"palette": list(self.custom_palette.values())}
+            # Merge with any custom building styles
+            if "building" in layers and isinstance(layers["building"], dict):
+                style["building"].update(layers["building"])
             
             # Create figure with user-specified DPI
             fig, ax = plt.subplots(figsize=(width, height), dpi=dpi)
@@ -1086,9 +1275,9 @@ class PrettymapsApp:
                 radius=1000 * radius,
                 circle=circular,
                 layers=layers,
-                style={"building": {"palette": list(self.custom_palette.values())}},
+                style=style,
                 figsize=(width, height),
-                preset=selected_preset,
+                preset="default",
                 show=False,
                 ax=ax,
             )
