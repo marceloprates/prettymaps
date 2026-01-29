@@ -44,7 +44,31 @@ Then **restart the runtime** (Runtime -> Restart Runtime) before importing prett
 
 # Run front-end
 
-After prettymaps is installed, you can run the front-end (streamlit) application from the prettymaps repository using:
+## Tkinter Desktop Application (Recommended)
+
+After prettymaps is installed, you can run the desktop application (Tkinter) from the prettymaps repository using:
+```
+python app_tkinter.py
+```
+
+![Tkinter Desktop UI](pictures/tkinter_ui_preview.png)
+
+The Tkinter version provides a native desktop experience with:
+- ⚡ Faster startup (<1 second)
+- 🖥️ Native system dialogs and widgets
+- 📦 Can be packaged as standalone executable
+- 💾 Lower resource usage (no browser required)
+
+See [QUICKSTART_TKINTER.md](QUICKSTART_TKINTER.md) for detailed usage guide.
+
+## Streamlit Web Application (Legacy)
+
+You can also run the web-based Streamlit application. First, install the streamlit dependency:
+```
+pip install -r requirements_streamlit.txt
+```
+
+Then run:
 ```
 streamlit run app.py
 ```
