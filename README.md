@@ -51,6 +51,16 @@ After prettymaps is installed, you can run the desktop application (Tkinter) fro
 python app_tkinter.py
 ```
 
+![Tkinter Desktop UI](pictures/tkinter_ui_preview.png)
+
+The Tkinter version provides a native desktop experience with:
+- ⚡ Faster startup (<1 second)
+- 🖥️ Native system dialogs and widgets
+- 📦 Can be packaged as standalone executable
+- 💾 Lower resource usage (no browser required)
+
+See [QUICKSTART_TKINTER.md](QUICKSTART_TKINTER.md) for detailed usage guide.
+
 ## Streamlit Web Application (Legacy)
 
 You can also run the web-based Streamlit application. First, install the streamlit dependency:
