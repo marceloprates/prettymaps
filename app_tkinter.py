@@ -52,14 +52,6 @@ class PrettymapsApp:
         self._initial_geocode_done = False  # Flag to prevent multiple updates at startup
         self._preview_update_pending = False  # Flag to debounce preview updates
         
-        # Define color themes
-        self.themes = {
-            "Autumn": ["#433633", "#FF5E5B", "#D4A574", "#8B6F47"],
-            "Ocean": ["#1F4788", "#2E8BC0", "#A2D5F7", "#5A9FBD"],
-            "Forest": ["#1B4D3E", "#2D6A4F", "#40916C", "#95D5B2"],
-            "Desert": ["#D4A574", "#EBA644", "#B8860B", "#CD853F"],
-        }
-        
         # Get default layer styles from prettymaps
         self.default_style = prettymaps.preset("default").params["style"]
         
@@ -291,16 +283,6 @@ class PrettymapsApp:
         )
         row += 1
         
-        # Theme selector
-        ttk.Label(scrollable_frame, text="Theme:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        row += 1
-        self.theme_var = tk.StringVar(value="Autumn")
-        theme_combo = ttk.Combobox(scrollable_frame, textvariable=self.theme_var,
-                                   values=["Autumn", "Ocean", "Forest", "Desert"], state="readonly", width=37)
-        theme_combo.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        self.theme_var.trace_add("write", lambda *args: self.update_color_pickers())
-        row += 1
-        
         # Number of colors
         ttk.Label(scrollable_frame, text="Number of colors:").grid(row=row, column=0, sticky=tk.W, pady=5)
         row += 1
@@ -438,24 +420,23 @@ class PrettymapsApp:
         self.current_map_path = None
     
     def update_color_pickers(self):
-        """Update color pickers based on selected theme and number of colors"""
+        """Update color pickers based on number of colors"""
         # Clear existing color widgets
         for widget in self.color_widgets:
             widget.destroy()
         self.color_widgets = []
         
-        # Get theme colors
-        theme_name = self.theme_var.get()
-        palette = self.themes.get(theme_name, ["#433633", "#FF5E5B"])
+        # Default palette colors
+        default_palette = ["#433633", "#FF5E5B", "#D4A574", "#8B6F47"]
         
         # Update number of colors if needed
         num_colors = self.num_colors_var.get()
         
         # Create color picker buttons, preserving existing custom colors
         for i in range(num_colors):
-            # Use existing custom color if available, otherwise use palette default
+            # Use existing custom color if available, otherwise use default palette
             if i not in self.custom_palette:
-                self.custom_palette[i] = palette[i % len(palette)]
+                self.custom_palette[i] = default_palette[i % len(default_palette)]
             color = self.custom_palette[i]
             
             frame = ttk.Frame(self.colors_frame)
