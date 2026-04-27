@@ -88,6 +88,22 @@
             "lw": 1,
             "zorder": 2
         },
+        "sea": {
+            "fc": "#a1e3ff",
+            "ec": "#2F3737",
+            "hatch": "ooo...",
+            "hatch_c": "#85c9e6",
+            "lw": 1,
+            "zorder": 2
+        },
+        "waterway": {
+            "fc": "#a1e3ff",
+            "ec": "#2F3737",
+            "hatch": "ooo...",
+            "hatch_c": "#85c9e6",
+            "lw": 1,
+            "zorder": 2
+        },
         "parking": {
             "fc": "#F2F4CB",
             "ec": "#2F3737",

@@ -71,6 +71,18 @@
             "lw": 1,
             "zorder": 2
         },
+        "sea": {
+            "fc": "#92D5F2",
+            "ec": "#6da8c2",
+            "lw": 1,
+            "zorder": 2
+        },
+        "waterway": {
+            "fc": "#92D5F2",
+            "ec": "#6da8c2",
+            "lw": 1,
+            "zorder": 2
+        },
         "streets": {
             "fc": "#F1E6D0",
             "ec": "#2F3737",

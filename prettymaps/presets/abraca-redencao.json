@@ -94,6 +94,18 @@
             "lw": 1,
             "zorder": 3
         },
+        "sea": {
+            "fc": "#a8e1e6",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 3
+        },
+        "waterway": {
+            "fc": "#a8e1e6",
+            "ec": "#2F3737",
+            "lw": 1,
+            "zorder": 3
+        },
         "school": {
             "fc": "#FCE19C",
             "ec": "#2F3737",
