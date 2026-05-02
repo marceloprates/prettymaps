@@ -25,6 +25,27 @@
         ],
         "leisure": "park"
       }
+    },
+    "sea": {},
+    "water": {
+      "tags": {
+        "natural": [
+          "water",
+          "bay"
+        ]
+      }
+    },
+    "waterway": {
+      "tags": {
+        "waterway": [
+          "river",
+          "stream"
+        ]
+      },
+      "width": {
+        "river": 20,
+        "stream": 10
+      }
     }
   },
   "style": {
