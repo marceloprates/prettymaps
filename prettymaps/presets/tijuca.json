@@ -42,6 +42,19 @@
         "natural": "water"
       }
     },
+    "sea": {},
+    "waterway": {
+      "tags": {
+        "waterway": [
+          "river",
+          "stream"
+        ]
+      },
+      "width": {
+        "river": 20,
+        "stream": 10
+      }
+    },
     "pedestrian": {
       "tags": {
         "area:highway": "pedestrian"

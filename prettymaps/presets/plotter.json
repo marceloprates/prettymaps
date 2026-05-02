@@ -30,6 +30,19 @@
         ]
       }
     },
+    "sea": {},
+    "waterway": {
+      "tags": {
+        "waterway": [
+          "river",
+          "stream"
+        ]
+      },
+      "width": {
+        "river": 20,
+        "stream": 10
+      }
+    },
     "forest": {
       "tags": {
         "landuse": "forest"
