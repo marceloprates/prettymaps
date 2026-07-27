@@ -56,7 +56,11 @@ import shutil
 
 # Local imports
 from .fetch import get_gdfs, obtain_elevation, get_keypoints
+from .gpx import read_track, is_track_file, track_center, track_radius
 from .utils import log_execution_time
+
+# Default matplotlib style for a GPX/KML track layer (see the `gpx` arg of plot()).
+GPX_STYLE = {"ec": "#EB4034", "lw": 3, "zorder": 6}
 
 # Log configuration for elapsed time
 logging.basicConfig(
@@ -1130,6 +1134,8 @@ def plot(
     logging: bool = False,
     semantic: bool = False,
     adjust_aspect_ratio: bool = True,
+    gpx: str | List[str] | None = None,
+    gpx_style: Dict[str, Any] | None = None,
 ) -> Plot:
     """
     Plots a map based on a given query and specified parameters.
@@ -1161,9 +1167,23 @@ def plot(
         scale_y: Scaling parameter in the y direction. Defaults to 1.
         rotation: Rotation parameter in degrees. Defaults to 0.
         logging: Whether to enable logging. Defaults to False.
+        gpx: Path (or list of paths) to a GPX/KML file whose track is drawn on the map as a "gpx" layer. If `query` is itself a GPX/KML file, the map is framed around that track and it is drawn automatically. Defaults to None.
+        gpx_style: Matplotlib style for the GPX track layer (e.g. {"ec": "#EB4034", "lw": 3}). Overrides `GPX_STYLE`; ignored if `style["gpx"]` is given. Defaults to None.
     Returns:
         Plot: The resulting plot object.
     """
+
+    # 0. Read a GPX/KML track, if given, to frame the map around it and/or draw it
+    track_geom = None
+    gpx_source = gpx if gpx is not None else (query if is_track_file(query) else None)
+    if gpx_source is not None:
+        track_geom = read_track(gpx_source)
+    if track_geom is not None and is_track_file(query):
+        # The query IS the track file: centre the map on the track and, unless the
+        # caller fixed a radius, choose one that encloses the whole track.
+        if radius is None:
+            radius = track_radius(track_geom)
+        query = track_center(track_geom)
 
     # 1. Manage presets
     layers, style, circle, radius, dilate = manage_presets(
@@ -1196,6 +1216,13 @@ def plot(
     gdfs = get_gdfs(query, layers, radius, dilate, -rotation, logging=logging)
     fetch_time = time.time() - start_time
     print(f"Fetching geodataframes took {fetch_time:.2f} seconds")
+
+    # 4b. Inject the GPX/KML track as a "gpx" layer (rides through the same
+    # projection, transforms and drawing as every other layer).
+    if track_geom is not None:
+        gdfs["gpx"] = gp.GeoDataFrame(geometry=[track_geom], crs="EPSG:4326")
+        layers.setdefault("gpx", {})
+        style.setdefault("gpx", {**GPX_STYLE, **(gpx_style or {})})
 
     # 5. Apply transformations to GeoDataFrames (translation, scale, rotation)
     gdfs = transform_gdfs(gdfs, x, y, scale_x, scale_y, rotation, logging=logging)
