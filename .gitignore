@@ -20,9 +20,10 @@ outputs/
 # Data
 /data/
 
-# Ignore all notebooks except examples.ipynb
+# Ignore all notebooks except the tutorial
 notebooks/*
-!notebooks/examples.ipynb
+!notebooks/tutorial.py
+!notebooks/tutorial.md
 
 # Exclude etc folder
 etc/
@@ -48,3 +49,14 @@ SRTM1/
 *.tmp
 *.tmp.png
 prettymaps/presets/my-preset.json
+
+# Local-only agent guardrails (not committed)
+AGENTS.md
+.venv/
+# Marimo caches
+__marimo__/
+*.marimo
+
+# Lesson agent guardrails
+.ralph/
+.pi/
