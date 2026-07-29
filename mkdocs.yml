@@ -1,8 +1,9 @@
 site_name: prettymaps
-site_url: https://yourusername.github.io/prettymaps/
+site_url: https://marceloprates.github.io/prettymaps/
 docs_dir: docs
 nav:
   - Home: index.md
+  - Tutorial: tutorial.md
   - Usage: usage.md
   - API Reference: api.md
 theme:
@@ -18,4 +19,4 @@ plugins:
           options:
             show_root_heading: true
             show_source: true
-            docstring_style: google 
+            docstring_style: google

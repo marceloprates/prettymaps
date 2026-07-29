@@ -21,4 +21,4 @@ import prettymaps
 prettymaps.plot("Porto Alegre, Brazil")
 ```
 
-Explore the [Usage](usage.md) and [API Reference](api.md) for more details. 
+Explore the [Tutorial](tutorial.md), [Usage](usage.md) and [API Reference](api.md) for more details. 
