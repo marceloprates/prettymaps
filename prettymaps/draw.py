@@ -396,7 +396,7 @@ def plot_gdf(
                         **{
                             k: v
                             for k, v in kwargs.items()
-                            if k in ["lw", "lt", "dashes", "zorder"]
+                            if k in ["lw", "ls", "dashes", "zorder"]
                         },
                     )
         elif mode == "plotter":
