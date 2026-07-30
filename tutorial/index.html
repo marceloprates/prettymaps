@@ -1,0 +1,1172 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://marceloprates.github.io/prettymaps/tutorial/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../usage/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tutorial - prettymaps</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#prettymaps-tutorial" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="prettymaps" class="md-header__button md-logo" aria-label="prettymaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            prettymaps
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tutorial
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="prettymaps" class="md-nav__button md-logo" aria-label="prettymaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    prettymaps
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-on-google-colaboratory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install on Google Colaboratory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-front-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run front-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plotting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plotting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plotting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default preset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot-an-entire-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot an entire region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-geodataframes-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access GeoDataFrames directly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search by name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mosaic-of-building-footprints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mosaic of building footprints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-matplotlib-axes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the matplotlib axes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plotter-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plotter mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a preset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiplot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiplot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-hillshade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add hillshade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-keypoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add keypoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-on-google-colaboratory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install on Google Colaboratory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-front-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run front-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plotting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plotting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plotting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default preset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot-an-entire-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot an entire region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-geodataframes-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access GeoDataFrames directly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search by name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mosaic-of-building-footprints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mosaic of building footprints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-matplotlib-axes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the matplotlib axes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plotter-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plotter mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a preset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiplot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiplot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-hillshade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add hillshade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-keypoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add keypoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="prettymaps-tutorial">prettymaps Tutorial</h1>
+<p>A minimal Python library to draw customized maps from <a href="https://www.openstreetmap.org">OpenStreetMap</a> created using the <a href="https://github.com/gboeing/osmnx">osmnx</a>, <a href="https://matplotlib.org/">matplotlib</a>, <a href="https://shapely.readthedocs.io">shapely</a> and <a href="https://github.com/abey79/vsketch">vsketch</a> packages.</p>
+<p><img alt="Heerhugowaard sample" src="../img/tour-01-heerhugowaard.png" /></p>
+<p>This tutorial is generated from <a href="../notebooks/tutorial.py"><code>notebooks/tutorial.py</code></a>, a marimo notebook. To run it interactively:</p>
+<pre><code class="language-sh">uv run --with marimo marimo edit notebooks/tutorial.py
+</code></pre>
+<p>Or with the locally installed copy:</p>
+<pre><code class="language-sh">.venv/bin/marimo edit notebooks/tutorial.py
+</code></pre>
+<h2 id="installation">Installation</h2>
+<h3 id="install-locally">Install locally</h3>
+<pre><code>pip install prettymaps
+</code></pre>
+<h3 id="install-on-google-colaboratory">Install on Google Colaboratory</h3>
+<pre><code>!pip install -e &quot;git+https://github.com/marceloprates/prettymaps#egg=prettymaps&quot;
+</code></pre>
+<p>Then <strong>restart the runtime</strong> (Runtime -&gt; Restart Runtime) before importing prettymaps.</p>
+<h2 id="run-front-end">Run front-end</h2>
+<p>After prettymaps is installed, you can run the front-end (streamlit) application from the prettymaps repository using:</p>
+<pre><code>streamlit run app.py
+</code></pre>
+<h2 id="plotting">Plotting</h2>
+<p>Plotting with prettymaps is very simple. Run:</p>
+<pre><code class="language-python">prettymaps.plot(your_query)
+</code></pre>
+<p><strong><code>your_query</code></strong> can be:</p>
+<ol>
+<li>An address (Example: <code>"Porto Alegre"</code>),</li>
+<li>Latitude / Longitude coordinates (Example: <code>(-30.0324999, -51.2303767)</code>),</li>
+<li>A custom boundary in GeoDataFrame format.</li>
+</ol>
+<h3 id="default-preset">Default preset</h3>
+<pre><code class="language-python">import prettymaps
+
+plot = prettymaps.plot('Stad van de Zon, Heerhugowaard, Netherlands')
+</code></pre>
+<p><img alt="Heerhugowaard, default preset" src="../img/tour-01-heerhugowaard.png" /></p>
+<h3 id="presets">Presets</h3>
+<p>You can also choose from different "presets" (parameter combinations saved in JSON files). See below an example using the "minimal" preset:</p>
+<pre><code class="language-python">plot = prettymaps.plot(
+    'Stad van de Zon, Heerhugowaard, Netherlands',
+    preset='minimal',
+)
+</code></pre>
+<p><img alt="Heerhugowaard, minimal preset" src="../img/tour-02-minimal-preset.png" /></p>
+<p>Run <code>prettymaps.presets()</code> to list all available presets. To inspect a specific preset, run <code>prettymaps.preset('default')</code>.</p>
+<h3 id="customizing-parameters">Customizing parameters</h3>
+<p>Instead of using the default configuration you can customize several parameters. The most important are:</p>
+<ul>
+<li><strong><code>layers</code></strong> — A dictionary of OpenStreetMap layers to fetch.</li>
+<li>Keys: layer names (arbitrary)</li>
+<li>Values: dicts representing OpenStreetMap queries</li>
+<li><strong><code>style</code></strong> — Matplotlib style parameters</li>
+<li>Keys: layer names (the same as before)</li>
+<li>Values: dicts representing Matplotlib style parameters</li>
+</ul>
+<pre><code class="language-python">plot = prettymaps.plot(
+    your_query,
+    layers,
+    style,
+    preset,
+    save_preset,
+    update_preset,
+    circle,
+    radius,
+    dilate,
+)
+</code></pre>
+<p><code>plot</code> is a Python dataclass containing:</p>
+<pre><code class="language-python">@dataclass
+class Plot:
+    geodataframes: Dict[str, gp.GeoDataFrame]
+    fig: matplotlib.figure.Figure
+    ax: matplotlib.axes.Axes
+</code></pre>
+<p>Here's an example of running <code>prettymaps.plot()</code> with customized parameters (Macau):</p>
+<pre><code class="language-python">plot = prettymaps.plot(
+    'Praça Ferreira do Amaral, Macau',
+    circle=True,
+    radius=1100,
+    layers={
+        &quot;green&quot;: {
+            &quot;tags&quot;: {
+                &quot;landuse&quot;: &quot;grass&quot;,
+                &quot;natural&quot;: [&quot;island&quot;, &quot;wood&quot;],
+                &quot;leisure&quot;: &quot;park&quot;,
+            }
+        },
+        &quot;forest&quot;: {&quot;tags&quot;: {&quot;landuse&quot;: &quot;forest&quot;}},
+        &quot;water&quot;: {&quot;tags&quot;: {&quot;natural&quot;: [&quot;water&quot;, &quot;bay&quot;]}},
+        &quot;parking&quot;: {
+            &quot;tags&quot;: {
+                &quot;amenity&quot;: &quot;parking&quot;,
+                &quot;highway&quot;: &quot;pedestrian&quot;,
+                &quot;man_made&quot;: &quot;pier&quot;,
+            }
+        },
+        &quot;streets&quot;: {
+            &quot;width&quot;: {
+                &quot;motorway&quot;: 5, &quot;trunk&quot;: 5, &quot;primary&quot;: 4.5,
+                &quot;secondary&quot;: 4, &quot;tertiary&quot;: 3.5, &quot;residential&quot;: 3,
+            }
+        },
+        &quot;building&quot;: {&quot;tags&quot;: {&quot;building&quot;: True}},
+    },
+    style={
+        &quot;background&quot;: {&quot;fc&quot;: &quot;#F2F4CB&quot;, &quot;ec&quot;: &quot;#dadbc1&quot;, &quot;hatch&quot;: &quot;ooo...&quot;},
+        &quot;perimeter&quot;: {&quot;fc&quot;: &quot;#F2F4CB&quot;, &quot;ec&quot;: &quot;#dadbc1&quot;, &quot;lw&quot;: 0, &quot;hatch&quot;: &quot;ooo...&quot;},
+        &quot;green&quot;: {&quot;fc&quot;: &quot;#D0F1BF&quot;, &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 1},
+        &quot;forest&quot;: {&quot;fc&quot;: &quot;#64B96A&quot;, &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 1},
+        &quot;water&quot;: {
+            &quot;fc&quot;: &quot;#a1e3ff&quot;, &quot;ec&quot;: &quot;#2F3737&quot;,
+            &quot;hatch&quot;: &quot;ooo...&quot;, &quot;hatch_c&quot;: &quot;#85c9e6&quot;, &quot;lw&quot;: 1,
+        },
+        &quot;parking&quot;: {&quot;fc&quot;: &quot;#F2F4CB&quot;, &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 1},
+        &quot;streets&quot;: {&quot;fc&quot;: &quot;#2F3737&quot;, &quot;ec&quot;: &quot;#475657&quot;, &quot;alpha&quot;: 1, &quot;lw&quot;: 0},
+        &quot;building&quot;: {
+            &quot;palette&quot;: [&quot;#FFC857&quot;, &quot;#E9724C&quot;, &quot;#C5283D&quot;],
+            &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 0.5,
+        },
+    },
+)
+</code></pre>
+<p><img alt="Macau, custom parameters" src="../img/tour-03-macau-custom.png" /></p>
+<h3 id="plot-an-entire-region">Plot an entire region</h3>
+<p>To plot an entire region (not just a rectangular or circular area), set <code>radius=False</code>:</p>
+<pre><code class="language-python">plot = prettymaps.plot('Bom Fim, Porto Alegre, Brasil', radius=False)
+</code></pre>
+<p><img alt="Bom Fim, Porto Alegre" src="../img/tour-04-bomfim-region.png" /></p>
+<h3 id="access-geodataframes-directly">Access GeoDataFrames directly</h3>
+<p>You can access a layer's GeoDataFrame directly:</p>
+<pre><code class="language-python">plot = prettymaps.plot('Centro Histórico, Porto Alegre', show=False)
+plot.geodataframes['building']
+</code></pre>
+<h3 id="search-by-name">Search by name</h3>
+<p>Search a building by name and display it:</p>
+<pre><code class="language-python">plot.geodataframes['building'][
+    plot.geodataframes['building'].name
+    == 'Catedral Metropolitana Nossa Senhora Mãe de Deus'
+].geometry[0]
+</code></pre>
+<h3 id="mosaic-of-building-footprints">Mosaic of building footprints</h3>
+<pre><code class="language-python">import numpy as np
+import osmnx as ox
+from matplotlib import pyplot as plt
+
+plot = prettymaps.plot('Porto Alegre', show=False)
+buildings = plot.geodataframes['building']
+buildings = ox.projection.project_gdf(buildings)
+buildings = [b for b in buildings.geometry if b.area &gt; 0]
+
+n = 6
+fig, axes = plt.subplots(n, n, figsize=(7, 6))
+fig.patch.set_facecolor('#5cc0eb')
+fig.suptitle('Buildings of Porto Alegre', size=25, color='#fff')
+for ax, building in zip(np.concatenate(axes), buildings):
+    ax.plot(*building.exterior.xy, c='#ffffff')
+    ax.autoscale(); ax.axis('off'); ax.axis('equal')
+</code></pre>
+<p><img alt="Buildings of Porto Alegre mosaic" src="../img/tour-05-mosaic.png" /></p>
+<h3 id="customizing-the-matplotlib-axes">Customizing the matplotlib axes</h3>
+<p>Access <code>plot.ax</code> or <code>plot.fig</code> to add new elements to the matplotlib plot:</p>
+<pre><code class="language-python">plot = prettymaps.plot(
+    (41.39491, 2.17557),
+    preset='barcelona',
+    show=False,
+)
+
+plot.fig.patch.set_facecolor('#F2F4CB')
+plot.ax.set_title('Barcelona', font='serif', size=50)
+</code></pre>
+<h3 id="plotter-mode">Plotter mode</h3>
+<p>Use <strong>plotter</strong> mode to export a pen plotter-compatible SVG (thanks to abey79's amazing <a href="https://github.com/abey79/vsketch">vsketch</a> library):</p>
+<pre><code class="language-python">plot = prettymaps.plot(
+    (41.39491, 2.17557),
+    mode='plotter',
+    layers=dict(perimeter={}),
+    preset='barcelona-plotter',
+    scale_x=0.6,
+    scale_y=-0.6,
+)
+</code></pre>
+<p><img alt="Barcelona plotter" src="../img/tour-06-barcelona-plotter.png" /></p>
+<h3 id="other-examples">Other examples</h3>
+<pre><code class="language-python">plot = prettymaps.plot(
+    'Barra da Tijuca',
+    dilate=0,
+    figsize=(22, 10),
+    preset='tijuca',
+    adjust_aspect_ratio=False,
+)
+</code></pre>
+<p><img alt="Barra da Tijuca, tijuca preset" src="../img/tour-07-tijuca.png" /></p>
+<h3 id="create-a-preset">Create a preset</h3>
+<p>Use <code>prettymaps.create_preset()</code> to create a preset:</p>
+<pre><code class="language-python">prettymaps.create_preset(
+    &quot;my-preset&quot;,
+    layers={
+        &quot;building&quot;: {
+            &quot;tags&quot;: {&quot;building&quot;: True, &quot;leisure&quot;: [&quot;track&quot;, &quot;pitch&quot;]},
+        },
+        &quot;streets&quot;: {
+            &quot;width&quot;: {
+                &quot;trunk&quot;: 6, &quot;primary&quot;: 6, &quot;secondary&quot;: 5,
+                &quot;tertiary&quot;: 4, &quot;residential&quot;: 3.5,
+                &quot;pedestrian&quot;: 3, &quot;footway&quot;: 3, &quot;path&quot;: 3,
+            }
+        },
+    },
+    style={
+        &quot;perimeter&quot;: {&quot;fill&quot;: False, &quot;lw&quot;: 0, &quot;zorder&quot;: 0},
+        &quot;streets&quot;: {&quot;fc&quot;: &quot;#F1E6D0&quot;, &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 1.5, &quot;zorder&quot;: 3},
+        &quot;building&quot;: {&quot;palette&quot;: [&quot;#fff&quot;], &quot;ec&quot;: &quot;#2F3737&quot;, &quot;lw&quot;: 1, &quot;zorder&quot;: 4},
+    },
+)
+
+prettymaps.preset('my-preset')
+</code></pre>
+<h3 id="multiplot">Multiplot</h3>
+<p>Use <code>prettymaps.multiplot</code> and <code>prettymaps.Subplot</code> to draw multiple regions on the same canvas:</p>
+<pre><code class="language-python">plot = prettymaps.multiplot(
+    prettymaps.Subplot(
+        'Cidade Baixa, Porto Alegre',
+        style={'building': {'palette': ['#49392C', '#E1F2FE', '#98D2EB']}},
+    ),
+    prettymaps.Subplot(
+        'Bom Fim, Porto Alegre',
+        style={'building': {'palette': ['#BA2D0B', '#D5F2E3', '#73BA9B', '#F79D5C']}},
+    ),
+    prettymaps.Subplot(
+        'Farroupilha, Porto Alegre',
+        layers={'building': {'tags': {'building': True}}},
+        style={'building': {'palette': ['#EEE4E1', '#E7D8C9', '#E6BEAE']}},
+    ),
+    preset='cb-bf-f',
+    figsize=(12, 12),
+)
+</code></pre>
+<p><img alt="Porto Alegre multiplot" src="../img/tour-08-multiplot.png" /></p>
+<h3 id="add-hillshade">Add hillshade</h3>
+<pre><code class="language-python">plot = prettymaps.plot(
+    'Honolulu',
+    radius=5500,
+    figsize='a4',
+    layers={
+        'hillshade': {
+            'azdeg': 315,
+            'altdeg': 45,
+            'vert_exag': 1,
+            'dx': 1,
+            'dy': 1,
+            'alpha': 0.75,
+        },
+    },
+)
+</code></pre>
+<p><img alt="Honolulu hillshade" src="../img/tour-09-honolulu-hillshade.png" /></p>
+<h3 id="add-keypoints">Add keypoints</h3>
+<pre><code class="language-python">plot = prettymaps.plot(
+    'Garopaba',
+    radius=5000,
+    figsize='a4',
+    layers={'building': False},
+    keypoints={
+        'tags': {'natural': ['beach']},
+        'specific': {
+            'pedra branca': {'tags': {'natural': ['peak']}},
+        },
+    },
+)
+</code></pre>
+<p><img alt="Garopaba keypoints" src="../img/tour-10-garopaba-keypoints.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

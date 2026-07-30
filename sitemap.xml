@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://yourusername.github.io/prettymaps/</loc>
-         <lastmod>2025-08-31</lastmod>
+         <loc>https://marceloprates.github.io/prettymaps/</loc>
+         <lastmod>2026-07-30</lastmod>
     </url>
     <url>
-         <loc>https://yourusername.github.io/prettymaps/api/</loc>
-         <lastmod>2025-08-31</lastmod>
+         <loc>https://marceloprates.github.io/prettymaps/api/</loc>
+         <lastmod>2026-07-30</lastmod>
     </url>
     <url>
-         <loc>https://yourusername.github.io/prettymaps/usage/</loc>
-         <lastmod>2025-08-31</lastmod>
+         <loc>https://marceloprates.github.io/prettymaps/tutorial/</loc>
+         <lastmod>2026-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://marceloprates.github.io/prettymaps/usage/</loc>
+         <lastmod>2026-07-30</lastmod>
     </url>
 </urlset>
