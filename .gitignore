@@ -32,10 +32,6 @@ etc/
 /docs/images/
 /docs/archive/
 
-# Scripts (if you want to ignore generated or temp files in scripts)
-/scripts/*.pyc
-/scripts/__pycache__/
-
 # Ignore SRTM1 data
 SRTM1/
 
