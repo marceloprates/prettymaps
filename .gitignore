@@ -44,6 +44,7 @@ SRTM1/
 *.tmp
 *.tmp.png
 prettymaps/presets/my-preset.json
+prettymaps/presets/pytest-temp-preset.json
 
 # Local-only agent guardrails (not committed)
 AGENTS.md
