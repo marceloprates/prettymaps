@@ -569,8 +569,155 @@ def merge_tags(layers_dict: dict) -> dict:
     return merged_tags
 
 
+def _sea_from_file(
+    bbox: "Polygon",
+    all_features: GeoDataFrame,
+    graph_gdf: GeoDataFrame,
+    crs,
+) -> GeoDataFrame:
+    """
+    Compute sea geometry using data already loaded from an OSM file.
+
+    Mirrors the sea logic in unified_osm_request but operates on pre-loaded
+    data so no additional network calls are made.
+    """
+    try:
+        if "natural" not in all_features.columns:
+            return GeoDataFrame(geometry=[], crs=crs)
+        coastlines = all_features[all_features["natural"] == "coastline"]
+        if coastlines.empty:
+            return GeoDataFrame(geometry=[], crs=crs)
+        coastline = unary_union(coastlines.geometry.tolist())
+        sea_candidates = bbox.difference(coastline.buffer(1e-9)).geoms
+        drive = graph_gdf if (graph_gdf is not None and not graph_gdf.empty) else GeoDataFrame(geometry=[])
+
+        def filter_candidate(sea_candidate):
+            intersections = drive.geometry.intersects(sea_candidate)
+            if "bridge" in drive.columns:
+                return not any(
+                    intersections
+                    & (drive.loc[drive.geometry.intersects(sea_candidate), "bridge"] != "yes")
+                )
+            return not any(intersections)
+
+        sea = unary_union(
+            MultiPolygon([c for c in sea_candidates if filter_candidate(c)]).geoms
+        ).buffer(1e-8)
+        return GeoDataFrame(geometry=[sea], crs=crs)
+    except Exception:
+        return GeoDataFrame(geometry=[], crs=crs)
+
+
+def _filter_features_by_tags(
+    all_features: GeoDataFrame, layer_tags: dict, crs
+) -> GeoDataFrame:
+    """Filter a pre-loaded features GeoDataFrame by a layer's tags dict."""
+    if not layer_tags or all_features.empty:
+        return GeoDataFrame(geometry=[], crs=crs)
+    parts = []
+    for key, value in layer_tags.items():
+        if key not in all_features.columns:
+            continue
+        if isinstance(value, bool) and value:
+            parts.append(all_features[~pd.isna(all_features[key])])
+        elif isinstance(value, list):
+            parts.append(all_features[all_features[key].isin(value)])
+        else:
+            parts.append(all_features[all_features[key] == value])
+    return pd.concat(parts) if parts else GeoDataFrame(geometry=[], crs=crs)
+
+
+def _get_gdfs_from_osm_file(
+    query, layers_dict: dict, radius, dilate, rotation: float, osm_file: str
+) -> dict:
+    """
+    Build all layer GeoDataFrames from a local OSM file.
+
+    Reads the file exactly twice (features + graph) and avoids all Overpass
+    API calls. Perimeter is taken from the query when it is a polygon or a
+    radius-bounded point; otherwise it is derived from the file's bounding box.
+    """
+    perimeter_kwargs = {}
+    if "perimeter" in layers_dict:
+        perimeter_kwargs = deepcopy(layers_dict["perimeter"])
+        perimeter_kwargs.pop("dilate", None)
+
+    # --- Load data from file once each ---
+    combined_tags = merge_tags(layers_dict)
+    try:
+        all_features = ox.features.features_from_xml(osm_file, tags=combined_tags)
+    except Exception:
+        all_features = GeoDataFrame(geometry=[])
+
+    needs_graph = any(l in {"streets", "railway", "waterway", "sea"} for l in layers_dict)
+    graph_gdf = None
+    if needs_graph:
+        try:
+            graph = ox.graph_from_xml(osm_file, retain_all=True)
+            graph_gdf = ox.graph_to_gdfs(graph, nodes=False)
+        except Exception:
+            graph_gdf = GeoDataFrame(geometry=[])
+
+    # --- Determine perimeter (no Overpass calls) ---
+    if parse_query(query) == "polygon":
+        perimeter = ox.projection.project_gdf(query)
+        if dilate is not None:
+            perimeter.geometry = perimeter.geometry.buffer(dilate)
+        perimeter = perimeter.to_crs(4326)
+    elif radius:
+        perimeter = get_perimeter(
+            query, radius=radius, rotation=rotation, dilate=dilate, **perimeter_kwargs
+        )
+    elif not all_features.empty:
+        bbox_geom = box(*all_features.total_bounds)
+        perimeter = GeoDataFrame(
+            geometry=[bbox_geom], crs=all_features.crs or "EPSG:4326"
+        )
+        if dilate is not None:
+            perimeter = ox.projection.project_gdf(perimeter)
+            perimeter.geometry = perimeter.geometry.buffer(dilate)
+            perimeter = perimeter.to_crs(4326)
+    else:
+        perimeter = get_perimeter(
+            query, radius=radius, rotation=rotation, dilate=dilate, **perimeter_kwargs
+        )
+
+    # --- Build clipping geometry ---
+    perimeter_proj = ox.projection.project_gdf(perimeter).buffer(0).to_crs(4326)
+    perimeter_with_tolerance = unary_union(perimeter_proj.geometry).buffer(0)
+    bbox = box(*perimeter_with_tolerance.bounds)
+
+    # --- Assemble per-layer GeoDataFrames ---
+    gdfs = {}
+    for layer, kwargs in layers_dict.items():
+        try:
+            if layer in ("streets", "railway", "waterway"):
+                gdf = graph_gdf.copy() if (graph_gdf is not None and not graph_gdf.empty) \
+                    else GeoDataFrame(geometry=[])
+            elif layer == "sea":
+                gdf = _sea_from_file(bbox, all_features, graph_gdf, perimeter.crs)
+            elif layer == "perimeter":
+                gdf = perimeter
+            elif kwargs.get("osmid") is not None:
+                gdf = ox.geocoder.geocode_to_gdf(kwargs["osmid"], by_osmid=True)
+            else:
+                gdf = _filter_features_by_tags(
+                    all_features, kwargs.get("tags") or {}, perimeter.crs
+                )
+
+            gdf = gdf.copy()
+            gdf.geometry = gdf.geometry.intersection(perimeter_with_tolerance)
+            gdf.drop(gdf[gdf.geometry.is_empty].index, inplace=True)
+            gdfs[layer] = gdf
+        except Exception:
+            gdfs[layer] = GeoDataFrame(geometry=[])
+
+    gdfs["perimeter"] = perimeter
+    return gdfs
+
+
 def unified_osm_request(
-    perimeter: GeoDataFrame, layers_dict: dict, logging: bool = False, osm_file: str = None
+    perimeter: GeoDataFrame, layers_dict: dict, logging: bool = False
 ) -> dict:
     """
     Unify all OSM requests into one to improve efficiency.
@@ -579,8 +726,6 @@ def unified_osm_request(
     perimeter (GeoDataFrame): The perimeter GeoDataFrame.
     layers_dict (dict): Dictionary of layers to fetch.
     logging (bool): Enable or disable logging.
-    osm_file (str): Optional path to a local .osm file. When provided, data is loaded
-        from the file instead of queried from the Overpass API.
 
     Returns:
     dict: Dictionary of GeoDataFrames for each layer.
@@ -605,12 +750,9 @@ def unified_osm_request(
         {layer: kwargs for layer, kwargs in layers_dict.items() if layer not in gdfs}
     )
 
-    # Fetch all features in one request (from file or from Overpass API)
+    # Fetch all features in one request
     try:
-        if osm_file is not None:
-            all_features = ox.features.features_from_xml(osm_file, tags=combined_tags)
-        else:
-            all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
+        all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
     except Exception as e:
         all_features = GeoDataFrame(geometry=[])
 
@@ -620,14 +762,11 @@ def unified_osm_request(
             continue
         try:
             if layer in ["streets", "railway", "waterway"]:
-                if osm_file is not None:
-                    graph = ox.graph_from_xml(osm_file, retain_all=True)
-                else:
-                    graph = ox.graph_from_polygon(
-                        bbox,
-                        custom_filter=kwargs.get("custom_filter"),
-                        truncate_by_edge=True,
-                    )
+                graph = ox.graph_from_polygon(
+                    bbox,
+                    custom_filter=kwargs.get("custom_filter"),
+                    truncate_by_edge=True,
+                )
                 gdf = ox.graph_to_gdfs(graph, nodes=False)
             elif layer == "sea":
                 try:
@@ -708,6 +847,9 @@ def unified_osm_request(
 @log_execution_time
 def get_gdfs(query, layers_dict, radius, dilate, rotation=0, logging=False, osm_file=None) -> dict:
 
+    if osm_file is not None:
+        return _get_gdfs_from_osm_file(query, layers_dict, radius, dilate, rotation, osm_file)
+
     perimeter_kwargs = {}
     if "perimeter" in layers_dict:
         perimeter_kwargs = deepcopy(layers_dict["perimeter"])
@@ -723,7 +865,7 @@ def get_gdfs(query, layers_dict, radius, dilate, rotation=0, logging=False, osm_
     )
 
     # Get all layers as GeoDataFrames in one unified request
-    gdfs = unified_osm_request(perimeter, layers_dict, logging=logging, osm_file=osm_file)
+    gdfs = unified_osm_request(perimeter, layers_dict, logging=logging)
     gdfs["perimeter"] = perimeter
 
     return gdfs
