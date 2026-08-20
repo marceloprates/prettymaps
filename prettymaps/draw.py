@@ -1136,6 +1136,7 @@ def plot(
     adjust_aspect_ratio: bool = True,
     gpx: str | List[str] | None = None,
     gpx_style: Dict[str, Any] | None = None,
+    osm_file: str | None = None,
 ) -> Plot:
     """
     Plots a map based on a given query and specified parameters.
@@ -1213,7 +1214,7 @@ def plot(
 
     # 4. Fetch geodataframes
     start_time = time.time()
-    gdfs = get_gdfs(query, layers, radius, dilate, -rotation, logging=logging)
+    gdfs = get_gdfs(query, layers, radius, dilate, -rotation, logging=logging, osm_file=osm_file)
     fetch_time = time.time() - start_time
     print(f"Fetching geodataframes took {fetch_time:.2f} seconds")
 

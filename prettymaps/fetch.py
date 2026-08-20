@@ -570,7 +570,7 @@ def merge_tags(layers_dict: dict) -> dict:
 
 
 def unified_osm_request(
-    perimeter: GeoDataFrame, layers_dict: dict, logging: bool = False
+    perimeter: GeoDataFrame, layers_dict: dict, logging: bool = False, osm_file: str = None
 ) -> dict:
     """
     Unify all OSM requests into one to improve efficiency.
@@ -579,6 +579,8 @@ def unified_osm_request(
     perimeter (GeoDataFrame): The perimeter GeoDataFrame.
     layers_dict (dict): Dictionary of layers to fetch.
     logging (bool): Enable or disable logging.
+    osm_file (str): Optional path to a local .osm file. When provided, data is loaded
+        from the file instead of queried from the Overpass API.
 
     Returns:
     dict: Dictionary of GeoDataFrames for each layer.
@@ -603,9 +605,12 @@ def unified_osm_request(
         {layer: kwargs for layer, kwargs in layers_dict.items() if layer not in gdfs}
     )
 
-    # Fetch all features in one request
+    # Fetch all features in one request (from file or from Overpass API)
     try:
-        all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
+        if osm_file is not None:
+            all_features = ox.features.features_from_xml(osm_file, tags=combined_tags)
+        else:
+            all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
     except Exception as e:
         all_features = GeoDataFrame(geometry=[])
 
@@ -615,11 +620,14 @@ def unified_osm_request(
             continue
         try:
             if layer in ["streets", "railway", "waterway"]:
-                graph = ox.graph_from_polygon(
-                    bbox,
-                    custom_filter=kwargs.get("custom_filter"),
-                    truncate_by_edge=True,
-                )
+                if osm_file is not None:
+                    graph = ox.graph_from_xml(osm_file, retain_all=True)
+                else:
+                    graph = ox.graph_from_polygon(
+                        bbox,
+                        custom_filter=kwargs.get("custom_filter"),
+                        truncate_by_edge=True,
+                    )
                 gdf = ox.graph_to_gdfs(graph, nodes=False)
             elif layer == "sea":
                 try:
@@ -698,7 +706,7 @@ def unified_osm_request(
 
 # Fetch GeoDataFrames given query and a dictionary of layers
 @log_execution_time
-def get_gdfs(query, layers_dict, radius, dilate, rotation=0, logging=False) -> dict:
+def get_gdfs(query, layers_dict, radius, dilate, rotation=0, logging=False, osm_file=None) -> dict:
 
     perimeter_kwargs = {}
     if "perimeter" in layers_dict:
@@ -715,7 +723,7 @@ def get_gdfs(query, layers_dict, radius, dilate, rotation=0, logging=False) -> d
     )
 
     # Get all layers as GeoDataFrames in one unified request
-    gdfs = unified_osm_request(perimeter, layers_dict, logging=logging)
+    gdfs = unified_osm_request(perimeter, layers_dict, logging=logging, osm_file=osm_file)
     gdfs["perimeter"] = perimeter
 
     return gdfs
