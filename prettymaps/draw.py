@@ -197,9 +197,12 @@ def graph_to_shapely(gdf: gp.GeoDataFrame, width: float = 1.0) -> BaseGeometry:
             return np.nan
 
     # Annotate GeoDataFrame with the width for each highway type
-    gdf["width"] = (
-        gdf["highway"].map(highway_to_width) if type(width) == dict else width
-    )
+    if type(width) == dict:
+        gdf["width"] = (
+            gdf["highway"].map(highway_to_width) if "highway" in gdf.columns else np.nan
+        )
+    else:
+        gdf["width"] = width
 
     # Remove rows with inexistent width
     gdf.drop(gdf[gdf.width.isna()].index, inplace=True)

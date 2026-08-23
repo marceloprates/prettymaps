@@ -592,22 +592,26 @@ def unified_osm_request(
 
     # Initialize the result dictionary
     gdfs = {}
-    ## Read layers from cache
-    # for layer, kwargs in layers_dict.items():
-    #    gdf = read_from_cache(perimeter, layers_dict[layer])
-    #    if gdf is not None:
-    #        gdfs[layer] = gdf
+    # Read layers from cache (skips network fetch entirely on a hit)
+    for layer, kwargs in layers_dict.items():
+        if layer == "perimeter":
+            continue
+        cached = read_from_cache(perimeter, kwargs)
+        if cached is not None:
+            gdfs[layer] = cached
 
     # Combine all tags into a single dictionary for a unified request
     combined_tags = merge_tags(
         {layer: kwargs for layer, kwargs in layers_dict.items() if layer not in gdfs}
     )
 
-    # Fetch all features in one request
-    try:
-        all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
-    except Exception as e:
-        all_features = GeoDataFrame(geometry=[])
+    # Fetch all features in one request (skip if every tag-based layer was cached)
+    all_features = GeoDataFrame(geometry=[])
+    if combined_tags:
+        try:
+            all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
+        except Exception as e:
+            all_features = GeoDataFrame(geometry=[])
 
     # Split the features into separate GeoDataFrames based on the layers_dict
     for layer, kwargs in layers_dict.items():
@@ -668,6 +672,8 @@ def unified_osm_request(
                         layer_tags = kwargs.get("tags")
                         gdf = gp.GeoDataFrame(geometry=[], crs=perimeter.crs)
                         for key, value in layer_tags.items():
+                            if key not in all_features.columns:
+                                continue
                             if isinstance(value, bool) and value:
                                 filtered_features = all_features[
                                     ~pd.isna(all_features[key])
@@ -688,7 +694,8 @@ def unified_osm_request(
             gdf.geometry = gdf.geometry.intersection(perimeter_with_tolerance)
             gdf.drop(gdf[gdf.geometry.is_empty].index, inplace=True)
             gdfs[layer] = gdf
-            # write_to_cache(perimeter, gdf, layers_dict[layer])
+            if layer != "perimeter":
+                write_to_cache(perimeter, gdf, kwargs)
         except Exception as e:
             # print(f"Error fetching {layer}: {e}")
             gdfs[layer] = GeoDataFrame(geometry=[])
