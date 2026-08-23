@@ -22,5 +22,6 @@ setup(
     ],
     package_dir={"prettymaps": "prettymaps"},
     package_data={"prettymaps": ["presets/*.json"]},
+    entry_points={"console_scripts": ["prettymaps=prettymaps.cli:main"]},
     python_requires=">=3.12",
 )
