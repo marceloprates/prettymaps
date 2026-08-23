@@ -56,3 +56,10 @@ def test_plot_command_with_preset_and_size(monkeypatch):
             "figsize": (8.0, 10.0),
         }
     ]
+
+
+def test_list_presets_prints_preset_names(capsys):
+    cli.main(["list-presets"])
+
+    out = capsys.readouterr().out
+    assert "default" in out.splitlines()
