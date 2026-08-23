@@ -607,6 +607,7 @@ def unified_osm_request(
     try:
         all_features = ox.features.features_from_polygon(bbox, tags=combined_tags)
     except Exception as e:
+        logging.warning(f"Failed to fetch features for combined tags: {e}")
         all_features = GeoDataFrame(geometry=[])
 
     # Split the features into separate GeoDataFrames based on the layers_dict
@@ -690,7 +691,7 @@ def unified_osm_request(
             gdfs[layer] = gdf
             # write_to_cache(perimeter, gdf, layers_dict[layer])
         except Exception as e:
-            # print(f"Error fetching {layer}: {e}")
+            logging.warning(f"Error fetching layer '{layer}': {e}")
             gdfs[layer] = GeoDataFrame(geometry=[])
 
     return gdfs
