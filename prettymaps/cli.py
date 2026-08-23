@@ -22,6 +22,11 @@ def build_parser():
     plot_parser.add_argument(
         "--height", type=float, default=11.7, help="Figure height in inches"
     )
+    plot_parser.add_argument(
+        "--no-credit",
+        action="store_true",
+        help="Omit the OpenStreetMap/prettymaps credit box from the image",
+    )
 
     subparsers.add_parser("list-presets", help="List available preset names")
 
@@ -37,6 +42,7 @@ def main(argv=None):
             preset=args.preset,
             save_as=args.output,
             figsize=(args.width, args.height),
+            credit=False if args.no_credit else {},
         )
     elif args.command == "list-presets":
         for name in _presets()["preset"]:
