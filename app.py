@@ -3,6 +3,7 @@ import logging
 from matplotlib import pyplot as plt
 import sys
 import os
+import tempfile
 import io
 
 
@@ -10,7 +11,7 @@ def download_svg():
     """
     Creates additional map in SVG format
     """
-    fig_path = "/tmp/generated_map_download.svg"
+    fig_path = os.path.join(tempfile.gettempdir(), "generated_map.svg")
     plt.savefig(fig_path, format="svg", bbox_inches="tight", dpi=150)
     return fig_path
 
@@ -174,7 +175,7 @@ with cols[1]:
             st.session_state.last_image = buf
 
             # Save the figure to a file
-            fig_path = "/tmp/generated_map.png"
+            fig_path = os.path.join(tempfile.gettempdir(), "generated_map.png")
             with open(fig_path, "wb") as f:
                 f.write(st.session_state.last_image.getbuffer())
 
