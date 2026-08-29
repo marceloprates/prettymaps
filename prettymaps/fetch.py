@@ -36,12 +36,7 @@ from shapely.affinity import rotate, scale
 from shapely.ops import unary_union
 from shapely.errors import ShapelyDeprecationWarning
 
-from IPython.display import display
-from skimage.measure import find_contours
-import elevation
 import geopandas as gp
-import rioxarray as rxr
-from rasterio.crs import CRS
 from .utils import log_execution_time
 
 import logging
@@ -108,6 +103,15 @@ def obtain_elevation(gdf):
     gdf (GeoDataFrame): GeoDataFrame containing the polygon.
     output_dir (str): Directory to save the downloaded tiles.
     """
+    try:
+        import elevation
+        import rioxarray as rxr
+        from rasterio.crs import CRS
+    except ImportError as e:
+        raise ImportError(
+            "Elevation features require elevation, rioxarray, and rasterio. "
+            "Install with: pip install elevation rioxarray rasterio"
+        ) from e
 
     # Ensure the GeoDataFrame has a single polygon
     if len(gdf) != 1:
@@ -159,6 +163,12 @@ def obtain_elevation(gdf):
 
 
 def get_sea_mask(gdf):
+    try:
+        from skimage.measure import find_contours
+    except ImportError as e:
+        raise ImportError(
+            "Sea mask requires scikit-image. Install with: pip install scikit-image"
+        ) from e
     elevation = obtain_elevation(gdf)
     sea_mask = elevation < 0
     sea_mask = sea_mask.T

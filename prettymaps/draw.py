@@ -27,8 +27,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-# Third-party imports
-import cv2
+# Third-party imports (heavy/optional deps: lazy-imported where used)
 import geopandas as gp
 import matplotlib
 import numpy as np
@@ -36,7 +35,6 @@ import osmnx as ox
 import pandas as pd
 import shapely.affinity
 import shapely.ops
-import vsketch
 from matplotlib import pyplot as plt
 from matplotlib.colors import LightSource
 from matplotlib.patches import Path, PathPatch
@@ -50,8 +48,6 @@ from shapely.geometry import (
     box,
 )
 from shapely.geometry.base import BaseGeometry
-from sklearn.preprocessing import MinMaxScaler
-from thefuzz import fuzz
 import shutil
 
 # Local imports
@@ -526,6 +522,13 @@ def draw_hillshade(
     **kwargs,
 ):
     if "hillshade" in layers:
+        try:
+            import cv2
+        except ImportError as e:
+            raise ImportError(
+                "Hillshade requires OpenCV. Install with: "
+                "pip install opencv-python-headless"
+            ) from e
         elevation_data = obtain_elevation(gdfs["perimeter"])
         elevation_data = np.clip(elevation_data, 0, None)
         elevation_data = elevation_data.astype(np.float32)
@@ -1008,6 +1011,12 @@ def init_plot(
     ax.axis("equal")
 
     if mode == "plotter":
+        try:
+            import vsketch
+        except ImportError as e:
+            raise ImportError(
+                "Plotter mode requires vsketch. Install with: pip install vsketch"
+            ) from e
         vsk = vsketch.Vsketch()
         vsk.size("a4", landscape=True)
     else:
@@ -1081,6 +1090,13 @@ def match_keypoint(keypoints_df, query, index=0):
         Returns:
         pd.DataFrame: A DataFrame containing the row of the best match based on the fuzzy string matching score.
         """
+
+    try:
+        from thefuzz import fuzz
+    except ImportError as e:
+        raise ImportError(
+            "Keypoint matching requires thefuzz. Install with: pip install thefuzz"
+        ) from e
 
     # Drop rows where 'name' is NaN
     keypoints_df = keypoints_df.dropna(subset=["name"])
