@@ -22,5 +22,5 @@ setup(
     ],
     package_dir={"prettymaps": "prettymaps"},
     package_data={"prettymaps": ["presets/*.json"]},
-    python_requires=">=3.12",
+    python_requires=">=3.12,<3.14",
 )
